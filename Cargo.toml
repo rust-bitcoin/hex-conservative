@@ -1,10 +1,30 @@
 [package]
 name = "hex-conservative"
 version = "0.0.1"
-edition = "2018"
-description = "A hex encoding and decoding crate with a conservative MSRV and dependency policy."
+authors = ["Andrew Poelstra <apoelstra@wpsoftware.net>"]
 license = "CC0-1.0"
+repository = "https://github.com/rust-bitcoin/hex-conservative"
+documentation = "https://docs.rs/hex-conservative/"
+description = "A hex encoding and decoding crate with a conservative MSRV and dependency policy."
+categories = ["encoding"]
+keywords = ["encoding", "hex", "hexadecimal"]
+readme = "README.md"
+edition = "2018"
+exclude = ["tests", "contrib"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+default = ["std"]
+std = ["alloc"]
+alloc = []
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
 
 [dependencies]
+core2 = { version = "0.3.2", default_features = false, optional = true }
+
+[dev-dependencies]
+
+[[example]]
+name = "hexy"
