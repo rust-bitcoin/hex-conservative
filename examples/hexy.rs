@@ -43,7 +43,7 @@ impl FromStr for Hexy {
 
 impl fmt::LowerHex for Hexy {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        // This is equivalent to but more performan than:
+        // This is equivalent to but more performant than:
         // fmt::LowerHex::fmt(&self.as_bytes().as_hex(), f)
         fmt_hex_exact!(f, 32, self.as_bytes(), Case::Lower)
     }
@@ -51,7 +51,7 @@ impl fmt::LowerHex for Hexy {
 
 impl fmt::UpperHex for Hexy {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        // This is equivalent to but more performan than:
+        // This is equivalent to but more performant than:
         // fmt::UpperHex::fmt(&self.as_bytes().as_hex(), f)
         fmt_hex_exact!(f, 32, self.as_bytes(), Case::Upper)
     }
