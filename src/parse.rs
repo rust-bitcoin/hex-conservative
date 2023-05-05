@@ -53,27 +53,27 @@ pub trait FromHex: Sized {
         I: Iterator<Item = Result<u8, Error>> + ExactSizeIterator + DoubleEndedIterator;
 
     /// Produces an object from a hex string.
-    fn from_hex(s: &str) -> Result<Self, Error> { Self::from_byte_iter(HexIterator::new(s)?) }
+    fn from_hex(s: &str) -> Result<Self, Error> { Self::from_byte_iter(Iter::new(s)?) }
 }
 
 /// Iterator over a hex-encoded string slice which decodes hex and yields bytes.
-pub struct HexIterator<'a> {
+pub struct Iter<'a> {
     /// The `Bytes` iterator whose next two bytes will be decoded to yield
     /// the next byte.
     iter: str::Bytes<'a>,
 }
 
-impl<'a> HexIterator<'a> {
-    /// Constructs a new `HexIterator` from a string slice.
+impl<'a> Iter<'a> {
+    /// Constructs a new `Iter` from a string slice.
     ///
     /// # Errors
     ///
     /// If the input string is of odd length.
-    pub fn new(s: &'a str) -> Result<HexIterator<'a>, Error> {
+    pub fn new(s: &'a str) -> Result<Iter<'a>, Error> {
         if s.len() % 2 != 0 {
             Err(Error::OddLengthString(s.len()))
         } else {
-            Ok(HexIterator { iter: s.bytes() })
+            Ok(Iter { iter: s.bytes() })
         }
     }
 }
@@ -86,7 +86,7 @@ fn chars_to_hex(hi: u8, lo: u8) -> Result<u8, Error> {
     Ok(ret as u8)
 }
 
-impl<'a> Iterator for HexIterator<'a> {
+impl<'a> Iterator for Iter<'a> {
     type Item = Result<u8, Error>;
 
     fn next(&mut self) -> Option<Result<u8, Error>> {
@@ -102,7 +102,7 @@ impl<'a> Iterator for HexIterator<'a> {
 }
 
 #[cfg(any(feature = "std", feature = "core2"))]
-impl<'a> io::Read for HexIterator<'a> {
+impl<'a> io::Read for Iter<'a> {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         let mut bytes_read = 0usize;
         for dst in buf {
@@ -118,7 +118,7 @@ impl<'a> io::Read for HexIterator<'a> {
     }
 }
 
-impl<'a> DoubleEndedIterator for HexIterator<'a> {
+impl<'a> DoubleEndedIterator for Iter<'a> {
     fn next_back(&mut self) -> Option<Result<u8, Error>> {
         let lo = self.iter.next_back()?;
         let hi = self.iter.next_back().unwrap();
@@ -126,7 +126,7 @@ impl<'a> DoubleEndedIterator for HexIterator<'a> {
     }
 }
 
-impl<'a> ExactSizeIterator for HexIterator<'a> {}
+impl<'a> ExactSizeIterator for Iter<'a> {}
 
 #[cfg(any(test, feature = "std", feature = "alloc"))]
 impl FromHex for Vec<u8> {
