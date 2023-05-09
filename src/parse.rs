@@ -95,6 +95,8 @@ impl<'a> DoubleEndedIterator for HexToBytesIter<'a> {
 
 impl<'a> ExactSizeIterator for HexToBytesIter<'a> {}
 
+impl<'a> core::iter::FusedIterator for HexToBytesIter<'a> {}
+
 #[cfg(any(test, feature = "std", feature = "alloc"))]
 impl FromHex for Vec<u8> {
     fn from_byte_iter<I>(iter: I) -> Result<Self, Error>
