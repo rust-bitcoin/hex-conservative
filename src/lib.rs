@@ -44,7 +44,7 @@ pub mod display;
 pub mod parse;
 
 pub use display::DisplayHex;
-pub use parse::{Error, FromHex, Iter};
+pub use parse::{Error, FromHex, HexToBytesIter};
 
 /// Reexports of extension traits.
 pub mod exts {
