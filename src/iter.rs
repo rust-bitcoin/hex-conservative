@@ -33,14 +33,6 @@ impl<'a> HexToBytesIter<'a> {
     }
 }
 
-fn chars_to_hex(hi: u8, lo: u8) -> Result<u8, HexToBytesError> {
-    let hih = (hi as char).to_digit(16).ok_or(HexToBytesError::InvalidChar(hi))?;
-    let loh = (lo as char).to_digit(16).ok_or(HexToBytesError::InvalidChar(lo))?;
-
-    let ret = (hih << 4) + loh;
-    Ok(ret as u8)
-}
-
 impl<'a> Iterator for HexToBytesIter<'a> {
     type Item = Result<u8, HexToBytesError>;
 
@@ -55,6 +47,18 @@ impl<'a> Iterator for HexToBytesIter<'a> {
         (min / 2, max.map(|x| x / 2))
     }
 }
+
+impl<'a> DoubleEndedIterator for HexToBytesIter<'a> {
+    fn next_back(&mut self) -> Option<Result<u8, HexToBytesError>> {
+        let lo = self.iter.next_back()?;
+        let hi = self.iter.next_back().unwrap();
+        Some(chars_to_hex(hi, lo))
+    }
+}
+
+impl<'a> ExactSizeIterator for HexToBytesIter<'a> {}
+
+impl<'a> core::iter::FusedIterator for HexToBytesIter<'a> {}
 
 #[cfg(any(feature = "std", feature = "core2"))]
 impl<'a> io::Read for HexToBytesIter<'a> {
@@ -73,14 +77,10 @@ impl<'a> io::Read for HexToBytesIter<'a> {
     }
 }
 
-impl<'a> DoubleEndedIterator for HexToBytesIter<'a> {
-    fn next_back(&mut self) -> Option<Result<u8, HexToBytesError>> {
-        let lo = self.iter.next_back()?;
-        let hi = self.iter.next_back().unwrap();
-        Some(chars_to_hex(hi, lo))
-    }
+fn chars_to_hex(hi: u8, lo: u8) -> Result<u8, HexToBytesError> {
+    let hih = (hi as char).to_digit(16).ok_or(HexToBytesError::InvalidChar(hi))?;
+    let loh = (lo as char).to_digit(16).ok_or(HexToBytesError::InvalidChar(lo))?;
+
+    let ret = (hih << 4) + loh;
+    Ok(ret as u8)
 }
-
-impl<'a> ExactSizeIterator for HexToBytesIter<'a> {}
-
-impl<'a> core::iter::FusedIterator for HexToBytesIter<'a> {}
