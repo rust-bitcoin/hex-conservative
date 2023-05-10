@@ -46,7 +46,7 @@ mod iter;
 pub mod parse;
 
 pub use display::DisplayHex;
-pub use iter::HexToBytesIter;
+pub use iter::{BytesToHexIter, HexToBytesIter};
 pub use parse::{FromHex, HexToArrayError, HexToBytesError};
 
 /// Reexports of extension traits.
