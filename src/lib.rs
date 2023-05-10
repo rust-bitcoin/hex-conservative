@@ -41,10 +41,11 @@ extern crate alloc;
 
 pub mod buf_encoder;
 pub mod display;
+mod error;
 pub mod parse;
 
 pub use display::DisplayHex;
-pub use parse::{Error, FromHex, HexToBytesIter};
+pub use parse::{FromHex, HexToArrayError, HexToBytesError, HexToBytesIter};
 
 /// Reexports of extension traits.
 pub mod exts {

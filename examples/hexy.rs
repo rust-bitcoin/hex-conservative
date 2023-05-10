@@ -1,15 +1,15 @@
-//! Demonstrate basic hexadecimal encoding and decoding.
+//! Demonstrate custom hexadecimal encoding and decoding.
 //!
 //! For basic encoding and decoding see crate level rustdoc in `lib.rs`.
 
 use std::fmt;
 use std::str::FromStr;
 
-use hex_conservative::{fmt_hex_exact, Case, Error, FromHex};
+use hex_conservative::{fmt_hex_exact, Case, FromHex, HexToArrayError, HexToBytesError};
 
 fn main() {
     let s = "deadbeefcafebabedeadbeefcafebabedeadbeefcafebabedeadbeefcafebabe";
-    let hexy = Hexy::from_hex(s).expect("valid hex digits");
+    let hexy = Hexy::from_hex(s).expect("the correct number of valid hex digits");
     let display = format!("{}", hexy);
 
     assert_eq!(display, s);
@@ -34,7 +34,7 @@ impl fmt::Display for Hexy {
 }
 
 impl FromStr for Hexy {
-    type Err = Error;
+    type Err = HexToArrayError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> { Hexy::from_hex(s) }
 }
@@ -60,9 +60,11 @@ impl fmt::UpperHex for Hexy {
 // And use a fixed size array to convert from hex.
 
 impl FromHex for Hexy {
-    fn from_byte_iter<I>(iter: I) -> Result<Self, Error>
+    type Error = HexToArrayError;
+
+    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
     where
-        I: Iterator<Item = Result<u8, Error>> + ExactSizeIterator + DoubleEndedIterator,
+        I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
     {
         // Errors if the iterator is the wrong length.
         let a = <[u8; 32] as FromHex>::from_byte_iter(iter)?;

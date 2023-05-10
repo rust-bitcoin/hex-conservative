@@ -1,7 +1,7 @@
 use std::fmt;
 use std::str::FromStr;
 
-use hex::{fmt_hex_exact, Case, Error, FromHex};
+use hex::{fmt_hex_exact, Case, FromHex, HexToArrayError, HexToBytesError};
 use honggfuzz::fuzz;
 
 const LEN: usize = 32; // Arbitrary amount of data.
@@ -22,7 +22,7 @@ impl fmt::Display for Hexy {
 }
 
 impl FromStr for Hexy {
-    type Err = Error;
+    type Err = HexToArrayError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> { Hexy::from_hex(s) }
 }
@@ -40,9 +40,11 @@ impl fmt::UpperHex for Hexy {
 }
 
 impl FromHex for Hexy {
-    fn from_byte_iter<I>(iter: I) -> Result<Self, Error>
+    type Error = HexToArrayError;
+
+    fn from_byte_iter<I>(iter: I) -> Result<Self, HexToArrayError>
     where
-        I: Iterator<Item = Result<u8, Error>> + ExactSizeIterator + DoubleEndedIterator,
+        I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
     {
         // Errors if the iterator is the wrong length.
         let a = <[u8; 32] as FromHex>::from_byte_iter(iter)?;
