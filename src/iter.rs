@@ -39,7 +39,7 @@ impl<'a> Iterator for HexToBytesIter<'a> {
     fn next(&mut self) -> Option<Result<u8, HexToBytesError>> {
         let hi = self.iter.next()?;
         let lo = self.iter.next().unwrap();
-        Some(chars_to_hex(hi, lo))
+        Some(hex_chars_to_byte(hi, lo))
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -52,7 +52,7 @@ impl<'a> DoubleEndedIterator for HexToBytesIter<'a> {
     fn next_back(&mut self) -> Option<Result<u8, HexToBytesError>> {
         let lo = self.iter.next_back()?;
         let hi = self.iter.next_back().unwrap();
-        Some(chars_to_hex(hi, lo))
+        Some(hex_chars_to_byte(hi, lo))
     }
 }
 
@@ -77,7 +77,8 @@ impl<'a> io::Read for HexToBytesIter<'a> {
     }
 }
 
-fn chars_to_hex(hi: u8, lo: u8) -> Result<u8, HexToBytesError> {
+/// `hi` and `lo` are bytes representing hex characters.
+fn hex_chars_to_byte(hi: u8, lo: u8) -> Result<u8, HexToBytesError> {
     let hih = (hi as char).to_digit(16).ok_or(HexToBytesError::InvalidChar(hi))?;
     let loh = (lo as char).to_digit(16).ok_or(HexToBytesError::InvalidChar(lo))?;
 
