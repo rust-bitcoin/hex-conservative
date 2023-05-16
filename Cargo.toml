@@ -12,14 +12,17 @@ readme = "README.md"
 edition = "2018"
 exclude = ["tests", "contrib"]
 
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[workspace]
+members = ["fuzz"]
+
 [features]
 default = ["std"]
 std = ["alloc"]
 alloc = []
-
-[package.metadata.docs.rs]
-all-features = true
-rustdoc-args = ["--cfg", "docsrs"]
 
 [dependencies]
 core2 = { version = "0.3.2", default_features = false, optional = true }
