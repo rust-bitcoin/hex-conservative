@@ -13,8 +13,13 @@ use crate::parse::HexToBytesError;
 
 /// Iterator over a hex-encoded string slice which decodes hex and yields bytes.
 pub struct HexToBytesIter<'a> {
-    /// The `Bytes` iterator whose next two bytes will be decoded to yield
-    /// the next byte.
+    /// The [`Bytes`] iterator whose next two bytes will be decoded to yield the next byte.
+    ///
+    /// # Invariants
+    ///
+    /// `iter` is guaranteed to be of even length.
+    ///
+    /// [`Bytes`]: core::str::Bytes
     iter: str::Bytes<'a>,
 }
 
@@ -38,7 +43,7 @@ impl<'a> Iterator for HexToBytesIter<'a> {
 
     fn next(&mut self) -> Option<Result<u8, HexToBytesError>> {
         let hi = self.iter.next()?;
-        let lo = self.iter.next().unwrap();
+        let lo = self.iter.next().expect("iter length invariant violated, this is a bug");
         Some(hex_chars_to_byte(hi, lo))
     }
 
@@ -51,12 +56,14 @@ impl<'a> Iterator for HexToBytesIter<'a> {
 impl<'a> DoubleEndedIterator for HexToBytesIter<'a> {
     fn next_back(&mut self) -> Option<Result<u8, HexToBytesError>> {
         let lo = self.iter.next_back()?;
-        let hi = self.iter.next_back().unwrap();
+        let hi = self.iter.next_back().expect("iter length invariant violated, this is a bug");
         Some(hex_chars_to_byte(hi, lo))
     }
 }
 
-impl<'a> ExactSizeIterator for HexToBytesIter<'a> {}
+impl<'a> ExactSizeIterator for HexToBytesIter<'a> {
+    fn len(&self) -> usize { self.iter.len() / 2 }
+}
 
 impl<'a> core::iter::FusedIterator for HexToBytesIter<'a> {}
 
