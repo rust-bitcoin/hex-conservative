@@ -20,6 +20,13 @@
 //! println!("An array as lower hex: {:x}", a.as_hex());
 //! // And for vecs since `Vec` derefs to byte slice.
 //! println!("A vector as upper hex: {:X}", v.as_hex());
+//!
+//! // Please note, mixed case strings will still parse successfully but we only
+//! // support displaying hex in a single case.
+//! assert_eq!(
+//!     Vec::from_hex("dEaDbEeF").expect("valid mixed case hex digits"),
+//!     Vec::from_hex("deadbeef").expect("valid hex digits"),
+//! );
 //! # }
 //! ```
 

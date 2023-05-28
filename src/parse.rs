@@ -220,4 +220,15 @@ mod tests {
         assert_eq!(Vec::<u8>::from_hex(badchar2), Err(Error::InvalidChar(b'Y')));
         assert_eq!(Vec::<u8>::from_hex(badchar3), Err(Error::InvalidChar(194)));
     }
+
+    #[test]
+    fn mixed_case() {
+        let s = "DEADbeef0123";
+        let want_lower = "deadbeef0123";
+        let want_upper = "DEADBEEF0123";
+
+        let v = Vec::<u8>::from_hex(s).expect("valid hex");
+        assert_eq!(format!("{:x}", v.as_hex()), want_lower);
+        assert_eq!(format!("{:X}", v.as_hex()), want_upper);
+    }
 }
