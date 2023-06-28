@@ -207,7 +207,6 @@ mod tests {
     #[test]
     fn decode_iter_backward() {
         let hex = "deadbeef";
-        // TODO: Confirm that this is what we want, the digits are still ordered (high, low)?
         let v = vec![0xef, 0xbe, 0xad, 0xde];
 
         for (i, b) in HexToBytesIter::new(hex).unwrap().rev().enumerate() {
