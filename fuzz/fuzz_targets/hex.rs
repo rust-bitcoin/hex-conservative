@@ -40,7 +40,7 @@ impl fmt::UpperHex for Hexy {
 }
 
 impl FromHex for Hexy {
-    type Error = HexToArrayError;
+    type Err = HexToArrayError;
 
     fn from_byte_iter<I>(iter: I) -> Result<Self, HexToArrayError>
     where
