@@ -16,10 +16,14 @@
 //! let v = Vec::from_hex("deadbeef").expect("valid hex digits");
 //! // Or a known length hex string into a fixed size array.
 //! let a = <[u8; 4]>::from_hex("deadbeef").expect("valid length and valid hex digits");
+//!
 //! // We support `LowerHex` and `UpperHex` out of the box for `[u8]` slices.
 //! println!("An array as lower hex: {:x}", a.as_hex());
 //! // And for vecs since `Vec` derefs to byte slice.
 //! println!("A vector as upper hex: {:X}", v.as_hex());
+//!
+//! // Allocate a new string (also `to_upper_hex_string`).
+//! let s = v.to_lower_hex_string();
 //!
 //! // Please note, mixed case strings will still parse successfully but we only
 //! // support displaying hex in a single case.
