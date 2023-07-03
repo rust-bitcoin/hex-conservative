@@ -16,6 +16,7 @@ fn main() {
 }
 
 /// A struct that always uses hex when in string form.
+#[derive(Debug)] // Manually implement Debug as we do for display below if you want the output in hex.
 pub struct Hexy {
     // Some opaque data.
     data: [u8; 32],
