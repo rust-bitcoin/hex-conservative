@@ -11,24 +11,24 @@ use crate::iter::HexToBytesIter;
 /// Trait for objects that can be deserialized from hex strings.
 pub trait FromHex: Sized {
     /// Error type returned while parsing hex string.
-    type Error: From<HexToBytesError> + Sized + fmt::Debug + fmt::Display;
+    type Err: From<HexToBytesError> + Sized + fmt::Debug + fmt::Display;
 
     /// Produces an object from a byte iterator.
-    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
+    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Err>
     where
         I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator;
 
     /// Produces an object from a hex string.
-    fn from_hex(s: &str) -> Result<Self, Self::Error> {
+    fn from_hex(s: &str) -> Result<Self, Self::Err> {
         Self::from_byte_iter(HexToBytesIter::new(s)?)
     }
 }
 
 #[cfg(any(test, feature = "std", feature = "alloc"))]
 impl FromHex for Vec<u8> {
-    type Error = HexToBytesError;
+    type Err = HexToBytesError;
 
-    fn from_byte_iter<I>(iter: I) -> Result<Self, HexToBytesError>
+    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Err>
     where
         I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
     {
@@ -70,9 +70,9 @@ impl std::error::Error for HexToBytesError {
 macro_rules! impl_fromhex_array {
     ($len:expr) => {
         impl FromHex for [u8; $len] {
-            type Error = HexToArrayError;
+            type Err = HexToArrayError;
 
-            fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
+            fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Err>
             where
                 I: Iterator<Item = Result<u8, HexToBytesError>>
                     + ExactSizeIterator

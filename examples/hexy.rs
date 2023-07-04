@@ -60,9 +60,9 @@ impl fmt::UpperHex for Hexy {
 // And use a fixed size array to convert from hex.
 
 impl FromHex for Hexy {
-    type Error = HexToArrayError;
+    type Err = HexToArrayError;
 
-    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
+    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Err>
     where
         I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
     {
