@@ -5,7 +5,9 @@
 use std::fmt;
 use std::str::FromStr;
 
-use hex_conservative::{fmt_hex_exact, Case, FromHex, HexToArrayError, HexToBytesError};
+use hex_conservative::{
+    fmt_hex_exact, Case, DisplayHex, FromHex, HexToArrayError, HexToBytesError,
+};
 
 fn main() {
     let s = "deadbeefcafebabedeadbeefcafebabedeadbeefcafebabedeadbeefcafebabe";
@@ -24,6 +26,12 @@ pub struct Hexy {
 impl Hexy {
     /// Demonstrates getting internal opaque data as a byte slice.
     pub fn as_bytes(&self) -> &[u8] { &self.data }
+}
+
+impl fmt::Debug for Hexy {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        fmt::Formatter::debug_struct(f, "Hexy").field("data", &self.data.as_hex()).finish()
+    }
 }
 
 // Note we implement `Display` and `FromStr` using `LowerHex`/`FromHex` respectively, if this was a

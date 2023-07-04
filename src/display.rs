@@ -25,7 +25,7 @@ pub trait DisplayHex: Copy + sealed::IsRef {
     /// The type providing [`fmt::Display`] implementation.
     ///
     /// This is usually a wrapper type holding a reference to `Self`.
-    type Display: fmt::LowerHex + fmt::UpperHex;
+    type Display: fmt::Display + fmt::Debug + fmt::LowerHex + fmt::UpperHex;
 
     /// Display `Self` as a continuous sequence of ASCII hex chars.
     fn as_hex(self) -> Self::Display;
@@ -148,6 +148,14 @@ impl<'a> DisplayByteSlice<'a> {
     }
 }
 
+impl<'a> fmt::Display for DisplayByteSlice<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
+}
+
+impl<'a> fmt::Debug for DisplayByteSlice<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
+}
+
 impl<'a> fmt::LowerHex for DisplayByteSlice<'a> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { self.display(f, Case::Lower) }
 }
@@ -180,6 +188,20 @@ where
         encoder.put_bytes(self.array.clone(), case);
         f.pad_integral(true, "0x", encoder.as_str())
     }
+}
+
+impl<A: Clone + IntoIterator, B: FixedLenBuf> fmt::Display for DisplayArray<A, B>
+where
+    A::Item: Borrow<u8>,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
+}
+
+impl<A: Clone + IntoIterator, B: FixedLenBuf> fmt::Debug for DisplayArray<A, B>
+where
+    A::Item: Borrow<u8>,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
 }
 
 impl<A: Clone + IntoIterator, B: FixedLenBuf> fmt::LowerHex for DisplayArray<A, B>
