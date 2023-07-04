@@ -11,8 +11,11 @@ use hex_conservative::{
 
 fn main() {
     let s = "deadbeefcafebabedeadbeefcafebabedeadbeefcafebabedeadbeefcafebabe";
+    println!("Parse hex from string:  {}", s);
+
     let hexy = Hexy::from_hex(s).expect("the correct number of valid hex digits");
     let display = format!("{}", hexy);
+    println!("Display Hexy as string: {}", display);
 
     assert_eq!(display, s);
 }
