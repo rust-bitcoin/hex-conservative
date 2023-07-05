@@ -167,6 +167,7 @@ impl<'a> fmt::UpperHex for DisplayByteSlice<'a> {
 /// Displays byte array as hex.
 ///
 /// Created by [`<&[u8; LEN] as DisplayHex>::as_hex`](DisplayHex::as_hex).
+// See `buf_encoder::impl_encode!` for `DisplayHex` implementation.
 pub struct DisplayArray<A: Clone + IntoIterator, B: FixedLenBuf>
 where
     A::Item: Borrow<u8>,
