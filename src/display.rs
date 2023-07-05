@@ -221,10 +221,10 @@ where
 
 /// Format known-length array as hex.
 ///
-/// This supports all formatting options of formatter and may be faster than calling
-/// `display_as_hex()` on an arbitrary `&[u8]`. Note that the implementation intentionally keeps
-/// leading zeros even when not requested. This is designed to display values such as hashes and
-/// keys and removing leading zeros would be confusing.
+/// This supports all formatting options of formatter and may be faster than calling `as_hex()` on
+/// an arbitrary `&[u8]`. Note that the implementation intentionally keeps leading zeros even when
+/// not requested. This is designed to display values such as hashes and keys and removing leading
+/// zeros would be confusing.
 ///
 /// ## Parameters
 ///
