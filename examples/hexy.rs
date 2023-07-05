@@ -1,6 +1,7 @@
-//! Demonstrate custom hexadecimal encoding and decoding.
+//! Demonstrate hexadecimal encoding and decoding for a type with a natural hex representation.
 //!
-//! For basic encoding and decoding see crate level rustdoc in `lib.rs`.
+//! For a type where hex is supported but is not the natural representation see `./custom.rs`.
+//! To wrap an array see the `./wrap_array_*` examples.
 
 use std::fmt;
 use std::str::FromStr;
@@ -37,8 +38,8 @@ impl fmt::Debug for Hexy {
     }
 }
 
-// Note we implement `Display` and `FromStr` using `LowerHex`/`FromHex` respectively, if this was a
-// not-so-hexy object then these impls would return a different string format.
+// We implement `Display`/`FromStr` using `LowerHex`/`FromHex` respectively, if hex was not the
+// natural representation for this type this would not be the case.
 
 impl fmt::Display for Hexy {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
