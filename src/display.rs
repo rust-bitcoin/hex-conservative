@@ -25,7 +25,7 @@ pub trait DisplayHex: Copy + sealed::IsRef {
     /// The type providing [`fmt::Display`] implementation.
     ///
     /// This is usually a wrapper type holding a reference to `Self`.
-    type Display: fmt::LowerHex + fmt::UpperHex;
+    type Display: fmt::Display + fmt::Debug + fmt::LowerHex + fmt::UpperHex;
 
     /// Display `Self` as a continuous sequence of ASCII hex chars.
     fn as_hex(self) -> Self::Display;
@@ -148,6 +148,14 @@ impl<'a> DisplayByteSlice<'a> {
     }
 }
 
+impl<'a> fmt::Display for DisplayByteSlice<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
+}
+
+impl<'a> fmt::Debug for DisplayByteSlice<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
+}
+
 impl<'a> fmt::LowerHex for DisplayByteSlice<'a> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { self.display(f, Case::Lower) }
 }
@@ -159,6 +167,7 @@ impl<'a> fmt::UpperHex for DisplayByteSlice<'a> {
 /// Displays byte array as hex.
 ///
 /// Created by [`<&[u8; LEN] as DisplayHex>::as_hex`](DisplayHex::as_hex).
+// See `buf_encoder::impl_encode!` for `DisplayHex` implementation.
 pub struct DisplayArray<A: Clone + IntoIterator, B: FixedLenBuf>
 where
     A::Item: Borrow<u8>,
@@ -182,6 +191,20 @@ where
     }
 }
 
+impl<A: Clone + IntoIterator, B: FixedLenBuf> fmt::Display for DisplayArray<A, B>
+where
+    A::Item: Borrow<u8>,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
+}
+
+impl<A: Clone + IntoIterator, B: FixedLenBuf> fmt::Debug for DisplayArray<A, B>
+where
+    A::Item: Borrow<u8>,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
+}
+
 impl<A: Clone + IntoIterator, B: FixedLenBuf> fmt::LowerHex for DisplayArray<A, B>
 where
     A::Item: Borrow<u8>,
@@ -198,10 +221,10 @@ where
 
 /// Format known-length array as hex.
 ///
-/// This supports all formatting options of formatter and may be faster than calling
-/// `display_as_hex()` on an arbitrary `&[u8]`. Note that the implementation intentionally keeps
-/// leading zeros even when not requested. This is designed to display values such as hashes and
-/// keys and removing leading zeros would be confusing.
+/// This supports all formatting options of formatter and may be faster than calling `as_hex()` on
+/// an arbitrary `&[u8]`. Note that the implementation intentionally keeps leading zeros even when
+/// not requested. This is designed to display values such as hashes and keys and removing leading
+/// zeros would be confusing.
 ///
 /// ## Parameters
 ///
