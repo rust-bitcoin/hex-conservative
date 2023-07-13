@@ -226,6 +226,10 @@ where
 /// not requested. This is designed to display values such as hashes and keys and removing leading
 /// zeros would be confusing.
 ///
+/// Note that the bytes parameter is `IntoIterator` this means that if you would like to do some
+/// manipulation to the byte array before formatting then you can. For example `bytes.iter().rev()`
+/// to print the array backwards.
+///
 /// ## Parameters
 ///
 /// * `$formatter` - a [`fmt::Formatter`].
