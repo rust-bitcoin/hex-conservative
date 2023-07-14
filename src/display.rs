@@ -4,6 +4,26 @@
 //!
 //! This module provides a trait for displaying things as hex as well as an implementation for
 //! `&[u8]`.
+//!
+//! For arrays and slices we support padding and precision for length < 512 bytes.
+//!
+//! # Examples
+//!
+//! ```
+//! use hex_conservative::DisplayHex;
+//!
+//! // Display as hex.
+//! let v = vec![0xde, 0xad, 0xbe, 0xef];
+//! assert_eq!(format!("{}", v.as_hex()), "deadbeef");
+//!
+//! // Get the most significant bytes.
+//! let v = vec![0x01, 0x23, 0x45, 0x67];
+//! assert_eq!(format!("{0:.4}", v.as_hex()), "0123");
+//!
+//! // Padding with zeros
+//! let v = vec![0xab; 2];
+//! assert_eq!(format!("{:0>8}", v.as_hex()), "0000abab");
+//!```
 
 use core::borrow::Borrow;
 use core::fmt;
@@ -136,6 +156,13 @@ impl<'a> DisplayByteSlice<'a> {
     fn display(&self, f: &mut fmt::Formatter, case: Case) -> fmt::Result {
         let mut buf = [0u8; 1024];
         let mut encoder = BufEncoder::new(&mut buf);
+
+        // Its unlikely that someone will want special formatting for a hex string that
+        // is over 1024 characters so just handle padding for short slices.
+        if self.bytes.len() < 512 {
+            encoder.put_bytes(self.bytes, case);
+            return f.pad(encoder.as_str());
+        }
 
         let mut chunks = self.bytes.chunks_exact(512);
         for chunk in &mut chunks {
@@ -324,6 +351,32 @@ mod tests {
             }
 
             assert_eq!(Dummy([42; 32]).to_string(), "2a".repeat(32));
+        }
+
+        #[test]
+        fn display_short_with_padding() {
+            let v = vec![0xbe, 0xef];
+            assert_eq!(format!("Hello {:<8}!", v.as_hex()), "Hello beef    !");
+            assert_eq!(format!("Hello {:-<8}!", v.as_hex()), "Hello beef----!");
+            assert_eq!(format!("Hello {:^8}!", v.as_hex()), "Hello   beef  !");
+            assert_eq!(format!("Hello {:>8}!", v.as_hex()), "Hello     beef!");
+        }
+
+        // We only pad arrays 512 bytes and shorter.
+        #[test]
+        fn display_long_no_padding() {
+            // Sanity.
+            let x = 1;
+            // This is here to show how long 2000 is so one can visually see the test below does not pad.
+            let want = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+            let got = format!("{:0>2000}", x);
+            assert_eq!(got, want);
+
+            // Note this string is shorter than the one above.
+            let v = vec![0xab; 512];
+            let want = "abababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab";
+            let got = format!("{:0>2000}", v.as_hex());
+            assert_eq!(got, want)
         }
     }
 }
