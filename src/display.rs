@@ -140,11 +140,11 @@ impl<'a> DisplayByteSlice<'a> {
         let mut chunks = self.bytes.chunks_exact(512);
         for chunk in &mut chunks {
             encoder.put_bytes(chunk, case);
-            f.write_str(encoder.as_str())?;
+            write!(f, "{}", encoder.as_str())?;
             encoder.clear();
         }
         encoder.put_bytes(chunks.remainder(), case);
-        f.write_str(encoder.as_str())
+        write!(f, "{}", encoder.as_str())
     }
 }
 
@@ -325,5 +325,19 @@ mod tests {
 
             assert_eq!(Dummy([42; 32]).to_string(), "2a".repeat(32));
         }
+    }
+
+    #[test]
+    fn display_format() {
+        // Sanity.
+        let x = 1;
+        let want = "00000001";
+        let got = format!("{:08}", x);
+        assert_eq!(got, want);
+
+        let v = vec![0xbe, 0xef];
+        let want = "0000beef";
+        let got = format!("{:08}", v.as_hex());
+        assert_eq!(got, want)
     }
 }
