@@ -105,3 +105,21 @@ impl Case {
 pub(crate) fn byte_to_hex(byte: u8, table: &[u8; 16]) -> [u8; 2] {
     [table[usize::from(byte.wrapping_shr(4))], table[usize::from(byte & 0x0F)]]
 }
+
+/// Quick and dirty macro for parsing hex in tests.
+///
+/// For improved ergonomics import with: `use hex_conservative::test_hex_unwrap as hex;`
+#[macro_export]
+macro_rules! test_hex_unwrap (($hex:expr) => (<Vec<u8> as $crate::FromHex>::from_hex($hex).unwrap()));
+
+#[cfg(test)]
+mod tests {
+    use crate::test_hex_unwrap as hex;
+
+    #[test]
+    fn parse_hex_into_vector() {
+        let got = hex!("deadbeef");
+        let want = vec![0xde, 0xad, 0xbe, 0xef];
+        assert_eq!(got, want)
+    }
+}
