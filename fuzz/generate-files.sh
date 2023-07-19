@@ -21,7 +21,7 @@ cargo-fuzz = true
 
 [dependencies]
 honggfuzz = { version = "0.5.55", default-features = false }
-hex = { path = "..", package = "hex-conservative", version = "0.1.0" }
+hex = { path = "..", package = "hex-conservative", version = "0.2.0" }
 EOF
 
 for targetFile in $(listTargetFiles); do
