@@ -378,5 +378,33 @@ mod tests {
             let got = format!("{:0>2000}", v.as_hex());
             assert_eq!(got, want)
         }
+
+        // Precision and padding act the same as for strings in the stdlib (because we use `Formatter::pad`).
+
+        #[test]
+        fn precision_truncates() {
+            // Precision gets the most significant bytes.
+            let v = vec![0x12, 0x34, 0x56, 0x78];
+            // Remember the integer is number of hex chars not number of bytes.
+            assert_eq!(format!("{0:.4}", v.as_hex()), "1234");
+        }
+
+        #[test]
+        fn precision_does_not_extend() {
+            let v = vec![0x12, 0x34, 0x56, 0x78];
+            assert_eq!(format!("{0:.16}", v.as_hex()), "12345678");
+        }
+
+        #[test]
+        fn padding_extends() {
+            let v = vec![0xab; 2];
+            assert_eq!(format!("{:0>8}", v.as_hex()), "0000abab");
+        }
+
+        #[test]
+        fn padding_does_not_truncate() {
+            let v = vec![0x12, 0x34, 0x56, 0x78];
+            assert_eq!(format!("{:0>4}", v.as_hex()), "12345678");
+        }
     }
 }
