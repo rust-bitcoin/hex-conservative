@@ -12,6 +12,9 @@ readme = "README.md"
 edition = "2018"
 exclude = ["tests", "contrib"]
 
+[lib]
+name = "hex"
+
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]

@@ -4,8 +4,8 @@
 //!
 //! For an example using the standard library `fmt` traits see `./wrap_array_fmt_traits.rs`.
 
-use hex_conservative::display::DisplayArray;
-use hex_conservative::{DisplayHex, FromHex, HexToArrayError, HexToBytesError};
+use hex::display::DisplayArray;
+use hex::{DisplayHex, FromHex, HexToArrayError, HexToBytesError};
 
 fn main() {
     let hex = "00000000cafebabedeadbeefcafebabedeadbeefcafebabedeadbeefcafebabe";

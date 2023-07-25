@@ -7,9 +7,6 @@
 //! ## Basic Usage
 //! ```
 //! # #[cfg(feature = "alloc")] {
-//! // Use the `package` key to improve import ergonomics (`hex` instead of `hex-conservative`).
-//! // hex = { package = "hex-conservative", version = "*" }
-//! # use hex_conservative as hex; // No need for this if using `package` as above.
 //! use hex::{DisplayHex, FromHex};
 //!
 //! // Decode an arbitrary length hex string into a vector.
@@ -108,7 +105,7 @@ pub(crate) fn byte_to_hex(byte: u8, table: &[u8; 16]) -> [u8; 2] {
 
 /// Quick and dirty macro for parsing hex in tests.
 ///
-/// For improved ergonomics import with: `use hex_conservative::test_hex_unwrap as hex;`
+/// For improved ergonomics import with: `use hex::test_hex_unwrap as hex;`
 #[macro_export]
 macro_rules! test_hex_unwrap (($hex:expr) => (<Vec<u8> as $crate::FromHex>::from_hex($hex).unwrap()));
 

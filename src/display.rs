@@ -10,7 +10,7 @@
 //! # Examples
 //!
 //! ```
-//! use hex_conservative::DisplayHex;
+//! use hex::DisplayHex;
 //!
 //! // Display as hex.
 //! let v = vec![0xde, 0xad, 0xbe, 0xef];

@@ -6,9 +6,7 @@
 use std::fmt;
 use std::str::FromStr;
 
-use hex_conservative::{
-    fmt_hex_exact, Case, DisplayHex, FromHex, HexToArrayError, HexToBytesError,
-};
+use hex::{fmt_hex_exact, Case, DisplayHex, FromHex, HexToArrayError, HexToBytesError};
 
 fn main() {
     let s = "deadbeefcafebabedeadbeefcafebabedeadbeefcafebabedeadbeefcafebabe";

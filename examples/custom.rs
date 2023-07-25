@@ -6,7 +6,7 @@
 use core::fmt;
 use core::str::FromStr;
 
-use hex_conservative::{DisplayHex, FromHex, HexToArrayError, HexToBytesError};
+use hex::{DisplayHex, FromHex, HexToArrayError, HexToBytesError};
 
 fn main() {
     let s = "deadbeefcafebabedeadbeefcafebabedeadbeefcafebabedeadbeefcafebabe";
