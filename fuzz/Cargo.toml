@@ -10,7 +10,7 @@ cargo-fuzz = true
 
 [dependencies]
 honggfuzz = { version = "0.5.55", default-features = false }
-hex-conservative = { path = "../", version = "0.1.1" }
+hex-conservative = { path = "../", version = "0.2.0" }
 
 [[bin]]
 name = "hex"
