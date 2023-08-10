@@ -30,6 +30,7 @@ impl<'a> HexToBytesIter<'a> {
     /// # Errors
     ///
     /// If the input string is of odd length.
+    #[inline]
     pub fn new(s: &'a str) -> Result<HexToBytesIter<'a>, HexToBytesError> {
         if s.len() % 2 != 0 {
             Err(HexToBytesError::OddLengthString(s.len()))
@@ -42,12 +43,14 @@ impl<'a> HexToBytesIter<'a> {
 impl<'a> Iterator for HexToBytesIter<'a> {
     type Item = Result<u8, HexToBytesError>;
 
+    #[inline]
     fn next(&mut self) -> Option<Result<u8, HexToBytesError>> {
         let hi = self.iter.next()?;
         let lo = self.iter.next().expect("iter length invariant violated, this is a bug");
         Some(hex_chars_to_byte(hi, lo))
     }
 
+    #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
         let (min, max) = self.iter.size_hint();
         (min / 2, max.map(|x| x / 2))
@@ -55,6 +58,7 @@ impl<'a> Iterator for HexToBytesIter<'a> {
 }
 
 impl<'a> DoubleEndedIterator for HexToBytesIter<'a> {
+    #[inline]
     fn next_back(&mut self) -> Option<Result<u8, HexToBytesError>> {
         let lo = self.iter.next_back()?;
         let hi = self.iter.next_back().expect("iter length invariant violated, this is a bug");
@@ -63,6 +67,7 @@ impl<'a> DoubleEndedIterator for HexToBytesIter<'a> {
 }
 
 impl<'a> ExactSizeIterator for HexToBytesIter<'a> {
+    #[inline]
     fn len(&self) -> usize { self.iter.len() / 2 }
 }
 
@@ -70,6 +75,7 @@ impl<'a> FusedIterator for HexToBytesIter<'a> {}
 
 #[cfg(any(feature = "std", feature = "core2"))]
 impl<'a> io::Read for HexToBytesIter<'a> {
+    #[inline]
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         let mut bytes_read = 0usize;
         for dst in buf {
@@ -116,6 +122,7 @@ where
 {
     type Item = char;
 
+    #[inline]
     fn next(&mut self) -> Option<char> {
         match self.low {
             Some(c) => {
@@ -130,6 +137,7 @@ where
         }
     }
 
+    #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
         let (min, max) = self.iter.size_hint();
         match self.low {
@@ -143,6 +151,7 @@ impl<I> DoubleEndedIterator for BytesToHexIter<I>
 where
     I: DoubleEndedIterator + Iterator<Item = u8>,
 {
+    #[inline]
     fn next_back(&mut self) -> Option<char> {
         match self.low {
             Some(c) => {
@@ -162,6 +171,7 @@ impl<I> ExactSizeIterator for BytesToHexIter<I>
 where
     I: ExactSizeIterator + Iterator<Item = u8>,
 {
+    #[inline]
     fn len(&self) -> usize { self.iter.len() * 2 }
 }
 
