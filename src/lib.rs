@@ -78,6 +78,7 @@ pub enum Case {
 }
 
 impl Default for Case {
+    #[inline]
     fn default() -> Self { Case::Lower }
 }
 

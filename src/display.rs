@@ -208,6 +208,7 @@ where
     A::Item: Borrow<u8>,
 {
     /// Creates the wrapper.
+    #[inline]
     pub fn new(array: A) -> Self { DisplayArray { array, _buffer_marker: Default::default() } }
 
     fn display(&self, f: &mut fmt::Formatter, case: Case) -> fmt::Result {

@@ -28,6 +28,7 @@ pub trait FromHex: Sized {
 impl FromHex for Vec<u8> {
     type Err = HexToBytesError;
 
+    #[inline]
     fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Err>
     where
         I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
