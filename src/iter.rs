@@ -207,39 +207,39 @@ mod tests {
     #[test]
     fn decode_iter_forward() {
         let hex = "deadbeef";
-        let v = vec![0xde, 0xad, 0xbe, 0xef];
+        let bytes = [0xde, 0xad, 0xbe, 0xef];
 
         for (i, b) in HexToBytesIter::new(hex).unwrap().enumerate() {
-            assert_eq!(b.unwrap(), v[i]);
+            assert_eq!(b.unwrap(), bytes[i]);
         }
     }
 
     #[test]
     fn decode_iter_backward() {
         let hex = "deadbeef";
-        let v = vec![0xef, 0xbe, 0xad, 0xde];
+        let bytes = [0xef, 0xbe, 0xad, 0xde];
 
         for (i, b) in HexToBytesIter::new(hex).unwrap().rev().enumerate() {
-            assert_eq!(b.unwrap(), v[i]);
+            assert_eq!(b.unwrap(), bytes[i]);
         }
     }
 
     #[test]
     fn encode_iter() {
-        let v = vec![0xde, 0xad, 0xbe, 0xef];
+        let bytes = [0xde, 0xad, 0xbe, 0xef];
         let hex = "deadbeef";
 
-        for (i, c) in BytesToHexIter::new(v.iter().cloned()).enumerate() {
+        for (i, c) in BytesToHexIter::new(bytes.iter().cloned()).enumerate() {
             assert_eq!(c, hex.chars().nth(i).unwrap());
         }
     }
 
     #[test]
     fn encode_iter_backwards() {
-        let v = vec![0xde, 0xad, 0xbe, 0xef];
+        let bytes = [0xde, 0xad, 0xbe, 0xef];
         let hex = "efbeadde";
 
-        for (i, c) in BytesToHexIter::new(v.iter().cloned()).rev().enumerate() {
+        for (i, c) in BytesToHexIter::new(bytes.iter().cloned()).rev().enumerate() {
             assert_eq!(c, hex.chars().nth(i).unwrap());
         }
     }
