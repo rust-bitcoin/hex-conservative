@@ -147,6 +147,7 @@ impl std::error::Error for HexToArrayError {
 }
 
 impl From<HexToBytesError> for HexToArrayError {
+    #[inline]
     fn from(e: HexToBytesError) -> Self { Self::Conversion(e) }
 }
 
