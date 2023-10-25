@@ -259,4 +259,60 @@ mod tests {
         let got = BytesToHexIter::new(bytes_iter).rev().collect::<String>();
         assert_eq!(got, hex);
     }
+
+    #[test]
+    fn hex_to_bytes_iter_nth() {
+        let hex = "deadbeef";
+        let bytes = [0xde_u8, 0xad, 0xbe, 0xef];
+        for (i, b) in bytes.iter().enumerate() {
+            let mut iter = HexToBytesIter::new(hex).expect("valid hex");
+            assert_eq!(iter.nth(i), Some(Ok(*b)));
+        }
+
+        let mut iter = HexToBytesIter::new(hex).expect("valid hex");
+        assert_eq!(iter.nth(bytes.len() + 1), None);
+    }
+
+    #[test]
+    fn bytes_to_hex_iter_nth() {
+        let bytes = [0xde_u8, 0xad, 0xbe, 0xef];
+        let hex = "deadbeef";
+        let iter = bytes.iter().copied();
+
+        for (i, c) in hex.chars().enumerate() {
+            let mut iter = BytesToHexIter::new(iter.clone());
+            assert_eq!(iter.nth(i), Some(c));
+        }
+        let mut iter = BytesToHexIter::new(iter);
+        assert_eq!(iter.nth(hex.len() + 1), None);
+    }
+
+    #[test]
+    fn hex_to_bytes_iter_nth_rev() {
+        let hex = "deadbeef";
+        let bytes = [0xef_u8, 0xbe, 0xad, 0xde];
+
+        for (i, b) in bytes.iter().enumerate() {
+            let iter = HexToBytesIter::new(hex).expect("valid hex");
+            assert_eq!(iter.rev().nth(i), Some(Ok(*b)));
+        }
+
+        let iter = HexToBytesIter::new(hex).expect("valid hex");
+        assert_eq!(iter.rev().nth(bytes.len() + 1), None);
+    }
+
+    #[test]
+    fn bytes_to_hex_iter_nth_rev() {
+        let bytes = [0xde_u8, 0xad, 0xbe, 0xef];
+        let hex = "efbeadde";
+        let iter = bytes.iter().copied();
+
+        for (i, c) in hex.chars().enumerate() {
+            let iter = BytesToHexIter::new(iter.clone());
+            assert_eq!(iter.rev().nth(i), Some(c));
+        }
+
+        let iter = BytesToHexIter::new(iter);
+        assert_eq!(iter.rev().nth(hex.len() + 1), None);
+    }
 }
