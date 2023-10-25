@@ -38,7 +38,7 @@ impl FromHex for Vec<u8> {
 }
 
 /// Hex decoding error.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum HexToBytesError {
     /// Non-hexadecimal character.
     InvalidChar(u8),
@@ -114,7 +114,7 @@ impl_fromhex_array!(384);
 impl_fromhex_array!(512);
 
 /// Hex decoding error.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum HexToArrayError {
     /// Conversion error while parsing hex string.
     Conversion(HexToBytesError),
