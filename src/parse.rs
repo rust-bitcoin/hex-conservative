@@ -48,7 +48,7 @@ pub enum HexToBytesError {
 
 impl fmt::Display for HexToBytesError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use self::HexToBytesError::*;
+        use HexToBytesError::*;
 
         match *self {
             InvalidChar(ch) => write!(f, "invalid hex character {}", ch),
@@ -60,7 +60,7 @@ impl fmt::Display for HexToBytesError {
 #[cfg(feature = "std")]
 impl std::error::Error for HexToBytesError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        use self::HexToBytesError::*;
+        use HexToBytesError::*;
 
         match self {
             InvalidChar(_) | OddLengthString(_) => None,
