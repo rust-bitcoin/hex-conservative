@@ -26,8 +26,12 @@ alloc = []
 
 [dependencies]
 core2 = { version = "0.3.2", default_features = false, optional = true }
+serde = { version = "1.0", default-features = false, optional = true }
+
 
 [dev-dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 
 [[example]]
 name = "hexy"
@@ -40,3 +44,7 @@ name = "wrap_array_display_hex_trait"
 
 [[example]]
 name = "wrap_array_fmt_traits"
+
+[[example]]
+name = "serde"
+required-features = ["std", "serde"]

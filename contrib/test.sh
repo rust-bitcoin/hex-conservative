@@ -2,7 +2,7 @@
 
 set -ex
 
-FEATURES="std alloc core2"
+FEATURES="std alloc core2 serde"
 MSRV="1\.48\.0"
 
 cargo --version
@@ -15,6 +15,10 @@ if cargo --version | grep nightly >/dev/null; then
 fi
 
 if cargo --version | grep ${MSRV}; then
+    cargo update -p serde_json --precise 1.0.99
+    cargo update -p serde --precise 1.0.156
+    cargo update -p quote --precise 1.0.30
+    cargo update -p proc-macro2 --precise 1.0.63
     # memchr 2.6.0 uses edition 2021
     cargo update -p memchr --precise 2.5.0
 fi
@@ -32,6 +36,7 @@ if [ "$DO_LINT" = true ]
 then
     cargo clippy --all-features --all-targets -- -D warnings
     cargo clippy --locked --example hexy -- -D warnings
+    cargo clippy --locked --example serde --features=serde -- -D warnings
 fi
 
 if [ "$DO_FEATURE_MATRIX" = true ]; then
