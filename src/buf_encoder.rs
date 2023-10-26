@@ -4,9 +4,9 @@
 //!
 //! This is a low-level module, most uses should be satisfied by the `display` module instead.
 //!
-//! The main type of this module is [`BufEncoder`] which provides buffered hex encoding. Such is
-//! faster than the usual `write!(f, "{02x}", b)?` in a for loop because it reduces dynamic
-//! dispatch and decreases the number of allocations if a `String` is being created.
+//! The main type in this module is [`BufEncoder`] which provides buffered hex encoding.
+//! `BufEncoder` is faster than the usual `write!(f, "{02x}", b)?` in a for loop because it reduces
+//! dynamic dispatch and decreases the number of allocations if a `String` is being created.
 
 use core::borrow::Borrow;
 
