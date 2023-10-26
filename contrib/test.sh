@@ -54,6 +54,11 @@ if [ "$DO_FEATURE_MATRIX" = true ]; then
     done
 fi
 
+cargo run --locked --example hexy
+cargo run --locked --example custom
+cargo run --locked --example wrap_array_display_hex_trait
+cargo run --locked --example wrap_array_fmt_traits
+
 # Build the docs if told to (this only works with the nightly toolchain)
 if [ "$DO_DOCSRS" = true ]; then
     RUSTDOCFLAGS="--cfg docsrs -D warnings -D rustdoc::broken-intra-doc-links" cargo +nightly doc --all-features
