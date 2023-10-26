@@ -7,7 +7,7 @@
 //! ## Basic Usage
 //! ```
 //! # #[cfg(feature = "alloc")] {
-//! // Use the `package` key to improve import ergonomics (`hex` instead of `hex-conservative`).
+//! // In your manifest use the `package` key to improve import ergonomics.
 //! // hex = { package = "hex-conservative", version = "*" }
 //! # use hex_conservative as hex; // No need for this if using `package` as above.
 //! use hex::{DisplayHex, FromHex};
