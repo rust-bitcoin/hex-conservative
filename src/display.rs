@@ -25,13 +25,13 @@
 //! assert_eq!(format!("{:0>8}", v.as_hex()), "0000abab");
 //!```
 
+#[cfg(feature = "alloc")]
+use alloc::string::String;
 use core::borrow::Borrow;
 use core::fmt;
 
 use super::Case;
 use crate::buf_encoder::{BufEncoder, FixedLenBuf, OutBytes};
-#[cfg(feature = "alloc")]
-use crate::prelude::*;
 
 /// Extension trait for types that can be displayed as hex.
 ///

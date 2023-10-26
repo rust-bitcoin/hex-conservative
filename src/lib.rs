@@ -63,12 +63,6 @@ pub use self::{
     parse::{FromHex, HexToArrayError, HexToBytesError},
 };
 
-/// Mainly reexports based on features.
-pub(crate) mod prelude {
-    #[cfg(feature = "alloc")]
-    pub(crate) use alloc::string::String;
-}
-
 /// Possible case of hex.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Case {
