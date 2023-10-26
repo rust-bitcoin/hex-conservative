@@ -38,7 +38,7 @@ impl FromHex for Vec<u8> {
 }
 
 /// Hex decoding error.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum HexToBytesError {
     /// Non-hexadecimal character.
     InvalidChar(u8),
@@ -48,7 +48,7 @@ pub enum HexToBytesError {
 
 impl fmt::Display for HexToBytesError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use self::HexToBytesError::*;
+        use HexToBytesError::*;
 
         match *self {
             InvalidChar(ch) => write!(f, "invalid hex character {}", ch),
@@ -60,7 +60,7 @@ impl fmt::Display for HexToBytesError {
 #[cfg(feature = "std")]
 impl std::error::Error for HexToBytesError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        use self::HexToBytesError::*;
+        use HexToBytesError::*;
 
         match self {
             InvalidChar(_) | OddLengthString(_) => None,
@@ -114,7 +114,7 @@ impl_fromhex_array!(384);
 impl_fromhex_array!(512);
 
 /// Hex decoding error.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum HexToArrayError {
     /// Conversion error while parsing hex string.
     Conversion(HexToBytesError),
@@ -147,6 +147,7 @@ impl std::error::Error for HexToArrayError {
 }
 
 impl From<HexToBytesError> for HexToArrayError {
+    #[inline]
     fn from(e: HexToBytesError) -> Self { Self::Conversion(e) }
 }
 
