@@ -10,7 +10,7 @@
 //! // In your manifest use the `package` key to improve import ergonomics.
 //! // hex = { package = "hex-conservative", version = "*" }
 //! # use hex_conservative as hex; // No need for this if using `package` as above.
-//! use hex::{DisplayHex, FromHex};
+//! use hex::prelude::*;
 //!
 //! // Decode an arbitrary length hex string into a vector.
 //! let v = Vec::from_hex("deadbeef").expect("valid hex digits");
@@ -49,10 +49,10 @@ mod error;
 mod iter;
 pub mod parse;
 
-/// Reexports of extension traits.
-pub mod exts {
-    pub use super::display::DisplayHex;
-    pub use super::parse::FromHex;
+/// Re-exports of the common crate traits.
+pub mod prelude {
+    #[doc(inline)]
+    pub use crate::{display::DisplayHex, parse::FromHex};
 }
 
 #[rustfmt::skip]                // Keep public re-exports separate.
