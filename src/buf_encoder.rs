@@ -10,9 +10,11 @@
 
 use core::borrow::Borrow;
 
-pub use out_bytes::OutBytes;
-
 use super::Case;
+
+#[rustfmt::skip]                // Keep public re-exports separate.
+#[doc(inline)]
+pub use self::out_bytes::OutBytes;
 
 /// Trait for types that can be soundly converted to `OutBytes`.
 ///

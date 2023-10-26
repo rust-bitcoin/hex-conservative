@@ -49,15 +49,19 @@ mod error;
 mod iter;
 pub mod parse;
 
-pub use display::DisplayHex;
-pub use iter::{BytesToHexIter, HexToBytesIter};
-pub use parse::{FromHex, HexToArrayError, HexToBytesError};
-
 /// Reexports of extension traits.
 pub mod exts {
     pub use super::display::DisplayHex;
     pub use super::parse::FromHex;
 }
+
+#[rustfmt::skip]                // Keep public re-exports separate.
+#[doc(inline)]
+pub use self::{
+    display::DisplayHex,
+    iter::{BytesToHexIter, HexToBytesIter},
+    parse::{FromHex, HexToArrayError, HexToBytesError},
+};
 
 /// Mainly reexports based on features.
 pub(crate) mod prelude {
