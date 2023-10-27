@@ -267,6 +267,20 @@ impl<T: AsOutBytes> BufEncoder<T> {
     /// Note that this returns the number of bytes before encoding, not number of hex digits.
     #[inline]
     pub fn space_remaining(&self) -> usize { (self.buf.as_out_bytes().len() - self.pos) / 2 }
+
+    pub(crate) fn put_filler(&mut self, filler: char, max_count: usize) -> usize {
+        let mut buf = [0; 4];
+        let filler = filler.encode_utf8(&mut buf);
+        let max_capacity = self.space_remaining() / filler.len();
+        let to_write = max_capacity.min(max_count);
+
+        for _ in 0..to_write {
+            self.buf.as_mut_out_bytes().write(self.pos, filler.as_bytes());
+            self.pos += filler.len();
+        }
+
+        to_write
+    }
 }
 
 #[cfg(test)]

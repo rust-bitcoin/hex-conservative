@@ -154,24 +154,82 @@ pub struct DisplayByteSlice<'a> {
 
 impl<'a> DisplayByteSlice<'a> {
     fn display(&self, f: &mut fmt::Formatter, case: Case) -> fmt::Result {
+        use fmt::Write;
+        // There are at least two optimizations left:
+        //
+        // * Reusing the buffer (encoder) which may decrease the number of virtual calls
+        // * Not recursing, avoiding another 1024B allocation and zeroing
+        //
+        // This would complicate the code so I was too lazy to do them but feel free to send a PR!
+
         let mut buf = [0u8; 1024];
         let mut encoder = BufEncoder::new(&mut buf);
 
-        // Its unlikely that someone will want special formatting for a hex string that
-        // is over 1024 characters so just handle padding for short slices.
-        if self.bytes.len() < 512 {
-            encoder.put_bytes(self.bytes, case);
-            return f.pad(encoder.as_str());
+        let pad_right = if let Some(width) = f.width() {
+            let string_len = match f.precision() {
+                Some(max) if self.bytes.len() * 2 > (max + 1) / 2 => max,
+                Some(_) | None => self.bytes.len() * 2,
+            };
+
+            if string_len < width {
+                let (left, right) = match f.align().unwrap_or(fmt::Alignment::Left) {
+                    fmt::Alignment::Left => (0, width - string_len),
+                    fmt::Alignment::Right => (width - string_len, 0),
+                    fmt::Alignment::Center =>
+                        ((width - string_len) / 2, (width - string_len + 1) / 2),
+                };
+                // Avoid division by zero and optimize for common case.
+                if left > 0 {
+                    let c = f.fill();
+                    let chunk_len = encoder.put_filler(c, left);
+                    let padding = encoder.as_str();
+                    for _ in 0..(left / chunk_len) {
+                        f.write_str(padding)?;
+                    }
+                    f.write_str(&padding[..((left % chunk_len) * c.len_utf8())])?;
+                    encoder.clear();
+                }
+                right
+            } else {
+                0
+            }
+        } else {
+            0
+        };
+
+        match f.precision() {
+            Some(max) if self.bytes.len() > (max + 1) / 2 => {
+                write!(f, "{}", self.bytes[..(max / 2)].as_hex())?;
+                if max % 2 == 1 && self.bytes.len() > max / 2 + 1 {
+                    f.write_char(
+                        super::byte_to_hex(self.bytes[max / 2 + 1], case.table())[1].into(),
+                    )?;
+                }
+            }
+            Some(_) | None => {
+                let mut chunks = self.bytes.chunks_exact(512);
+                for chunk in &mut chunks {
+                    encoder.put_bytes(chunk, case);
+                    f.write_str(encoder.as_str())?;
+                    encoder.clear();
+                }
+                encoder.put_bytes(chunks.remainder(), case);
+                f.write_str(encoder.as_str())?;
+            }
         }
 
-        let mut chunks = self.bytes.chunks_exact(512);
-        for chunk in &mut chunks {
-            encoder.put_bytes(chunk, case);
-            f.write_str(encoder.as_str())?;
+        // Avoid division by zero and optimize for common case.
+        if pad_right > 0 {
             encoder.clear();
+            let c = f.fill();
+            let chunk_len = encoder.put_filler(c, pad_right);
+            let padding = encoder.as_str();
+            for _ in 0..(pad_right / chunk_len) {
+                f.write_str(padding)?;
+            }
+            f.write_str(&padding[..((pad_right % chunk_len) * c.len_utf8())])?;
         }
-        encoder.put_bytes(chunks.remainder(), case);
-        f.write_str(encoder.as_str())
+        Ok(())
     }
 }
 
@@ -363,19 +421,12 @@ mod tests {
             assert_eq!(format!("Hello {:>8}!", v.as_hex()), "Hello     beef!");
         }
 
-        // We only pad arrays 512 bytes and shorter.
         #[test]
-        fn display_long_no_padding() {
-            // Sanity.
-            let x = 1;
-            // This is here to show how long 2000 is so one can visually see the test below does not pad.
-            let want = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
-            let got = format!("{:0>2000}", x);
-            assert_eq!(got, want);
-
+        fn display_long() {
             // Note this string is shorter than the one above.
             let v = vec![0xab; 512];
-            let want = "abababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab";
+            let mut want = "0".repeat(2000 - 1024);
+            want.extend(core::iter::repeat("ab").take(512));
             let got = format!("{:0>2000}", v.as_hex());
             assert_eq!(got, want)
         }
@@ -388,6 +439,37 @@ mod tests {
             let v = vec![0x12, 0x34, 0x56, 0x78];
             // Remember the integer is number of hex chars not number of bytes.
             assert_eq!(format!("{0:.4}", v.as_hex()), "1234");
+        }
+
+        #[test]
+        fn precision_with_padding_truncates() {
+            // Precision gets the most significant bytes.
+            let v = vec![0x12, 0x34, 0x56, 0x78];
+            assert_eq!(format!("{0:10.4}", v.as_hex()), "1234      ");
+        }
+
+        #[test]
+        fn precision_with_padding_pads_right() {
+            let v = vec![0x12, 0x34, 0x56, 0x78];
+            assert_eq!(format!("{0:10.20}", v.as_hex()), "12345678  ");
+        }
+
+        #[test]
+        fn precision_with_padding_pads_left() {
+            let v = vec![0x12, 0x34, 0x56, 0x78];
+            assert_eq!(format!("{0:>10.20}", v.as_hex()), "  12345678");
+        }
+
+        #[test]
+        fn precision_with_padding_pads_center() {
+            let v = vec![0x12, 0x34, 0x56, 0x78];
+            assert_eq!(format!("{0:^10.20}", v.as_hex()), " 12345678 ");
+        }
+
+        #[test]
+        fn precision_with_padding_pads_center_odd() {
+            let v = vec![0x12, 0x34, 0x56, 0x78];
+            assert_eq!(format!("{0:^11.20}", v.as_hex()), " 12345678  ");
         }
 
         #[test]
