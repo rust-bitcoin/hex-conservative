@@ -7,6 +7,7 @@ use core::{fmt, str};
 #[cfg(all(feature = "alloc", not(feature = "std")))]
 use crate::alloc::vec::Vec;
 use crate::iter::HexToBytesIter;
+use crate::write_err;
 
 /// Trait for objects that can be deserialized from hex strings.
 pub trait FromHex: Sized {
@@ -86,7 +87,9 @@ macro_rules! impl_fromhex_array {
                     }
                     Ok(ret)
                 } else {
-                    Err(HexToArrayError::InvalidLength(2 * $len, 2 * iter.len()))
+                    let expected = 2 * $len;
+                    let got = 2 * iter.len();
+                    Err(InvalidLengthError { expected, got }.into())
                 }
             }
         }
@@ -114,12 +117,12 @@ impl_fromhex_array!(384);
 impl_fromhex_array!(512);
 
 /// Hex decoding error.
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum HexToArrayError {
     /// Conversion error while parsing hex string.
     Conversion(HexToBytesError),
     /// Tried to parse fixed-length hash from a string with the wrong length (got, want).
-    InvalidLength(usize, usize),
+    InvalidLength(InvalidLengthError),
 }
 
 impl fmt::Display for HexToArrayError {
@@ -127,9 +130,8 @@ impl fmt::Display for HexToArrayError {
         use HexToArrayError::*;
 
         match *self {
-            Conversion(ref e) => crate::write_err!(f, "conversion error"; e),
-            InvalidLength(got, want) =>
-                write!(f, "bad hex string length {} (expected {})", got, want),
+            Conversion(ref e) => write_err!(f, "conversion error"; e),
+            InvalidLength(ref e) => write_err!(f, "invalid length hex for array"; e),
         }
     }
 }
@@ -141,7 +143,7 @@ impl std::error::Error for HexToArrayError {
 
         match *self {
             Conversion(ref e) => Some(e),
-            InvalidLength(_, _) => None,
+            InvalidLength(ref e) => Some(e),
         }
     }
 }
@@ -149,6 +151,29 @@ impl std::error::Error for HexToArrayError {
 impl From<HexToBytesError> for HexToArrayError {
     #[inline]
     fn from(e: HexToBytesError) -> Self { Self::Conversion(e) }
+}
+
+impl From<InvalidLengthError> for HexToArrayError {
+    #[inline]
+    fn from(e: InvalidLengthError) -> Self { Self::InvalidLength(e) }
+}
+
+/// Tried to parse fixed-length hash from a string with the wrong length.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct InvalidLengthError {
+    expected: usize,
+    got: usize,
+}
+
+impl fmt::Display for InvalidLengthError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "bad hex string length {} (expected {})", self.got, self.expected)
+    }
+}
+
+#[cfg(feature = "std")]
+impl std::error::Error for InvalidLengthError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { None }
 }
 
 #[cfg(test)]
@@ -185,7 +210,10 @@ mod tests {
     fn hex_to_array_error() {
         use HexToArrayError::*;
         let len_sixteen = "0123456789abcdef";
-        assert_eq!(<[u8; 4]>::from_hex(len_sixteen), Err(InvalidLength(8, 16)));
+        assert_eq!(
+            <[u8; 4]>::from_hex(len_sixteen),
+            Err(InvalidLength(InvalidLengthError { expected: 8, got: 16 }))
+        );
     }
 
     #[test]
