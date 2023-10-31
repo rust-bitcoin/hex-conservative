@@ -7,7 +7,7 @@
 //! ## Basic Usage
 //! ```
 //! # #[cfg(feature = "alloc")] {
-//! // Use the `package` key to improve import ergonomics (`hex` instead of `hex-conservative`).
+//! // In your manifest use the `package` key to improve import ergonomics.
 //! // hex = { package = "hex-conservative", version = "*" }
 //! # use hex_conservative as hex; // No need for this if using `package` as above.
 //! use hex::{DisplayHex, FromHex};
@@ -49,15 +49,19 @@ mod error;
 mod iter;
 pub mod parse;
 
-pub use display::DisplayHex;
-pub use iter::{BytesToHexIter, HexToBytesIter};
-pub use parse::{FromHex, HexToArrayError, HexToBytesError};
-
 /// Reexports of extension traits.
 pub mod exts {
     pub use super::display::DisplayHex;
     pub use super::parse::FromHex;
 }
+
+#[rustfmt::skip]                // Keep public re-exports separate.
+#[doc(inline)]
+pub use self::{
+    display::DisplayHex,
+    iter::{BytesToHexIter, HexToBytesIter},
+    parse::{FromHex, HexToArrayError, HexToBytesError},
+};
 
 /// Mainly reexports based on features.
 pub(crate) mod prelude {
