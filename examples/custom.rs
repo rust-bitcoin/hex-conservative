@@ -117,7 +117,7 @@ impl<'a> fmt::UpperHex for DisplayALittleBitHexy<'a> {
 }
 
 /// Example Error.
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Error {
     /// Conversion error while parsing hex string.
     Conversion(HexToBytesError),

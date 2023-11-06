@@ -10,7 +10,10 @@ use std::io;
 #[cfg(all(feature = "core2", not(feature = "std")))]
 use core2::io;
 
-use crate::parse::HexToBytesError;
+use crate::error::{InvalidCharError, OddLengthStringError};
+
+#[rustfmt::skip]                // Keep public re-exports separate.
+pub use crate::error::HexToBytesError;
 
 /// Iterator over a hex-encoded string slice which decodes hex and yields bytes.
 pub struct HexToBytesIter<'a> {
@@ -33,7 +36,7 @@ impl<'a> HexToBytesIter<'a> {
     #[inline]
     pub fn new(s: &'a str) -> Result<HexToBytesIter<'a>, HexToBytesError> {
         if s.len() % 2 != 0 {
-            Err(HexToBytesError::OddLengthString(s.len()))
+            Err(OddLengthStringError { len: s.len() }.into())
         } else {
             Ok(HexToBytesIter { iter: s.bytes() })
         }
@@ -93,8 +96,8 @@ impl<'a> io::Read for HexToBytesIter<'a> {
 
 /// `hi` and `lo` are bytes representing hex characters.
 fn hex_chars_to_byte(hi: u8, lo: u8) -> Result<u8, HexToBytesError> {
-    let hih = (hi as char).to_digit(16).ok_or(HexToBytesError::InvalidChar(hi))?;
-    let loh = (lo as char).to_digit(16).ok_or(HexToBytesError::InvalidChar(lo))?;
+    let hih = (hi as char).to_digit(16).ok_or(InvalidCharError { invalid: hi })?;
+    let loh = (lo as char).to_digit(16).ok_or(InvalidCharError { invalid: lo })?;
 
     let ret = (hih << 4) + loh;
     Ok(ret as u8)

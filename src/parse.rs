@@ -6,6 +6,7 @@ use core::{fmt, str};
 
 #[cfg(all(feature = "alloc", not(feature = "std")))]
 use crate::alloc::vec::Vec;
+use crate::error::InvalidLengthError;
 use crate::iter::HexToBytesIter;
 
 #[rustfmt::skip]                // Keep public re-exports separate.
@@ -58,7 +59,7 @@ macro_rules! impl_fromhex_array {
                     }
                     Ok(ret)
                 } else {
-                    Err(HexToArrayError::InvalidLength(2 * $len, 2 * iter.len()))
+                    Err(InvalidLengthError { expected: 2 * $len, got: 2 * iter.len() }.into())
                 }
             }
         }
@@ -89,25 +90,24 @@ impl_fromhex_array!(512);
 mod tests {
     use super::*;
     use crate::display::DisplayHex;
+    use crate::error::{InvalidCharError, InvalidLengthError, OddLengthStringError};
 
     #[test]
     #[cfg(feature = "alloc")]
     fn hex_error() {
-        use HexToBytesError::*;
-
         let oddlen = "0123456789abcdef0";
         let badchar1 = "Z123456789abcdef";
         let badchar2 = "012Y456789abcdeb";
         let badchar3 = "«23456789abcdef";
 
-        assert_eq!(Vec::<u8>::from_hex(oddlen), Err(OddLengthString(17)));
+        assert_eq!(Vec::<u8>::from_hex(oddlen), Err(OddLengthStringError { len: 17 }.into()));
         assert_eq!(
             <[u8; 4]>::from_hex(oddlen),
-            Err(HexToArrayError::Conversion(OddLengthString(17)))
+            Err(HexToBytesError::OddLengthString(OddLengthStringError { len: 17 }).into())
         );
-        assert_eq!(Vec::<u8>::from_hex(badchar1), Err(InvalidChar(b'Z')));
-        assert_eq!(Vec::<u8>::from_hex(badchar2), Err(InvalidChar(b'Y')));
-        assert_eq!(Vec::<u8>::from_hex(badchar3), Err(InvalidChar(194)));
+        assert_eq!(Vec::<u8>::from_hex(badchar1), Err(InvalidCharError { invalid: b'Z' }.into()));
+        assert_eq!(Vec::<u8>::from_hex(badchar2), Err(InvalidCharError { invalid: b'Y' }.into()));
+        assert_eq!(Vec::<u8>::from_hex(badchar3), Err(InvalidCharError { invalid: 194 }.into()));
     }
 
     #[test]
@@ -117,9 +117,11 @@ mod tests {
     }
     #[test]
     fn hex_to_array_error() {
-        use HexToArrayError::*;
         let len_sixteen = "0123456789abcdef";
-        assert_eq!(<[u8; 4]>::from_hex(len_sixteen), Err(InvalidLength(8, 16)));
+        assert_eq!(
+            <[u8; 4]>::from_hex(len_sixteen),
+            Err(InvalidLengthError { expected: 8, got: 16 }.into())
+        )
     }
 
     #[test]
