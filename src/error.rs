@@ -71,7 +71,6 @@ impl From<OddLengthStringError> for HexToBytesError {
 
 /// Invalid hex character.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct InvalidCharError {
     pub(crate) invalid: u8,
 }
@@ -89,7 +88,6 @@ impl std::error::Error for InvalidCharError {
 
 /// Purported hex string had odd length.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct OddLengthStringError {
     pub(crate) len: usize,
 }
@@ -151,7 +149,6 @@ impl From<InvalidLengthError> for HexToArrayError {
 
 /// Tried to parse fixed-length hash from a string with the wrong length.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct InvalidLengthError {
     pub(crate) expected: usize,
     pub(crate) got: usize,
