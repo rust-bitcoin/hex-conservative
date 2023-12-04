@@ -1,0 +1,513 @@
+impl<A, B> core::marker::Send for hex_conservative::display::DisplayArray<A, B> where A: core::marker::Send, B: core::marker::Send
+impl<A, B> core::marker::Sync for hex_conservative::display::DisplayArray<A, B> where A: core::marker::Sync, B: core::marker::Sync
+impl<A, B> core::marker::Unpin for hex_conservative::display::DisplayArray<A, B> where A: core::marker::Unpin, B: core::marker::Unpin
+impl<A, B> core::panic::unwind_safe::RefUnwindSafe for hex_conservative::display::DisplayArray<A, B> where A: core::panic::unwind_safe::RefUnwindSafe, B: core::panic::unwind_safe::RefUnwindSafe
+impl<A, B> core::panic::unwind_safe::UnwindSafe for hex_conservative::display::DisplayArray<A, B> where A: core::panic::unwind_safe::UnwindSafe, B: core::panic::unwind_safe::UnwindSafe
+impl<A: core::clone::Clone + core::iter::traits::collect::IntoIterator, B: hex_conservative::buf_encoder::FixedLenBuf> core::fmt::Debug for hex_conservative::display::DisplayArray<A, B> where <A as core::iter::traits::collect::IntoIterator>::Item: core::borrow::Borrow<u8>
+impl<A: core::clone::Clone + core::iter::traits::collect::IntoIterator, B: hex_conservative::buf_encoder::FixedLenBuf> core::fmt::Display for hex_conservative::display::DisplayArray<A, B> where <A as core::iter::traits::collect::IntoIterator>::Item: core::borrow::Borrow<u8>
+impl<A: core::clone::Clone + core::iter::traits::collect::IntoIterator, B: hex_conservative::buf_encoder::FixedLenBuf> core::fmt::LowerHex for hex_conservative::display::DisplayArray<A, B> where <A as core::iter::traits::collect::IntoIterator>::Item: core::borrow::Borrow<u8>
+impl<A: core::clone::Clone + core::iter::traits::collect::IntoIterator, B: hex_conservative::buf_encoder::FixedLenBuf> core::fmt::UpperHex for hex_conservative::display::DisplayArray<A, B> where <A as core::iter::traits::collect::IntoIterator>::Item: core::borrow::Borrow<u8>
+impl<A: core::clone::Clone + core::iter::traits::collect::IntoIterator, B: hex_conservative::buf_encoder::FixedLenBuf> hex_conservative::display::DisplayArray<A, B> where <A as core::iter::traits::collect::IntoIterator>::Item: core::borrow::Borrow<u8>
+impl<'a> core::fmt::Debug for hex_conservative::display::DisplayByteSlice<'a>
+impl<'a> core::fmt::Display for hex_conservative::display::DisplayByteSlice<'a>
+impl<'a> core::fmt::LowerHex for hex_conservative::display::DisplayByteSlice<'a>
+impl<'a> core::fmt::UpperHex for hex_conservative::display::DisplayByteSlice<'a>
+impl<'a> core::iter::traits::double_ended::DoubleEndedIterator for hex_conservative::HexToBytesIter<'a>
+impl<'a> core::iter::traits::exact_size::ExactSizeIterator for hex_conservative::HexToBytesIter<'a>
+impl<'a> core::iter::traits::iterator::Iterator for hex_conservative::HexToBytesIter<'a>
+impl<'a> core::iter::traits::marker::FusedIterator for hex_conservative::HexToBytesIter<'a>
+impl<'a> core::marker::Send for hex_conservative::display::DisplayByteSlice<'a>
+impl<'a> core::marker::Send for hex_conservative::HexToBytesIter<'a>
+impl<'a> core::marker::Sync for hex_conservative::display::DisplayByteSlice<'a>
+impl<'a> core::marker::Sync for hex_conservative::HexToBytesIter<'a>
+impl<'a> core::marker::Unpin for hex_conservative::display::DisplayByteSlice<'a>
+impl<'a> core::marker::Unpin for hex_conservative::HexToBytesIter<'a>
+impl<'a> core::panic::unwind_safe::RefUnwindSafe for hex_conservative::display::DisplayByteSlice<'a>
+impl<'a> core::panic::unwind_safe::RefUnwindSafe for hex_conservative::HexToBytesIter<'a>
+impl<'a> core::panic::unwind_safe::UnwindSafe for hex_conservative::display::DisplayByteSlice<'a>
+impl<'a> core::panic::unwind_safe::UnwindSafe for hex_conservative::HexToBytesIter<'a>
+impl<'a> hex_conservative::display::DisplayHex for &'a alloc::vec::Vec<u8>
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 1]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 10]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 1024]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 11]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 12]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 128]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 13]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 14]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 15]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 16]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 2]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 20]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 2048]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 256]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 3]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 32]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 33]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 4]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 4096]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 5]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 512]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 6]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 64]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 65]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 7]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 8]
+impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 9]
+impl<'a> hex_conservative::HexToBytesIter<'a>
+impl core::clone::Clone for hex_conservative::Case
+impl core::clone::Clone for hex_conservative::HexToArrayError
+impl core::clone::Clone for hex_conservative::HexToBytesError
+impl core::cmp::Eq for hex_conservative::Case
+impl core::cmp::Eq for hex_conservative::HexToArrayError
+impl core::cmp::Eq for hex_conservative::HexToBytesError
+impl core::cmp::PartialEq<hex_conservative::Case> for hex_conservative::Case
+impl core::cmp::PartialEq<hex_conservative::HexToArrayError> for hex_conservative::HexToArrayError
+impl core::cmp::PartialEq<hex_conservative::HexToBytesError> for hex_conservative::HexToBytesError
+impl core::convert::From<hex_conservative::HexToBytesError> for hex_conservative::HexToArrayError
+impl core::default::Default for hex_conservative::Case
+impl core::fmt::Debug for hex_conservative::Case
+impl core::fmt::Debug for hex_conservative::HexToArrayError
+impl core::fmt::Debug for hex_conservative::HexToBytesError
+impl core::fmt::Display for hex_conservative::HexToArrayError
+impl core::fmt::Display for hex_conservative::HexToBytesError
+impl core::hash::Hash for hex_conservative::Case
+impl core::marker::Copy for hex_conservative::Case
+impl core::marker::Send for hex_conservative::buf_encoder::OutBytes
+impl core::marker::Send for hex_conservative::Case
+impl core::marker::Send for hex_conservative::HexToArrayError
+impl core::marker::Send for hex_conservative::HexToBytesError
+impl !core::marker::Sized for hex_conservative::buf_encoder::OutBytes
+impl core::marker::StructuralEq for hex_conservative::Case
+impl core::marker::StructuralEq for hex_conservative::HexToArrayError
+impl core::marker::StructuralEq for hex_conservative::HexToBytesError
+impl core::marker::StructuralPartialEq for hex_conservative::Case
+impl core::marker::StructuralPartialEq for hex_conservative::HexToArrayError
+impl core::marker::StructuralPartialEq for hex_conservative::HexToBytesError
+impl core::marker::Sync for hex_conservative::buf_encoder::OutBytes
+impl core::marker::Sync for hex_conservative::Case
+impl core::marker::Sync for hex_conservative::HexToArrayError
+impl core::marker::Sync for hex_conservative::HexToBytesError
+impl core::marker::Unpin for hex_conservative::buf_encoder::OutBytes
+impl core::marker::Unpin for hex_conservative::Case
+impl core::marker::Unpin for hex_conservative::HexToArrayError
+impl core::marker::Unpin for hex_conservative::HexToBytesError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::buf_encoder::OutBytes
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::Case
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::HexToArrayError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::HexToBytesError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative::buf_encoder::OutBytes
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative::Case
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative::HexToArrayError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative::HexToBytesError
+impl hex_conservative::buf_encoder::AsOutBytes for hex_conservative::buf_encoder::OutBytes
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 10]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 1024]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 12]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 128]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 130]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 14]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 16]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 18]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 2]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 20]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 2048]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 22]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 24]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 256]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 26]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 28]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 30]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 32]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 4]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 40]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 4096]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 512]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 6]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 64]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 66]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 8]
+impl hex_conservative::buf_encoder::AsOutBytes for [u8; 8192]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 10]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 1024]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 12]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 128]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 130]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 14]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 16]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 18]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 2]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 20]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 2048]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 22]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 24]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 256]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 26]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 28]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 30]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 32]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 4]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 40]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 4096]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 512]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 6]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 64]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 66]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 8]
+impl hex_conservative::buf_encoder::FixedLenBuf for [u8; 8192]
+impl hex_conservative::parse::FromHex for alloc::vec::Vec<u8>
+impl hex_conservative::parse::FromHex for [u8; 10]
+impl hex_conservative::parse::FromHex for [u8; 12]
+impl hex_conservative::parse::FromHex for [u8; 128]
+impl hex_conservative::parse::FromHex for [u8; 14]
+impl hex_conservative::parse::FromHex for [u8; 16]
+impl hex_conservative::parse::FromHex for [u8; 2]
+impl hex_conservative::parse::FromHex for [u8; 20]
+impl hex_conservative::parse::FromHex for [u8; 24]
+impl hex_conservative::parse::FromHex for [u8; 256]
+impl hex_conservative::parse::FromHex for [u8; 28]
+impl hex_conservative::parse::FromHex for [u8; 32]
+impl hex_conservative::parse::FromHex for [u8; 33]
+impl hex_conservative::parse::FromHex for [u8; 384]
+impl hex_conservative::parse::FromHex for [u8; 4]
+impl hex_conservative::parse::FromHex for [u8; 512]
+impl hex_conservative::parse::FromHex for [u8; 6]
+impl hex_conservative::parse::FromHex for [u8; 64]
+impl hex_conservative::parse::FromHex for [u8; 65]
+impl hex_conservative::parse::FromHex for [u8; 8]
+impl<I> core::iter::traits::double_ended::DoubleEndedIterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::double_ended::DoubleEndedIterator + core::iter::traits::iterator::Iterator<Item = u8>
+impl<I> core::iter::traits::exact_size::ExactSizeIterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::iterator::Iterator<Item = u8>
+impl<I> core::iter::traits::iterator::Iterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::iterator::Iterator<Item = u8>
+impl<I> core::iter::traits::marker::FusedIterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::marker::FusedIterator + core::iter::traits::iterator::Iterator<Item = u8>
+impl<I> core::marker::Send for hex_conservative::BytesToHexIter<I> where I: core::marker::Send
+impl<I> core::marker::Sync for hex_conservative::BytesToHexIter<I> where I: core::marker::Sync
+impl<I> core::marker::Unpin for hex_conservative::BytesToHexIter<I> where I: core::marker::Unpin
+impl<I> core::panic::unwind_safe::RefUnwindSafe for hex_conservative::BytesToHexIter<I> where I: core::panic::unwind_safe::RefUnwindSafe
+impl<I> core::panic::unwind_safe::UnwindSafe for hex_conservative::BytesToHexIter<I> where I: core::panic::unwind_safe::UnwindSafe
+impl<I> hex_conservative::BytesToHexIter<I> where I: core::iter::traits::iterator::Iterator<Item = u8>
+impl<T> core::marker::Send for hex_conservative::buf_encoder::BufEncoder<T> where T: core::marker::Send
+impl<T> core::marker::Sync for hex_conservative::buf_encoder::BufEncoder<T> where T: core::marker::Sync
+impl<T> core::marker::Unpin for hex_conservative::buf_encoder::BufEncoder<T> where T: core::marker::Unpin
+impl<T> core::panic::unwind_safe::RefUnwindSafe for hex_conservative::buf_encoder::BufEncoder<T> where T: core::panic::unwind_safe::RefUnwindSafe
+impl<T> core::panic::unwind_safe::UnwindSafe for hex_conservative::buf_encoder::BufEncoder<T> where T: core::panic::unwind_safe::UnwindSafe
+impl<T: hex_conservative::buf_encoder::AsOutBytes + core::marker::Sized> hex_conservative::buf_encoder::AsOutBytes for &mut T
+impl<T: hex_conservative::buf_encoder::AsOutBytes> hex_conservative::buf_encoder::BufEncoder<T>
+pub enum hex_conservative::Case
+pub enum hex_conservative::HexToArrayError
+pub enum hex_conservative::HexToBytesError
+pub enum hex_conservative::parse::HexToArrayError
+pub enum hex_conservative::parse::HexToBytesError
+pub fn &'a alloc::vec::Vec<u8>::as_hex(self) -> Self::Display
+pub fn &'a alloc::vec::Vec<u8>::hex_reserve_suggestion(self) -> usize
+pub fn alloc::vec::Vec<u8>::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn &'a [u8; 1024]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 1024]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 10]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 10]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 11]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 11]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 128]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 128]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 12]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 12]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 13]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 13]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 14]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 14]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 15]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 15]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 16]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 16]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 1]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 1]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 2048]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 2048]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 20]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 20]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 256]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 256]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 2]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 2]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 32]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 32]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 33]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 33]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 3]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 3]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 4096]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 4096]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 4]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 4]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 512]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 512]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 5]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 5]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 64]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 64]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 65]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 65]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 6]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 6]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 7]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 7]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 8]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 8]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8; 9]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 9]::hex_reserve_suggestion(self) -> usize
+pub fn &'a [u8]::as_hex(self) -> Self::Display
+pub fn &'a [u8]::hex_reserve_suggestion(self) -> usize
+pub fn hex_conservative::buf_encoder::AsOutBytes::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn hex_conservative::buf_encoder::AsOutBytes::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn hex_conservative::buf_encoder::BufEncoder<T>::as_str(&self) -> &str
+pub fn hex_conservative::buf_encoder::BufEncoder<T>::clear(&mut self)
+pub fn hex_conservative::buf_encoder::BufEncoder<T>::is_full(&self) -> bool
+pub fn hex_conservative::buf_encoder::BufEncoder<T>::new(buf: T) -> Self
+pub fn hex_conservative::buf_encoder::BufEncoder<T>::put_byte(&mut self, byte: u8, case: hex_conservative::Case)
+pub fn hex_conservative::buf_encoder::BufEncoder<T>::put_bytes<I>(&mut self, bytes: I, case: hex_conservative::Case) where I: core::iter::traits::collect::IntoIterator, <I as core::iter::traits::collect::IntoIterator>::Item: core::borrow::Borrow<u8>
+pub fn hex_conservative::buf_encoder::BufEncoder<T>::put_bytes_min<'a>(&mut self, bytes: &'a [u8], case: hex_conservative::Case) -> &'a [u8]
+pub fn hex_conservative::buf_encoder::BufEncoder<T>::space_remaining(&self) -> usize
+pub fn hex_conservative::buf_encoder::FixedLenBuf::uninit() -> Self
+pub fn hex_conservative::buf_encoder::OutBytes::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn hex_conservative::buf_encoder::OutBytes::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn hex_conservative::BytesToHexIter<I>::len(&self) -> usize
+pub fn hex_conservative::BytesToHexIter<I>::new(iter: I) -> hex_conservative::BytesToHexIter<I>
+pub fn hex_conservative::BytesToHexIter<I>::next_back(&mut self) -> core::option::Option<char>
+pub fn hex_conservative::BytesToHexIter<I>::next(&mut self) -> core::option::Option<char>
+pub fn hex_conservative::BytesToHexIter<I>::size_hint(&self) -> (usize, core::option::Option<usize>)
+pub fn hex_conservative::Case::clone(&self) -> hex_conservative::Case
+pub fn hex_conservative::Case::default() -> Self
+pub fn hex_conservative::Case::eq(&self, other: &hex_conservative::Case) -> bool
+pub fn hex_conservative::Case::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn hex_conservative::Case::hash<__H: core::hash::Hasher>(&self, state: &mut __H)
+pub fn hex_conservative::display::DisplayArray<A, B>::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn hex_conservative::display::DisplayArray<A, B>::new(array: A) -> Self
+pub fn hex_conservative::display::DisplayByteSlice<'a>::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn hex_conservative::display::DisplayHex::append_hex_to_string(self, case: hex_conservative::Case, string: &mut alloc::string::String)
+pub fn hex_conservative::display::DisplayHex::as_hex(self) -> Self::Display
+pub fn hex_conservative::display::DisplayHex::hex_reserve_suggestion(self) -> usize
+pub fn hex_conservative::display::DisplayHex::to_hex_string(self, case: hex_conservative::Case) -> alloc::string::String
+pub fn hex_conservative::display::DisplayHex::to_lower_hex_string(self) -> alloc::string::String
+pub fn hex_conservative::display::DisplayHex::to_upper_hex_string(self) -> alloc::string::String
+pub fn hex_conservative::DisplayHex::append_hex_to_string(self, case: hex_conservative::Case, string: &mut alloc::string::String)
+pub fn hex_conservative::DisplayHex::as_hex(self) -> Self::Display
+pub fn hex_conservative::DisplayHex::hex_reserve_suggestion(self) -> usize
+pub fn hex_conservative::DisplayHex::to_hex_string(self, case: hex_conservative::Case) -> alloc::string::String
+pub fn hex_conservative::DisplayHex::to_lower_hex_string(self) -> alloc::string::String
+pub fn hex_conservative::DisplayHex::to_upper_hex_string(self) -> alloc::string::String
+pub fn hex_conservative::FromHex::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn hex_conservative::FromHex::from_hex(s: &str) -> core::result::Result<Self, Self::Err>
+pub fn hex_conservative::HexToArrayError::clone(&self) -> hex_conservative::HexToArrayError
+pub fn hex_conservative::HexToArrayError::eq(&self, other: &hex_conservative::HexToArrayError) -> bool
+pub fn hex_conservative::HexToArrayError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn hex_conservative::HexToArrayError::from(e: hex_conservative::HexToBytesError) -> Self
+pub fn hex_conservative::HexToBytesError::clone(&self) -> hex_conservative::HexToBytesError
+pub fn hex_conservative::HexToBytesError::eq(&self, other: &hex_conservative::HexToBytesError) -> bool
+pub fn hex_conservative::HexToBytesError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn hex_conservative::HexToBytesIter<'a>::len(&self) -> usize
+pub fn hex_conservative::HexToBytesIter<'a>::new(s: &'a str) -> core::result::Result<hex_conservative::HexToBytesIter<'a>, hex_conservative::HexToBytesError>
+pub fn hex_conservative::HexToBytesIter<'a>::next_back(&mut self) -> core::option::Option<core::result::Result<u8, hex_conservative::HexToBytesError>>
+pub fn hex_conservative::HexToBytesIter<'a>::next(&mut self) -> core::option::Option<core::result::Result<u8, hex_conservative::HexToBytesError>>
+pub fn hex_conservative::HexToBytesIter<'a>::size_hint(&self) -> (usize, core::option::Option<usize>)
+pub fn hex_conservative::parse::FromHex::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn hex_conservative::parse::FromHex::from_hex(s: &str) -> core::result::Result<Self, Self::Err>
+pub fn hex_conservative::prelude::DisplayHex::append_hex_to_string(self, case: hex_conservative::Case, string: &mut alloc::string::String)
+pub fn hex_conservative::prelude::DisplayHex::as_hex(self) -> Self::Display
+pub fn hex_conservative::prelude::DisplayHex::hex_reserve_suggestion(self) -> usize
+pub fn hex_conservative::prelude::DisplayHex::to_hex_string(self, case: hex_conservative::Case) -> alloc::string::String
+pub fn hex_conservative::prelude::DisplayHex::to_lower_hex_string(self) -> alloc::string::String
+pub fn hex_conservative::prelude::DisplayHex::to_upper_hex_string(self) -> alloc::string::String
+pub fn hex_conservative::prelude::FromHex::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn hex_conservative::prelude::FromHex::from_hex(s: &str) -> core::result::Result<Self, Self::Err>
+pub fn &mut T::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn &mut T::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 1024]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 1024]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 1024]::uninit() -> Self
+pub fn [u8; 10]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 10]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 10]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn [u8; 10]::uninit() -> Self
+pub fn [u8; 128]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 128]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 128]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn [u8; 128]::uninit() -> Self
+pub fn [u8; 12]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 12]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 12]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn [u8; 12]::uninit() -> Self
+pub fn [u8; 130]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 130]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 130]::uninit() -> Self
+pub fn [u8; 14]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 14]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 14]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn [u8; 14]::uninit() -> Self
+pub fn [u8; 16]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 16]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 16]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn [u8; 16]::uninit() -> Self
+pub fn [u8; 18]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 18]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 18]::uninit() -> Self
+pub fn [u8; 2048]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 2048]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 2048]::uninit() -> Self
+pub fn [u8; 20]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 20]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 20]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn [u8; 20]::uninit() -> Self
+pub fn [u8; 22]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 22]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 22]::uninit() -> Self
+pub fn [u8; 24]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 24]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 24]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn [u8; 24]::uninit() -> Self
+pub fn [u8; 256]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 256]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 256]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn [u8; 256]::uninit() -> Self
+pub fn [u8; 26]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 26]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 26]::uninit() -> Self
+pub fn [u8; 28]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 28]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 28]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn [u8; 28]::uninit() -> Self
+pub fn [u8; 2]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 2]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 2]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn [u8; 2]::uninit() -> Self
+pub fn [u8; 30]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 30]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 30]::uninit() -> Self
+pub fn [u8; 32]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 32]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 32]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn [u8; 32]::uninit() -> Self
+pub fn [u8; 33]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn [u8; 384]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn [u8; 4096]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 4096]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 4096]::uninit() -> Self
+pub fn [u8; 40]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 40]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 40]::uninit() -> Self
+pub fn [u8; 4]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 4]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 4]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn [u8; 4]::uninit() -> Self
+pub fn [u8; 512]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 512]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 512]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn [u8; 512]::uninit() -> Self
+pub fn [u8; 64]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 64]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 64]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn [u8; 64]::uninit() -> Self
+pub fn [u8; 65]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn [u8; 66]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 66]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 66]::uninit() -> Self
+pub fn [u8; 6]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 6]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 6]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn [u8; 6]::uninit() -> Self
+pub fn [u8; 8192]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 8192]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 8192]::uninit() -> Self
+pub fn [u8; 8]::as_mut_out_bytes(&mut self) -> &mut hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 8]::as_out_bytes(&self) -> &hex_conservative::buf_encoder::OutBytes
+pub fn [u8; 8]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Err> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn [u8; 8]::uninit() -> Self
+pub hex_conservative::Case::Lower
+pub hex_conservative::Case::Upper
+pub hex_conservative::HexToArrayError::Conversion(hex_conservative::HexToBytesError)
+pub hex_conservative::HexToArrayError::InvalidLength(InvalidLengthError)
+pub hex_conservative::HexToBytesError::InvalidChar(InvalidCharError)
+pub hex_conservative::HexToBytesError::OddLengthString(OddLengthStringError)
+pub hex_conservative::parse::HexToArrayError::Conversion(hex_conservative::HexToBytesError)
+pub hex_conservative::parse::HexToArrayError::InvalidLength(InvalidLengthError)
+pub hex_conservative::parse::HexToBytesError::InvalidChar(InvalidCharError)
+pub hex_conservative::parse::HexToBytesError::OddLengthString(OddLengthStringError)
+pub macro hex_conservative::display::fmt_hex_exact!
+pub macro hex_conservative::fmt_hex_exact!
+pub macro hex_conservative::test_hex_unwrap!
+pub macro hex_conservative::write_err!
+pub mod hex_conservative
+pub mod hex_conservative::buf_encoder
+pub mod hex_conservative::display
+pub mod hex_conservative::parse
+pub mod hex_conservative::prelude
+pub struct hex_conservative::buf_encoder::BufEncoder<T: hex_conservative::buf_encoder::AsOutBytes>
+pub struct hex_conservative::BytesToHexIter<I: core::iter::traits::iterator::Iterator<Item = u8>>
+pub struct hex_conservative::display::DisplayArray<A: core::clone::Clone + core::iter::traits::collect::IntoIterator, B: hex_conservative::buf_encoder::FixedLenBuf> where <A as core::iter::traits::collect::IntoIterator>::Item: core::borrow::Borrow<u8>
+pub struct hex_conservative::display::DisplayByteSlice<'a>
+pub struct hex_conservative::HexToBytesIter<'a>
+pub trait hex_conservative::buf_encoder::AsOutBytes: out_bytes::Sealed
+pub trait hex_conservative::buf_encoder::FixedLenBuf: core::marker::Sized + hex_conservative::buf_encoder::AsOutBytes
+pub trait hex_conservative::display::DisplayHex: core::marker::Copy + sealed::IsRef
+pub trait hex_conservative::DisplayHex: core::marker::Copy + sealed::IsRef
+pub trait hex_conservative::FromHex: core::marker::Sized
+pub trait hex_conservative::parse::FromHex: core::marker::Sized
+pub trait hex_conservative::prelude::DisplayHex: core::marker::Copy + sealed::IsRef
+pub trait hex_conservative::prelude::FromHex: core::marker::Sized
+pub type &'a alloc::vec::Vec<u8>::Display = hex_conservative::display::DisplayByteSlice<'a>
+pub type alloc::vec::Vec<u8>::Err = hex_conservative::HexToBytesError
+pub type &'a [u8; 1024]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 2048]>
+pub type &'a [u8; 10]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 20]>
+pub type &'a [u8; 11]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 22]>
+pub type &'a [u8; 128]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 256]>
+pub type &'a [u8; 12]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 24]>
+pub type &'a [u8; 13]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 26]>
+pub type &'a [u8; 14]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 28]>
+pub type &'a [u8; 15]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 30]>
+pub type &'a [u8; 16]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 32]>
+pub type &'a [u8; 1]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 2]>
+pub type &'a [u8; 2048]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 4096]>
+pub type &'a [u8; 20]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 40]>
+pub type &'a [u8; 256]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 512]>
+pub type &'a [u8; 2]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 4]>
+pub type &'a [u8; 32]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 64]>
+pub type &'a [u8; 33]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 66]>
+pub type &'a [u8; 3]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 6]>
+pub type &'a [u8; 4096]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 8192]>
+pub type &'a [u8; 4]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 8]>
+pub type &'a [u8; 512]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 1024]>
+pub type &'a [u8; 5]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 10]>
+pub type &'a [u8; 64]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 128]>
+pub type &'a [u8; 65]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 130]>
+pub type &'a [u8; 6]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 12]>
+pub type &'a [u8; 7]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 14]>
+pub type &'a [u8; 8]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 16]>
+pub type &'a [u8; 9]::Display = hex_conservative::display::DisplayArray<core::slice::iter::Iter<'a, u8>, [u8; 18]>
+pub type &'a [u8]::Display = hex_conservative::display::DisplayByteSlice<'a>
+pub type hex_conservative::BytesToHexIter<I>::Item = char
+pub type hex_conservative::display::DisplayHex::Display: core::fmt::Display + core::fmt::Debug + core::fmt::LowerHex + core::fmt::UpperHex
+pub type hex_conservative::DisplayHex::Display: core::fmt::Display + core::fmt::Debug + core::fmt::LowerHex + core::fmt::UpperHex
+pub type hex_conservative::FromHex::Err: core::convert::From<hex_conservative::HexToBytesError> + core::marker::Sized + core::fmt::Debug + core::fmt::Display
+pub type hex_conservative::HexToBytesIter<'a>::Item = core::result::Result<u8, hex_conservative::HexToBytesError>
+pub type hex_conservative::parse::FromHex::Err: core::convert::From<hex_conservative::HexToBytesError> + core::marker::Sized + core::fmt::Debug + core::fmt::Display
+pub type hex_conservative::prelude::DisplayHex::Display: core::fmt::Display + core::fmt::Debug + core::fmt::LowerHex + core::fmt::UpperHex
+pub type hex_conservative::prelude::FromHex::Err: core::convert::From<hex_conservative::HexToBytesError> + core::marker::Sized + core::fmt::Debug + core::fmt::Display
+pub type [u8; 10]::Err = hex_conservative::HexToArrayError
+pub type [u8; 128]::Err = hex_conservative::HexToArrayError
+pub type [u8; 12]::Err = hex_conservative::HexToArrayError
+pub type [u8; 14]::Err = hex_conservative::HexToArrayError
+pub type [u8; 16]::Err = hex_conservative::HexToArrayError
+pub type [u8; 20]::Err = hex_conservative::HexToArrayError
+pub type [u8; 24]::Err = hex_conservative::HexToArrayError
+pub type [u8; 256]::Err = hex_conservative::HexToArrayError
+pub type [u8; 28]::Err = hex_conservative::HexToArrayError
+pub type [u8; 2]::Err = hex_conservative::HexToArrayError
+pub type [u8; 32]::Err = hex_conservative::HexToArrayError
+pub type [u8; 33]::Err = hex_conservative::HexToArrayError
+pub type [u8; 384]::Err = hex_conservative::HexToArrayError
+pub type [u8; 4]::Err = hex_conservative::HexToArrayError
+pub type [u8; 512]::Err = hex_conservative::HexToArrayError
+pub type [u8; 64]::Err = hex_conservative::HexToArrayError
+pub type [u8; 65]::Err = hex_conservative::HexToArrayError
+pub type [u8; 6]::Err = hex_conservative::HexToArrayError
+pub type [u8; 8]::Err = hex_conservative::HexToArrayError
+#[repr(transparent)] pub struct hex_conservative::buf_encoder::OutBytes(_)
