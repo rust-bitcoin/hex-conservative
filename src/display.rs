@@ -31,7 +31,7 @@ use core::borrow::Borrow;
 use core::fmt;
 
 use super::Case;
-use crate::buf_encoder::{BufEncoder, FixedLenBuf, OutBytes};
+use crate::buf_encoder::BufEncoder;
 
 /// Extension trait for types that can be displayed as hex.
 ///
@@ -162,8 +162,7 @@ impl<'a> DisplayByteSlice<'a> {
         //
         // This would complicate the code so I was too lazy to do them but feel free to send a PR!
 
-        let mut buf = [0u8; 1024];
-        let mut encoder = BufEncoder::new(&mut buf);
+        let mut encoder = BufEncoder::<1024>::new();
 
         let pad_right = if let Some(width) = f.width() {
             let string_len = match f.precision() {
@@ -202,7 +201,7 @@ impl<'a> DisplayByteSlice<'a> {
                 write!(f, "{}", self.bytes[..(max / 2)].as_hex())?;
                 if max % 2 == 1 && self.bytes.len() > max / 2 + 1 {
                     f.write_char(
-                        super::byte_to_hex(self.bytes[max / 2 + 1], case.table())[1].into(),
+                        case.table().byte_to_hex(self.bytes[max / 2 + 1]).as_bytes()[1].into(),
                     )?;
                 }
             }
@@ -251,59 +250,64 @@ impl<'a> fmt::UpperHex for DisplayByteSlice<'a> {
 
 /// Displays byte array as hex.
 ///
-/// Created by [`<&[u8; LEN] as DisplayHex>::as_hex`](DisplayHex::as_hex).
-// See `buf_encoder::impl_encode!` for `DisplayHex` implementation.
-pub struct DisplayArray<A: Clone + IntoIterator, B: FixedLenBuf>
-where
-    A::Item: Borrow<u8>,
-{
-    array: A,
-    _buffer_marker: core::marker::PhantomData<B>,
+/// Created by [`<&[u8; CAP / 2] as DisplayHex>::as_hex`](DisplayHex::as_hex).
+pub struct DisplayArray<'a, const CAP: usize> {
+    array: &'a [u8],
 }
 
-impl<A: Clone + IntoIterator, B: FixedLenBuf> DisplayArray<A, B>
-where
-    A::Item: Borrow<u8>,
-{
+impl<'a, const CAP: usize> DisplayArray<'a, CAP> {
     /// Creates the wrapper.
+    ///
+    /// # Panics
+    ///
+    /// When the length of array is greater than capacity / 2.
     #[inline]
-    pub fn new(array: A) -> Self { DisplayArray { array, _buffer_marker: Default::default() } }
+    fn new(array: &'a [u8]) -> Self {
+        assert!(array.len() <= CAP / 2);
+        DisplayArray { array }
+    }
 
     fn display(&self, f: &mut fmt::Formatter, case: Case) -> fmt::Result {
-        let mut buf = B::uninit();
-        let mut encoder = BufEncoder::new(&mut buf);
-        encoder.put_bytes(self.array.clone(), case);
+        let mut encoder = BufEncoder::<CAP>::new();
+        encoder.put_bytes(self.array, case);
         f.pad_integral(true, "0x", encoder.as_str())
     }
 }
 
-impl<A: Clone + IntoIterator, B: FixedLenBuf> fmt::Display for DisplayArray<A, B>
-where
-    A::Item: Borrow<u8>,
-{
+impl<'a, const LEN: usize> fmt::Display for DisplayArray<'a, LEN> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
 }
 
-impl<A: Clone + IntoIterator, B: FixedLenBuf> fmt::Debug for DisplayArray<A, B>
-where
-    A::Item: Borrow<u8>,
-{
+impl<'a, const LEN: usize> fmt::Debug for DisplayArray<'a, LEN> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
 }
 
-impl<A: Clone + IntoIterator, B: FixedLenBuf> fmt::LowerHex for DisplayArray<A, B>
-where
-    A::Item: Borrow<u8>,
-{
+impl<'a, const LEN: usize> fmt::LowerHex for DisplayArray<'a, LEN> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { self.display(f, Case::Lower) }
 }
 
-impl<A: Clone + IntoIterator, B: FixedLenBuf> fmt::UpperHex for DisplayArray<A, B>
-where
-    A::Item: Borrow<u8>,
-{
+impl<'a, const LEN: usize> fmt::UpperHex for DisplayArray<'a, LEN> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { self.display(f, Case::Upper) }
 }
+
+macro_rules! impl_array_as_hex {
+    ($($len:expr),*) => {
+        $(
+            impl<'a> DisplayHex for &'a [u8; $len] {
+                type Display = DisplayArray<'a, {$len * 2}>;
+
+                fn as_hex(self) -> Self::Display {
+                    DisplayArray::new(self)
+                }
+            }
+        )*
+    }
+}
+
+impl_array_as_hex!(
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 32, 33, 64, 65, 128, 256, 512, 1024,
+    2048, 4096
+);
 
 /// Format known-length array as hex.
 ///
@@ -334,9 +338,7 @@ macro_rules! fmt_hex_exact {
         #[allow(deprecated)]
         const _: () = [()][($len > usize::MAX / 2) as usize];
         assert_eq!($bytes.len(), $len);
-        let mut buf = [0u8; $len * 2];
-        let buf = $crate::buf_encoder::AsOutBytes::as_mut_out_bytes(&mut buf);
-        $crate::display::fmt_hex_exact_fn($formatter, buf, $bytes, $case)
+        $crate::display::fmt_hex_exact_fn::<_, { $len * 2 }>($formatter, $bytes, $case)
     }};
 }
 pub use fmt_hex_exact;
@@ -344,9 +346,8 @@ pub use fmt_hex_exact;
 // Implementation detail of `write_hex_exact` macro to de-duplicate the code
 #[doc(hidden)]
 #[inline]
-pub fn fmt_hex_exact_fn<I>(
+pub fn fmt_hex_exact_fn<I, const N: usize>(
     f: &mut fmt::Formatter,
-    buf: &mut OutBytes,
     bytes: I,
     case: Case,
 ) -> fmt::Result
@@ -354,7 +355,7 @@ where
     I: IntoIterator,
     I::Item: Borrow<u8>,
 {
-    let mut encoder = BufEncoder::new(buf);
+    let mut encoder = BufEncoder::<N>::new();
     encoder.put_bytes(bytes, case);
     f.pad_integral(true, "0x", encoder.as_str())
 }
