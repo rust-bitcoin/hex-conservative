@@ -25,7 +25,7 @@ std = ["alloc"]
 alloc = []
 
 [dependencies]
-core2 = { version = "0.3.2", default_features = false, optional = true }
+core2 = { version = "0.3.2", default-features = false, optional = true }
 serde = { version = "1.0", default-features = false, optional = true }
 
 
