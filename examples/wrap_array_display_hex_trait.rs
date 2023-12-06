@@ -45,9 +45,9 @@ fn main() {
 pub struct Wrap([u8; 32]);
 
 impl FromHex for Wrap {
-    type Err = HexToArrayError;
+    type Error = HexToArrayError;
 
-    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Err>
+    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
     where
         I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
     {
