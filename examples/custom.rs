@@ -64,9 +64,9 @@ impl FromStr for ALittleBitHexy {
 // If the object can be parsed from hex, implement `FromHex`.
 
 impl FromHex for ALittleBitHexy {
-    type Err = HexToArrayError;
+    type Error = HexToArrayError;
 
-    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Err>
+    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
     where
         I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
     {

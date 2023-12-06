@@ -40,9 +40,9 @@ impl fmt::UpperHex for Hexy {
 }
 
 impl FromHex for Hexy {
-    type Err = HexToArrayError;
+    type Error = HexToArrayError;
 
-    fn from_byte_iter<I>(iter: I) -> Result<Self, HexToArrayError>
+    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
     where
         I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
     {
