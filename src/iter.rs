@@ -4,11 +4,6 @@
 
 use core::iter::FusedIterator;
 use core::str;
-#[cfg(feature = "std")]
-use std::io;
-
-#[cfg(all(feature = "core2", not(feature = "std")))]
-use core2::io;
 
 use crate::error::{InvalidCharError, OddLengthStringError};
 
@@ -40,6 +35,20 @@ impl<'a> HexToBytesIter<'a> {
         } else {
             Ok(HexToBytesIter { iter: s.bytes() })
         }
+    }
+
+    fn read(&mut self, buf: &mut [u8]) -> usize {
+        let mut bytes_read = 0usize;
+        for dst in buf {
+            match self.next() {
+                Some(Ok(src)) => {
+                    *dst = src;
+                    bytes_read += 1;
+                }
+                _ => break,
+            }
+        }
+        bytes_read
     }
 }
 
@@ -76,22 +85,29 @@ impl<'a> ExactSizeIterator for HexToBytesIter<'a> {
 
 impl<'a> FusedIterator for HexToBytesIter<'a> {}
 
-#[cfg(any(feature = "std", feature = "core2"))]
-impl<'a> io::Read for HexToBytesIter<'a> {
+/// Supports reading from a [`bitcoin_io::Read`] reader.
+///
+/// [`bitcoin_io::Read`]: <https://docs.rs/bitcoin-io/0.1.1/bitcoin_io/trait.Read.html>
+#[cfg(feature = "bitcoin-io")]
+impl<'a> bitcoin_io::Read for HexToBytesIter<'a> {
     #[inline]
-    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        let mut bytes_read = 0usize;
-        for dst in buf {
-            match self.next() {
-                Some(Ok(src)) => {
-                    *dst = src;
-                    bytes_read += 1;
-                }
-                _ => break,
-            }
-        }
-        Ok(bytes_read)
-    }
+    fn read(&mut self, buf: &mut [u8]) -> bitcoin_io::Result<usize> { Ok(self.read(buf)) }
+}
+
+/// Supports reading from a [`std::io::Read`] reader.
+#[cfg(feature = "std")]
+impl<'a> std::io::Read for HexToBytesIter<'a> {
+    #[inline]
+    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> { Ok(self.read(buf)) }
+}
+
+/// Supports reading from a [`core2::io::Read`] reader.
+///
+/// [`core2::io::Read`]: <https://docs.rs/core2/0.3.2/core2/io/trait.Read.html>
+#[cfg(feature = "core2")]
+impl<'a> core2::io::Read for HexToBytesIter<'a> {
+    #[inline]
+    fn read(&mut self, buf: &mut [u8]) -> core2::io::Result<usize> { Ok(self.read(buf)) }
 }
 
 /// `hi` and `lo` are bytes representing hex characters.

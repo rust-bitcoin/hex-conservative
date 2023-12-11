@@ -2,7 +2,7 @@
 
 set -ex
 
-FEATURES="std alloc core2 serde"
+FEATURES="std alloc core2 bitcoin-io serde"
 MSRV="1\.48\.0"
 
 cargo --version
