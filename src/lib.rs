@@ -58,6 +58,8 @@ pub mod prelude {
     pub use crate::{display::DisplayHex, parse::FromHex};
 }
 
+pub(crate) use table::Table;
+
 #[rustfmt::skip]                // Keep public re-exports separate.
 #[doc(inline)]
 pub use self::{
@@ -89,23 +91,44 @@ impl Case {
     /// The returned table may only contain displayable ASCII chars.
     #[inline]
     #[rustfmt::skip]
-    pub(crate) fn table(self) -> &'static [u8; 16] {
-        static LOWER: [u8; 16] = [b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'a', b'b', b'c', b'd', b'e', b'f'];
-        static UPPER: [u8; 16] = [b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'A', b'B', b'C', b'D', b'E', b'F'];
-
+    pub(crate) fn table(self) -> &'static Table {
         match self {
-            Case::Lower => &LOWER,
-            Case::Upper => &UPPER,
+            Case::Lower => &Table::LOWER,
+            Case::Upper => &Table::UPPER,
         }
     }
 }
 
-/// Encodes single byte as two ASCII chars using the given table.
-///
-/// The function guarantees only returning values from the provided table.
-#[inline]
-pub(crate) fn byte_to_hex(byte: u8, table: &[u8; 16]) -> [u8; 2] {
-    [table[usize::from(byte.wrapping_shr(4))], table[usize::from(byte & 0x0F)]]
+/// Correctness boundary for `Table`.
+mod table {
+    use arrayvec::ArrayString;
+
+    /// Table of hex chars.
+    //
+    // Correctness invariant: each byte in the table must be ASCII.
+    pub(crate) struct Table([u8; 16]);
+
+    impl Table {
+        pub(crate) const LOWER: Self = Table([
+            b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'a', b'b', b'c', b'd',
+            b'e', b'f',
+        ]);
+        pub(crate) const UPPER: Self = Table([
+            b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'A', b'B', b'C', b'D',
+            b'E', b'F',
+        ]);
+
+        /// Encodes single byte as two ASCII chars using the given table.
+        ///
+        /// The function guarantees only returning values from the provided table.
+        #[inline]
+        pub(crate) fn byte_to_hex(&self, byte: u8) -> ArrayString<2> {
+            let left = self.0[usize::from(byte.wrapping_shr(4))];
+            let right = self.0[usize::from(byte & 0x0F)];
+
+            ArrayString::from_byte_string(&[left, right]).expect("Table only contains valid ASCII")
+        }
+    }
 }
 
 /// Quick and dirty macro for parsing hex in tests.

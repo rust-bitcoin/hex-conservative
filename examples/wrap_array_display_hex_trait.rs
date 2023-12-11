@@ -65,7 +65,7 @@ impl FromHex for Wrap {
 //     fn hex_reserve_suggestion(self) -> usize { self.0.as_ref().hex_reserve_suggestion() }
 // }
 impl<'a> DisplayHex for &'a Wrap {
-    type Display = DisplayArray<core::slice::Iter<'a, u8>, [u8; 64]>;
-    fn as_hex(self) -> Self::Display { DisplayArray::new(self.0.iter()) }
+    type Display = DisplayArray<'a, 64>;
+    fn as_hex(self) -> Self::Display { self.0.as_hex() }
     fn hex_reserve_suggestion(self) -> usize { 64 }
 }
