@@ -117,6 +117,7 @@ mod tests {
         let len_sixteen = "0123456789abcdef";
         assert!(<[u8; 8]>::from_hex(len_sixteen).is_ok());
     }
+
     #[test]
     fn hex_to_array_error() {
         let len_sixteen = "0123456789abcdef";
