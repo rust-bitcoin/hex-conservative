@@ -90,11 +90,13 @@ impl_fromhex_array!(512);
 mod tests {
     use super::*;
     use crate::display::DisplayHex;
-    use crate::error::{InvalidCharError, InvalidLengthError, OddLengthStringError};
+    use crate::error::InvalidLengthError;
 
     #[test]
     #[cfg(feature = "alloc")]
     fn hex_error() {
+        use crate::error::{InvalidCharError, OddLengthStringError};
+
         let oddlen = "0123456789abcdef0";
         let badchar1 = "Z123456789abcdef";
         let badchar2 = "012Y456789abcdeb";
@@ -115,6 +117,7 @@ mod tests {
         let len_sixteen = "0123456789abcdef";
         assert!(<[u8; 8]>::from_hex(len_sixteen).is_ok());
     }
+
     #[test]
     fn hex_to_array_error() {
         let len_sixteen = "0123456789abcdef";
