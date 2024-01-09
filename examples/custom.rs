@@ -19,7 +19,7 @@ fn main() {
     #[cfg(feature = "alloc")]
     {
         let hex = hexy.to_lower_hex_string();
-        let from_hex = ALittleBitHexy::from_hex(&hex).expect("failed to parse hex");
+        let from_hex = ALittleBitHexy::from_hex(hex).expect("failed to parse hex");
         assert_eq!(from_hex, hexy);
     }
 }
