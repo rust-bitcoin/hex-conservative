@@ -1,39 +1,75 @@
 impl core::clone::Clone for hex_conservative::Case
 impl core::clone::Clone for hex_conservative::HexToArrayError
 impl core::clone::Clone for hex_conservative::HexToBytesError
+impl core::clone::Clone for hex_conservative::InvalidCharError
+impl core::clone::Clone for hex_conservative::InvalidLengthError
+impl core::clone::Clone for hex_conservative::OddLengthStringError
 impl core::cmp::Eq for hex_conservative::Case
 impl core::cmp::Eq for hex_conservative::HexToArrayError
 impl core::cmp::Eq for hex_conservative::HexToBytesError
+impl core::cmp::Eq for hex_conservative::InvalidCharError
+impl core::cmp::Eq for hex_conservative::InvalidLengthError
+impl core::cmp::Eq for hex_conservative::OddLengthStringError
 impl core::cmp::PartialEq for hex_conservative::Case
 impl core::cmp::PartialEq for hex_conservative::HexToArrayError
 impl core::cmp::PartialEq for hex_conservative::HexToBytesError
+impl core::cmp::PartialEq for hex_conservative::InvalidCharError
+impl core::cmp::PartialEq for hex_conservative::InvalidLengthError
+impl core::cmp::PartialEq for hex_conservative::OddLengthStringError
 impl core::convert::From<hex_conservative::HexToBytesError> for hex_conservative::HexToArrayError
+impl core::convert::From<hex_conservative::InvalidCharError> for hex_conservative::HexToBytesError
+impl core::convert::From<hex_conservative::InvalidLengthError> for hex_conservative::HexToArrayError
+impl core::convert::From<hex_conservative::OddLengthStringError> for hex_conservative::HexToBytesError
 impl core::default::Default for hex_conservative::Case
 impl core::fmt::Debug for hex_conservative::Case
 impl core::fmt::Debug for hex_conservative::HexToArrayError
 impl core::fmt::Debug for hex_conservative::HexToBytesError
+impl core::fmt::Debug for hex_conservative::InvalidCharError
+impl core::fmt::Debug for hex_conservative::InvalidLengthError
+impl core::fmt::Debug for hex_conservative::OddLengthStringError
 impl core::fmt::Display for hex_conservative::HexToArrayError
 impl core::fmt::Display for hex_conservative::HexToBytesError
+impl core::fmt::Display for hex_conservative::InvalidCharError
+impl core::fmt::Display for hex_conservative::InvalidLengthError
+impl core::fmt::Display for hex_conservative::OddLengthStringError
 impl core::hash::Hash for hex_conservative::Case
 impl core::marker::Copy for hex_conservative::Case
 impl core::marker::Send for hex_conservative::Case
 impl core::marker::Send for hex_conservative::HexToArrayError
 impl core::marker::Send for hex_conservative::HexToBytesError
+impl core::marker::Send for hex_conservative::InvalidCharError
+impl core::marker::Send for hex_conservative::InvalidLengthError
+impl core::marker::Send for hex_conservative::OddLengthStringError
 impl core::marker::StructuralPartialEq for hex_conservative::Case
 impl core::marker::StructuralPartialEq for hex_conservative::HexToArrayError
 impl core::marker::StructuralPartialEq for hex_conservative::HexToBytesError
+impl core::marker::StructuralPartialEq for hex_conservative::InvalidCharError
+impl core::marker::StructuralPartialEq for hex_conservative::InvalidLengthError
+impl core::marker::StructuralPartialEq for hex_conservative::OddLengthStringError
 impl core::marker::Sync for hex_conservative::Case
 impl core::marker::Sync for hex_conservative::HexToArrayError
 impl core::marker::Sync for hex_conservative::HexToBytesError
+impl core::marker::Sync for hex_conservative::InvalidCharError
+impl core::marker::Sync for hex_conservative::InvalidLengthError
+impl core::marker::Sync for hex_conservative::OddLengthStringError
 impl core::marker::Unpin for hex_conservative::Case
 impl core::marker::Unpin for hex_conservative::HexToArrayError
 impl core::marker::Unpin for hex_conservative::HexToBytesError
+impl core::marker::Unpin for hex_conservative::InvalidCharError
+impl core::marker::Unpin for hex_conservative::InvalidLengthError
+impl core::marker::Unpin for hex_conservative::OddLengthStringError
 impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::Case
 impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::HexToArrayError
 impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::HexToBytesError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::InvalidCharError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::InvalidLengthError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::OddLengthStringError
 impl core::panic::unwind_safe::UnwindSafe for hex_conservative::Case
 impl core::panic::unwind_safe::UnwindSafe for hex_conservative::HexToArrayError
 impl core::panic::unwind_safe::UnwindSafe for hex_conservative::HexToBytesError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative::InvalidCharError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative::InvalidLengthError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative::OddLengthStringError
 impl hex_conservative::parse::FromHex for [u8; 10]
 impl hex_conservative::parse::FromHex for [u8; 128]
 impl hex_conservative::parse::FromHex for [u8; 12]
@@ -197,14 +233,26 @@ pub fn hex_conservative::HexToArrayError::clone(&self) -> hex_conservative::HexT
 pub fn hex_conservative::HexToArrayError::eq(&self, other: &hex_conservative::HexToArrayError) -> bool
 pub fn hex_conservative::HexToArrayError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 pub fn hex_conservative::HexToArrayError::from(e: hex_conservative::HexToBytesError) -> Self
+pub fn hex_conservative::HexToArrayError::from(e: hex_conservative::InvalidLengthError) -> Self
 pub fn hex_conservative::HexToBytesError::clone(&self) -> hex_conservative::HexToBytesError
 pub fn hex_conservative::HexToBytesError::eq(&self, other: &hex_conservative::HexToBytesError) -> bool
 pub fn hex_conservative::HexToBytesError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn hex_conservative::HexToBytesError::from(e: hex_conservative::InvalidCharError) -> Self
+pub fn hex_conservative::HexToBytesError::from(e: hex_conservative::OddLengthStringError) -> Self
 pub fn hex_conservative::HexToBytesIter<'a>::len(&self) -> usize
 pub fn hex_conservative::HexToBytesIter<'a>::new(s: &'a str) -> core::result::Result<hex_conservative::HexToBytesIter<'a>, hex_conservative::HexToBytesError>
 pub fn hex_conservative::HexToBytesIter<'a>::next(&mut self) -> core::option::Option<core::result::Result<u8, hex_conservative::HexToBytesError>>
 pub fn hex_conservative::HexToBytesIter<'a>::next_back(&mut self) -> core::option::Option<core::result::Result<u8, hex_conservative::HexToBytesError>>
 pub fn hex_conservative::HexToBytesIter<'a>::size_hint(&self) -> (usize, core::option::Option<usize>)
+pub fn hex_conservative::InvalidCharError::clone(&self) -> hex_conservative::InvalidCharError
+pub fn hex_conservative::InvalidCharError::eq(&self, other: &hex_conservative::InvalidCharError) -> bool
+pub fn hex_conservative::InvalidCharError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn hex_conservative::InvalidLengthError::clone(&self) -> hex_conservative::InvalidLengthError
+pub fn hex_conservative::InvalidLengthError::eq(&self, other: &hex_conservative::InvalidLengthError) -> bool
+pub fn hex_conservative::InvalidLengthError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn hex_conservative::OddLengthStringError::clone(&self) -> hex_conservative::OddLengthStringError
+pub fn hex_conservative::OddLengthStringError::eq(&self, other: &hex_conservative::OddLengthStringError) -> bool
+pub fn hex_conservative::OddLengthStringError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::as_str(&self) -> &str
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::clear(&mut self)
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::default() -> Self
@@ -227,13 +275,13 @@ pub fn hex_conservative::prelude::FromHex::from_hex(s: &str) -> core::result::Re
 pub hex_conservative::Case::Lower
 pub hex_conservative::Case::Upper
 pub hex_conservative::HexToArrayError::Conversion(hex_conservative::HexToBytesError)
-pub hex_conservative::HexToArrayError::InvalidLength(InvalidLengthError)
-pub hex_conservative::HexToBytesError::InvalidChar(InvalidCharError)
-pub hex_conservative::HexToBytesError::OddLengthString(OddLengthStringError)
+pub hex_conservative::HexToArrayError::InvalidLength(hex_conservative::InvalidLengthError)
+pub hex_conservative::HexToBytesError::InvalidChar(hex_conservative::InvalidCharError)
+pub hex_conservative::HexToBytesError::OddLengthString(hex_conservative::OddLengthStringError)
 pub hex_conservative::parse::HexToArrayError::Conversion(hex_conservative::HexToBytesError)
-pub hex_conservative::parse::HexToArrayError::InvalidLength(InvalidLengthError)
-pub hex_conservative::parse::HexToBytesError::InvalidChar(InvalidCharError)
-pub hex_conservative::parse::HexToBytesError::OddLengthString(OddLengthStringError)
+pub hex_conservative::parse::HexToArrayError::InvalidLength(hex_conservative::InvalidLengthError)
+pub hex_conservative::parse::HexToBytesError::InvalidChar(hex_conservative::InvalidCharError)
+pub hex_conservative::parse::HexToBytesError::OddLengthString(hex_conservative::OddLengthStringError)
 pub macro hex_conservative::display::fmt_hex_exact!
 pub macro hex_conservative::fmt_hex_exact!
 pub macro hex_conservative::test_hex_unwrap!
@@ -245,6 +293,9 @@ pub mod hex_conservative::parse
 pub mod hex_conservative::prelude
 pub struct hex_conservative::BytesToHexIter<I: core::iter::traits::iterator::Iterator<Item = u8>>
 pub struct hex_conservative::HexToBytesIter<'a>
+pub struct hex_conservative::InvalidCharError
+pub struct hex_conservative::InvalidLengthError
+pub struct hex_conservative::OddLengthStringError
 pub struct hex_conservative::buf_encoder::BufEncoder<const CAP: usize>
 pub struct hex_conservative::display::DisplayArray<'a, const CAP: usize>
 pub struct hex_conservative::display::DisplayByteSlice<'a>
