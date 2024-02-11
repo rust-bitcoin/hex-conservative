@@ -64,7 +64,7 @@ pub(crate) use table::Table;
 #[doc(inline)]
 pub use self::{
     display::DisplayHex,
-    iter::{BytesToHexIter, HexToBytesIter},
+    iter::{BytesToHexIter, HexToBytesIter, OddLengthStringError},
     parse::{FromHex, HexToArrayError, HexToBytesError},
 };
 

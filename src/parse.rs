@@ -26,7 +26,8 @@ pub trait FromHex: Sized {
 
     /// Produces an object from a hex string.
     fn from_hex(s: &str) -> Result<Self, Self::Error> {
-        Self::from_byte_iter(HexToBytesIter::new(s)?)
+        let iter = HexToBytesIter::new(s).map_err(Into::into)?;
+        Self::from_byte_iter(iter)
     }
 }
 
