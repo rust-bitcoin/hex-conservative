@@ -10,10 +10,10 @@ use std::io;
 #[cfg(all(feature = "core2", not(feature = "std")))]
 use core2::io;
 
-use crate::error::{InvalidCharError, OddLengthStringError};
+use crate::error::InvalidCharError;
 
 #[rustfmt::skip]                // Keep public re-exports separate.
-pub use crate::error::HexToBytesError;
+pub use crate::error::{HexToBytesError, OddLengthStringError};
 
 /// Iterator over a hex-encoded string slice which decodes hex and yields bytes.
 pub struct HexToBytesIter<'a> {
@@ -34,9 +34,9 @@ impl<'a> HexToBytesIter<'a> {
     ///
     /// If the input string is of odd length.
     #[inline]
-    pub fn new(s: &'a str) -> Result<HexToBytesIter<'a>, HexToBytesError> {
+    pub fn new(s: &'a str) -> Result<HexToBytesIter<'a>, OddLengthStringError> {
         if s.len() % 2 != 0 {
-            Err(OddLengthStringError { len: s.len() }.into())
+            Err(OddLengthStringError { len: s.len() })
         } else {
             Ok(HexToBytesIter { iter: s.bytes() })
         }
