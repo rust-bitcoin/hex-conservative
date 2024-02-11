@@ -65,7 +65,8 @@ pub(crate) use table::Table;
 pub use self::{
     display::DisplayHex,
     iter::{BytesToHexIter, HexToBytesIter},
-    parse::{FromHex, HexToArrayError, HexToBytesError},
+    parse::FromHex,
+    error::{HexToArrayError, HexToBytesError, OddLengthStringError, InvalidCharError, InvalidLengthError},
 };
 
 /// Possible case of hex.
