@@ -1,39 +1,52 @@
+#[non_exhaustive] pub enum hex_conservative::parse::PrefixedError<E>
+#[non_exhaustive] pub struct hex_conservative::parse::MissingPrefixError()
 impl core::clone::Clone for hex_conservative::Case
 impl core::clone::Clone for hex_conservative::HexToArrayError
 impl core::clone::Clone for hex_conservative::HexToBytesError
+impl core::clone::Clone for hex_conservative::parse::MissingPrefixError
 impl core::cmp::Eq for hex_conservative::Case
 impl core::cmp::Eq for hex_conservative::HexToArrayError
 impl core::cmp::Eq for hex_conservative::HexToBytesError
+impl core::cmp::Eq for hex_conservative::parse::MissingPrefixError
 impl core::cmp::PartialEq for hex_conservative::Case
 impl core::cmp::PartialEq for hex_conservative::HexToArrayError
 impl core::cmp::PartialEq for hex_conservative::HexToBytesError
+impl core::cmp::PartialEq for hex_conservative::parse::MissingPrefixError
 impl core::convert::From<hex_conservative::HexToBytesError> for hex_conservative::HexToArrayError
 impl core::default::Default for hex_conservative::Case
 impl core::fmt::Debug for hex_conservative::Case
 impl core::fmt::Debug for hex_conservative::HexToArrayError
 impl core::fmt::Debug for hex_conservative::HexToBytesError
+impl core::fmt::Debug for hex_conservative::parse::MissingPrefixError
 impl core::fmt::Display for hex_conservative::HexToArrayError
 impl core::fmt::Display for hex_conservative::HexToBytesError
+impl core::fmt::Display for hex_conservative::parse::MissingPrefixError
 impl core::hash::Hash for hex_conservative::Case
 impl core::marker::Copy for hex_conservative::Case
 impl core::marker::Send for hex_conservative::Case
 impl core::marker::Send for hex_conservative::HexToArrayError
 impl core::marker::Send for hex_conservative::HexToBytesError
+impl core::marker::Send for hex_conservative::parse::MissingPrefixError
 impl core::marker::StructuralPartialEq for hex_conservative::Case
 impl core::marker::StructuralPartialEq for hex_conservative::HexToArrayError
 impl core::marker::StructuralPartialEq for hex_conservative::HexToBytesError
+impl core::marker::StructuralPartialEq for hex_conservative::parse::MissingPrefixError
 impl core::marker::Sync for hex_conservative::Case
 impl core::marker::Sync for hex_conservative::HexToArrayError
 impl core::marker::Sync for hex_conservative::HexToBytesError
+impl core::marker::Sync for hex_conservative::parse::MissingPrefixError
 impl core::marker::Unpin for hex_conservative::Case
 impl core::marker::Unpin for hex_conservative::HexToArrayError
 impl core::marker::Unpin for hex_conservative::HexToBytesError
+impl core::marker::Unpin for hex_conservative::parse::MissingPrefixError
 impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::Case
 impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::HexToArrayError
 impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::HexToBytesError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::parse::MissingPrefixError
 impl core::panic::unwind_safe::UnwindSafe for hex_conservative::Case
 impl core::panic::unwind_safe::UnwindSafe for hex_conservative::HexToArrayError
 impl core::panic::unwind_safe::UnwindSafe for hex_conservative::HexToBytesError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative::parse::MissingPrefixError
 impl hex_conservative::parse::FromHex for [u8; 10]
 impl hex_conservative::parse::FromHex for [u8; 128]
 impl hex_conservative::parse::FromHex for [u8; 12]
@@ -110,6 +123,18 @@ impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 7]
 impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 8]
 impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 9]
 impl<'a> hex_conservative::display::DisplayHex for &'a [u8]
+impl<E: core::clone::Clone> core::clone::Clone for hex_conservative::parse::PrefixedError<E>
+impl<E: core::cmp::Eq> core::cmp::Eq for hex_conservative::parse::PrefixedError<E>
+impl<E: core::cmp::PartialEq> core::cmp::PartialEq for hex_conservative::parse::PrefixedError<E>
+impl<E: core::fmt::Debug> core::fmt::Debug for hex_conservative::parse::PrefixedError<E>
+impl<E: core::fmt::Display> core::fmt::Display for hex_conservative::parse::PrefixedError<E>
+impl<E> core::convert::From<E> for hex_conservative::parse::PrefixedError<E>
+impl<E> core::marker::Send for hex_conservative::parse::PrefixedError<E> where E: core::marker::Send
+impl<E> core::marker::StructuralPartialEq for hex_conservative::parse::PrefixedError<E>
+impl<E> core::marker::Sync for hex_conservative::parse::PrefixedError<E> where E: core::marker::Sync
+impl<E> core::marker::Unpin for hex_conservative::parse::PrefixedError<E> where E: core::marker::Unpin
+impl<E> core::panic::unwind_safe::RefUnwindSafe for hex_conservative::parse::PrefixedError<E> where E: core::panic::unwind_safe::RefUnwindSafe
+impl<E> core::panic::unwind_safe::UnwindSafe for hex_conservative::parse::PrefixedError<E> where E: core::panic::unwind_safe::UnwindSafe
 impl<I> core::iter::traits::double_ended::DoubleEndedIterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::double_ended::DoubleEndedIterator + core::iter::traits::iterator::Iterator<Item = u8>
 impl<I> core::iter::traits::exact_size::ExactSizeIterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::iterator::Iterator<Item = u8>
 impl<I> core::iter::traits::iterator::Iterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::iterator::Iterator<Item = u8>
@@ -193,7 +218,10 @@ pub fn hex_conservative::Case::hash<__H: core::hash::Hasher>(&self, state: &mut 
 pub fn hex_conservative::DisplayHex::as_hex(self) -> Self::Display
 pub fn hex_conservative::DisplayHex::hex_reserve_suggestion(self) -> usize
 pub fn hex_conservative::FromHex::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Error> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
-pub fn hex_conservative::FromHex::from_hex(s: &str) -> core::result::Result<Self, Self::Error>
+pub fn hex_conservative::FromHex::from_hex<S: core::convert::AsRef<str>>(s: S) -> core::result::Result<Self, Self::Error>
+pub fn hex_conservative::FromHex::from_maybe_prefixed_hex<S: core::convert::AsRef<str>>(s: S) -> core::result::Result<Self, Self::Error>
+pub fn hex_conservative::FromHex::from_no_prefix_hex<S: core::convert::AsRef<str>>(s: S) -> core::result::Result<Self, Self::Error>
+pub fn hex_conservative::FromHex::from_prefixed_hex<S: core::convert::AsRef<str>>(s: S) -> core::result::Result<Self, hex_conservative::parse::PrefixedError<Self::Error>>
 pub fn hex_conservative::HexToArrayError::clone(&self) -> hex_conservative::HexToArrayError
 pub fn hex_conservative::HexToArrayError::eq(&self, other: &hex_conservative::HexToArrayError) -> bool
 pub fn hex_conservative::HexToArrayError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
@@ -221,11 +249,24 @@ pub fn hex_conservative::display::DisplayByteSlice<'a>::fmt(&self, f: &mut core:
 pub fn hex_conservative::display::DisplayHex::as_hex(self) -> Self::Display
 pub fn hex_conservative::display::DisplayHex::hex_reserve_suggestion(self) -> usize
 pub fn hex_conservative::parse::FromHex::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Error> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
-pub fn hex_conservative::parse::FromHex::from_hex(s: &str) -> core::result::Result<Self, Self::Error>
+pub fn hex_conservative::parse::FromHex::from_hex<S: core::convert::AsRef<str>>(s: S) -> core::result::Result<Self, Self::Error>
+pub fn hex_conservative::parse::FromHex::from_maybe_prefixed_hex<S: core::convert::AsRef<str>>(s: S) -> core::result::Result<Self, Self::Error>
+pub fn hex_conservative::parse::FromHex::from_no_prefix_hex<S: core::convert::AsRef<str>>(s: S) -> core::result::Result<Self, Self::Error>
+pub fn hex_conservative::parse::FromHex::from_prefixed_hex<S: core::convert::AsRef<str>>(s: S) -> core::result::Result<Self, hex_conservative::parse::PrefixedError<Self::Error>>
+pub fn hex_conservative::parse::MissingPrefixError::clone(&self) -> hex_conservative::parse::MissingPrefixError
+pub fn hex_conservative::parse::MissingPrefixError::eq(&self, other: &hex_conservative::parse::MissingPrefixError) -> bool
+pub fn hex_conservative::parse::MissingPrefixError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn hex_conservative::parse::PrefixedError<E>::clone(&self) -> hex_conservative::parse::PrefixedError<E>
+pub fn hex_conservative::parse::PrefixedError<E>::eq(&self, other: &hex_conservative::parse::PrefixedError<E>) -> bool
+pub fn hex_conservative::parse::PrefixedError<E>::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn hex_conservative::parse::PrefixedError<E>::from(e: E) -> Self
 pub fn hex_conservative::prelude::DisplayHex::as_hex(self) -> Self::Display
 pub fn hex_conservative::prelude::DisplayHex::hex_reserve_suggestion(self) -> usize
 pub fn hex_conservative::prelude::FromHex::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Error> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::HexToBytesError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
-pub fn hex_conservative::prelude::FromHex::from_hex(s: &str) -> core::result::Result<Self, Self::Error>
+pub fn hex_conservative::prelude::FromHex::from_hex<S: core::convert::AsRef<str>>(s: S) -> core::result::Result<Self, Self::Error>
+pub fn hex_conservative::prelude::FromHex::from_maybe_prefixed_hex<S: core::convert::AsRef<str>>(s: S) -> core::result::Result<Self, Self::Error>
+pub fn hex_conservative::prelude::FromHex::from_no_prefix_hex<S: core::convert::AsRef<str>>(s: S) -> core::result::Result<Self, Self::Error>
+pub fn hex_conservative::prelude::FromHex::from_prefixed_hex<S: core::convert::AsRef<str>>(s: S) -> core::result::Result<Self, hex_conservative::parse::PrefixedError<Self::Error>>
 pub hex_conservative::Case::Lower
 pub hex_conservative::Case::Upper
 pub hex_conservative::HexToArrayError::Conversion(hex_conservative::HexToBytesError)
@@ -236,6 +277,8 @@ pub hex_conservative::parse::HexToArrayError::Conversion(hex_conservative::HexTo
 pub hex_conservative::parse::HexToArrayError::InvalidLength(InvalidLengthError)
 pub hex_conservative::parse::HexToBytesError::InvalidChar(InvalidCharError)
 pub hex_conservative::parse::HexToBytesError::OddLengthString(OddLengthStringError)
+pub hex_conservative::parse::PrefixedError::MissingPrefix(hex_conservative::parse::MissingPrefixError)
+pub hex_conservative::parse::PrefixedError::ParseHex(E)
 pub macro hex_conservative::display::fmt_hex_exact!
 pub macro hex_conservative::fmt_hex_exact!
 pub macro hex_conservative::test_hex_unwrap!
