@@ -56,6 +56,22 @@ impl<const CAP: usize> BufEncoder<CAP> {
         self.put_bytes_inner(bytes.into_iter(), case)
     }
 
+    /// Encodes `bytes` backwards as hex in given `case` and appends them to the buffer.
+    ///
+    /// ## Panics
+    ///
+    /// The method panics if the bytes wouldn't fit the buffer.
+    #[inline]
+    #[track_caller]
+    pub fn put_bytes_backwards<I>(&mut self, bytes: I, case: Case)
+    where
+        I: IntoIterator,
+        I::Item: Borrow<u8>,
+        I::IntoIter: DoubleEndedIterator,
+    {
+        self.put_bytes_inner(bytes.into_iter().rev(), case)
+    }
+
     #[inline]
     #[track_caller]
     fn put_bytes_inner<I>(&mut self, bytes: I, case: Case)

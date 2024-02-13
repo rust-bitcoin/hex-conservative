@@ -50,6 +50,9 @@ pub trait DisplayHex: Copy + sealed::IsRef {
     /// Display `Self` as a continuous sequence of ASCII hex chars.
     fn as_hex(self) -> Self::Display;
 
+    /// Displays `Self` backwards if implemented, default calls `self.as_hex`.
+    fn as_hex_backwards(self) -> Self::Display { self.as_hex() }
+
     /// Create a lower-hex-encoded string.
     ///
     /// A shorthand for `to_hex_string(Case::Lower)`, so that `Case` doesn't need to be imported.
@@ -117,7 +120,10 @@ impl<'a> DisplayHex for &'a [u8] {
     type Display = DisplayByteSlice<'a>;
 
     #[inline]
-    fn as_hex(self) -> Self::Display { DisplayByteSlice { bytes: self } }
+    fn as_hex(self) -> Self::Display { DisplayByteSlice { bytes: self, backwards: false } }
+
+    #[inline]
+    fn as_hex_backwards(self) -> Self::Display { DisplayByteSlice { bytes: self, backwards: true } }
 
     #[inline]
     fn hex_reserve_suggestion(self) -> usize {
@@ -133,7 +139,10 @@ impl<'a> DisplayHex for &'a alloc::vec::Vec<u8> {
     type Display = DisplayByteSlice<'a>;
 
     #[inline]
-    fn as_hex(self) -> Self::Display { DisplayByteSlice { bytes: self } }
+    fn as_hex(self) -> Self::Display { DisplayByteSlice { bytes: self, backwards: false } }
+
+    #[inline]
+    fn as_hex_backwards(self) -> Self::Display { DisplayByteSlice { bytes: self, backwards: true } }
 
     #[inline]
     fn hex_reserve_suggestion(self) -> usize {
@@ -150,6 +159,8 @@ impl<'a> DisplayHex for &'a alloc::vec::Vec<u8> {
 pub struct DisplayByteSlice<'a> {
     // pub because we want to keep lengths in sync
     pub(crate) bytes: &'a [u8],
+    // Display this slice backwards.
+    backwards: bool,
 }
 
 impl<'a> DisplayByteSlice<'a> {
@@ -201,24 +212,43 @@ impl<'a> DisplayByteSlice<'a> {
             0
         };
 
-        match f.precision() {
-            // Do ceil division on max so as to ignore odd length max width which makes
-            // no sense for hex strings i.e., honour max but use even length.
-            Some(max) if self.bytes.len() > max / 2 => {
-                write!(f, "{}", self.bytes[..(max / 2)].as_hex())?;
-            }
-            Some(_) | None => {
-                let mut chunks = self.bytes.chunks_exact(512);
-                for chunk in &mut chunks {
-                    encoder.put_bytes(chunk, case);
-                    f.write_str(encoder.as_str())?;
-                    encoder.clear();
+        if self.backwards {
+            match f.precision() {
+                // Do ceil division on max so as to ignore odd length max width which makes
+                // no sense for hex strings i.e., honour max but use even length.
+                Some(max) if self.bytes.len() > max / 2 => {
+                    write!(f, "{}", self.bytes[..(max / 2)].as_hex_backwards())?;
                 }
-                encoder.put_bytes(chunks.remainder(), case);
-                f.write_str(encoder.as_str())?;
+                Some(_) | None => {
+                    let mut chunks = self.bytes.chunks_exact(512);
+                    for chunk in &mut chunks {
+                        encoder.put_bytes_backwards(chunk, case);
+                        f.write_str(encoder.as_str())?;
+                        encoder.clear();
+                    }
+                    encoder.put_bytes_backwards(chunks.remainder(), case);
+                    f.write_str(encoder.as_str())?;
+                }
+            }
+        } else {
+            match f.precision() {
+                // Do ceil division on max so as to ignore odd length max width which makes
+                // no sense for hex strings i.e., honour max but use even length.
+                Some(max) if self.bytes.len() > max / 2 => {
+                    write!(f, "{}", self.bytes[..(max / 2)].as_hex())?;
+                }
+                Some(_) | None => {
+                    let mut chunks = self.bytes.chunks_exact(512);
+                    for chunk in &mut chunks {
+                        encoder.put_bytes(chunk, case);
+                        f.write_str(encoder.as_str())?;
+                        encoder.clear();
+                    }
+                    encoder.put_bytes(chunks.remainder(), case);
+                    f.write_str(encoder.as_str())?;
+                }
             }
         }
-
         // Avoid division by zero and optimize for common case.
         if pad_right > 0 {
             encoder.clear();
@@ -255,6 +285,7 @@ impl<'a> fmt::UpperHex for DisplayByteSlice<'a> {
 /// Created by [`<&[u8; CAP / 2] as DisplayHex>::as_hex`](DisplayHex::as_hex).
 pub struct DisplayArray<'a, const CAP: usize> {
     array: &'a [u8],
+    backwards: bool,
 }
 
 impl<'a, const CAP: usize> DisplayArray<'a, CAP> {
@@ -266,12 +297,26 @@ impl<'a, const CAP: usize> DisplayArray<'a, CAP> {
     #[inline]
     fn new(array: &'a [u8]) -> Self {
         assert!(array.len() <= CAP / 2);
-        DisplayArray { array }
+        DisplayArray { array, backwards: false }
+    }
+
+    /// Creates the wrapper, displaying backwards.
+    ///
+    /// # Panics
+    ///
+    /// When the length of array is greater than capacity / 2.
+    fn backwards(array: &'a [u8]) -> Self {
+        assert!(array.len() <= CAP / 2);
+        DisplayArray { array, backwards: true }
     }
 
     fn display(&self, f: &mut fmt::Formatter, case: Case) -> fmt::Result {
         let mut encoder = BufEncoder::<CAP>::new();
-        encoder.put_bytes(self.array, case);
+        if self.backwards {
+            encoder.put_bytes_backwards(self.array, case);
+        } else {
+            encoder.put_bytes(self.array, case);
+        }
         f.pad_integral(true, "0x", encoder.as_str())
     }
 }
@@ -300,6 +345,10 @@ macro_rules! impl_array_as_hex {
 
                 fn as_hex(self) -> Self::Display {
                     DisplayArray::new(self)
+                }
+
+                fn as_hex_backwards(self) -> Self::Display {
+                    DisplayArray::backwards(self)
                 }
             }
         )*
@@ -416,6 +465,12 @@ mod tests {
         }
 
         #[test]
+        fn backwards() {
+            let v = vec![0x12, 0x34];
+            assert_eq!(format!("{}", v.as_hex_backwards()), "3412");
+        }
+
+        #[test]
         fn display_short_with_padding() {
             let v = vec![0xbe, 0xef];
             assert_eq!(format!("Hello {:<8}!", v.as_hex()), "Hello beef    !");
@@ -442,6 +497,7 @@ mod tests {
             let v = vec![0x12, 0x34, 0x56, 0x78];
             // Remember the integer is number of hex chars not number of bytes.
             assert_eq!(format!("{0:.4}", v.as_hex()), "1234");
+            assert_eq!(format!("{0:.4}", v.as_hex_backwards()), "3412");
         }
 
         #[test]
@@ -450,6 +506,7 @@ mod tests {
             let v = vec![0x12, 0x34, 0x56, 0x78];
             // Remember the integer is number of hex chars not number of bytes.
             assert_eq!(format!("{0:.5}", v.as_hex()), "1234");
+            assert_eq!(format!("{0:.5}", v.as_hex_backwards()), "3412");
         }
 
         #[test]
@@ -457,6 +514,7 @@ mod tests {
             // Precision gets the most significant bytes.
             let v = vec![0x12, 0x34, 0x56, 0x78];
             assert_eq!(format!("{0:10.4}", v.as_hex()), "1234      ");
+            assert_eq!(format!("{0:10.4}", v.as_hex_backwards()), "3412      ");
         }
 
         #[test]
@@ -464,48 +522,56 @@ mod tests {
             // Precision gets the most significant bytes.
             let v = vec![0x12, 0x34, 0x56, 0x78];
             assert_eq!(format!("{0:10.5}", v.as_hex()), "1234      ");
+            assert_eq!(format!("{0:10.5}", v.as_hex_backwards()), "3412      ");
         }
 
         #[test]
         fn precision_with_padding_pads_right() {
             let v = vec![0x12, 0x34, 0x56, 0x78];
             assert_eq!(format!("{0:10.20}", v.as_hex()), "12345678  ");
+            assert_eq!(format!("{0:10.20}", v.as_hex_backwards()), "78563412  ");
         }
 
         #[test]
         fn precision_with_padding_pads_left() {
             let v = vec![0x12, 0x34, 0x56, 0x78];
             assert_eq!(format!("{0:>10.20}", v.as_hex()), "  12345678");
+            assert_eq!(format!("{0:>10.20}", v.as_hex_backwards()), "  78563412");
         }
 
         #[test]
         fn precision_with_padding_pads_center() {
             let v = vec![0x12, 0x34, 0x56, 0x78];
             assert_eq!(format!("{0:^10.20}", v.as_hex()), " 12345678 ");
+            assert_eq!(format!("{0:^10.20}", v.as_hex_backwards()), " 78563412 ");
         }
 
         #[test]
         fn precision_with_padding_pads_center_odd() {
             let v = vec![0x12, 0x34, 0x56, 0x78];
             assert_eq!(format!("{0:^11.20}", v.as_hex()), " 12345678  ");
+            assert_eq!(format!("{0:^11.20}", v.as_hex_backwards()), " 78563412  ");
         }
 
         #[test]
         fn precision_does_not_extend() {
             let v = vec![0x12, 0x34, 0x56, 0x78];
             assert_eq!(format!("{0:.16}", v.as_hex()), "12345678");
+            assert_eq!(format!("{0:.16}", v.as_hex_backwards()), "78563412");
         }
 
         #[test]
         fn padding_extends() {
-            let v = vec![0xab; 2];
-            assert_eq!(format!("{:0>8}", v.as_hex()), "0000abab");
+            let v = vec![0x12, 0x34];
+            assert_eq!(format!("{:0>8}", v.as_hex()), "00001234");
+            assert_eq!(format!("{:0>8}", v.as_hex_backwards()), "00003412");
         }
 
         #[test]
         fn padding_does_not_truncate() {
             let v = vec![0x12, 0x34, 0x56, 0x78];
             assert_eq!(format!("{:0>4}", v.as_hex()), "12345678");
+            assert_eq!(format!("{:0>4}", v.as_hex_backwards()), "78563412");
         }
     }
 }
