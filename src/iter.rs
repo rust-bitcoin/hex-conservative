@@ -13,7 +13,7 @@ use core2::io;
 use crate::error::InvalidCharError;
 
 #[rustfmt::skip]                // Keep public re-exports separate.
-pub use crate::error::{HexToBytesError, OddLengthStringError};
+pub use crate::error::OddLengthStringError;
 
 /// Iterator over a hex-encoded string slice which decodes hex and yields bytes.
 pub struct HexToBytesIter<'a> {
@@ -44,10 +44,10 @@ impl<'a> HexToBytesIter<'a> {
 }
 
 impl<'a> Iterator for HexToBytesIter<'a> {
-    type Item = Result<u8, HexToBytesError>;
+    type Item = Result<u8, InvalidCharError>;
 
     #[inline]
-    fn next(&mut self) -> Option<Result<u8, HexToBytesError>> {
+    fn next(&mut self) -> Option<Result<u8, InvalidCharError>> {
         let hi = self.iter.next()?;
         let lo = self.iter.next().expect("iter length invariant violated, this is a bug");
         Some(hex_chars_to_byte(hi, lo))
@@ -62,7 +62,7 @@ impl<'a> Iterator for HexToBytesIter<'a> {
 
 impl<'a> DoubleEndedIterator for HexToBytesIter<'a> {
     #[inline]
-    fn next_back(&mut self) -> Option<Result<u8, HexToBytesError>> {
+    fn next_back(&mut self) -> Option<Result<u8, InvalidCharError>> {
         let lo = self.iter.next_back()?;
         let hi = self.iter.next_back().expect("iter length invariant violated, this is a bug");
         Some(hex_chars_to_byte(hi, lo))
@@ -95,7 +95,7 @@ impl<'a> io::Read for HexToBytesIter<'a> {
 }
 
 /// `hi` and `lo` are bytes representing hex characters.
-fn hex_chars_to_byte(hi: u8, lo: u8) -> Result<u8, HexToBytesError> {
+fn hex_chars_to_byte(hi: u8, lo: u8) -> Result<u8, InvalidCharError> {
     let hih = (hi as char).to_digit(16).ok_or(InvalidCharError { invalid: hi })?;
     let loh = (lo as char).to_digit(16).ok_or(InvalidCharError { invalid: lo })?;
 

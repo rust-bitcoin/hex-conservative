@@ -1,14 +1,16 @@
+//! This is based on `examples::hexy`.
+
 use std::fmt;
 use std::str::FromStr;
 
-use hex::{fmt_hex_exact, Case, FromHex, HexToArrayError, HexToBytesError};
+use hex::{fmt_hex_exact, Case, FromHex, FromHexError, HexToArrayError, InvalidCharError};
 use honggfuzz::fuzz;
 
 const LEN: usize = 32; // Arbitrary amount of data.
 
 /// A struct that always uses hex when in string form.
 pub struct Hexy {
-    // Some opaque data.
+    // Some opaque data, this exampled is explicitly meant to be more than just wrapping an array
     data: [u8; LEN],
 }
 
@@ -22,7 +24,7 @@ impl fmt::Display for Hexy {
 }
 
 impl FromStr for Hexy {
-    type Err = HexToArrayError;
+    type Err = FromHexError<HexToArrayError>;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> { Hexy::from_hex(s) }
 }
@@ -44,7 +46,7 @@ impl FromHex for Hexy {
 
     fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
     where
-        I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
+        I: Iterator<Item = Result<u8, InvalidCharError>> + ExactSizeIterator + DoubleEndedIterator,
     {
         // Errors if the iterator is the wrong length.
         let a = <[u8; 32] as FromHex>::from_byte_iter(iter)?;

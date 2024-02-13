@@ -2,43 +2,73 @@
 
 //! Hex encoding and decoding.
 
+#[cfg(all(feature = "alloc", not(feature = "std")))]
+use alloc::vec::Vec;
 use core::{fmt, str};
 
 use arrayvec::ArrayVec;
 
-#[cfg(all(feature = "alloc", not(feature = "std")))]
-use crate::alloc::vec::Vec;
-use crate::error::InvalidLengthError;
+use crate::error::{ContainsPrefixError, InvalidLengthError, MissingPrefixError};
 use crate::iter::HexToBytesIter;
 
 #[rustfmt::skip]                // Keep public re-exports separate.
-pub use crate::error::{HexToBytesError, HexToArrayError};
+#[doc(inline)]
+pub use crate::error::{FromHexError, FromNoPrefixHexError, FromPrefixedHexError, HexToArrayError, InvalidCharError};
 
 /// Trait for objects that can be deserialized from hex strings.
 pub trait FromHex: Sized {
-    /// Error type returned while parsing hex string.
-    type Error: From<HexToBytesError> + Sized + fmt::Debug + fmt::Display;
+    /// Error type returned while constructing type from byte iterator.
+    type Error: fmt::Debug + fmt::Display;
 
     /// Produces an object from a byte iterator.
     fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
     where
-        I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator;
+        I: Iterator<Item = Result<u8, InvalidCharError>> + ExactSizeIterator + DoubleEndedIterator;
 
-    /// Produces an object from a hex string.
-    fn from_hex(s: &str) -> Result<Self, Self::Error> {
-        let iter = HexToBytesIter::new(s).map_err(Into::into)?;
-        Self::from_byte_iter(iter)
+    /// Produces an object from a hex string that may or may not include a `0x` prefix.
+    ///
+    /// Equivalent to [`Self::from_maybe_prefixed_hex`].
+    fn from_hex(s: &str) -> Result<Self, FromHexError<Self::Error>> {
+        Self::from_maybe_prefixed_hex(s)
+    }
+
+    /// Produces an object from a hex string that may or may not include a `0x` prefix.
+    fn from_maybe_prefixed_hex(s: &str) -> Result<Self, FromHexError<Self::Error>> {
+        let s = s.strip_prefix("0x").unwrap_or(s);
+        let iter = HexToBytesIter::new(s).map_err(FromHexError::OddLengthString)?;
+        Self::from_byte_iter(iter).map_err(FromHexError::Invalid)
+    }
+
+    /// Produces an object from a hex string that does not contain a `0x` prefix.
+    fn from_no_prefix_hex(s: &str) -> Result<Self, FromNoPrefixHexError<Self::Error>> {
+        if s.strip_prefix("0x").is_some() {
+            return Err(ContainsPrefixError::new(s).into());
+        }
+
+        let iter = HexToBytesIter::new(s).map_err(FromNoPrefixHexError::OddLengthString)?;
+        Self::from_byte_iter(iter).map_err(FromNoPrefixHexError::Invalid)
+    }
+
+    /// Produces an object from a `0x` prefixed hex string.
+    fn from_prefixed_hex(s: &str) -> Result<Self, FromPrefixedHexError<Self::Error>> {
+        if let Some(stripped) = s.strip_prefix("0x") {
+            let iter =
+                HexToBytesIter::new(stripped).map_err(FromPrefixedHexError::OddLengthString)?;
+            Self::from_byte_iter(iter).map_err(FromPrefixedHexError::Invalid)
+        } else {
+            Err(MissingPrefixError::new(s).into())
+        }
     }
 }
 
 #[cfg(any(test, feature = "std", feature = "alloc"))]
 impl FromHex for Vec<u8> {
-    type Error = HexToBytesError;
+    type Error = InvalidCharError;
 
     #[inline]
     fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
     where
-        I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
+        I: Iterator<Item = Result<u8, InvalidCharError>> + ExactSizeIterator + DoubleEndedIterator,
     {
         iter.collect()
     }
@@ -49,7 +79,7 @@ impl<const LEN: usize> FromHex for [u8; LEN] {
 
     fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
     where
-        I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
+        I: Iterator<Item = Result<u8, InvalidCharError>> + ExactSizeIterator + DoubleEndedIterator,
     {
         if iter.len() == LEN {
             let mut ret = ArrayVec::<u8, LEN>::new();
@@ -80,13 +110,19 @@ mod tests {
         let badchar3 = "«23456789abcdef";
 
         assert_eq!(Vec::<u8>::from_hex(oddlen), Err(OddLengthStringError { len: 17 }.into()));
+        assert_eq!(<[u8; 4]>::from_hex(oddlen), Err(OddLengthStringError { len: 17 }.into()));
         assert_eq!(
-            <[u8; 4]>::from_hex(oddlen),
-            Err(HexToBytesError::OddLengthString(OddLengthStringError { len: 17 }).into())
+            Vec::<u8>::from_hex(badchar1),
+            Err(FromHexError::Invalid(InvalidCharError { invalid: b'Z' }))
         );
-        assert_eq!(Vec::<u8>::from_hex(badchar1), Err(InvalidCharError { invalid: b'Z' }.into()));
-        assert_eq!(Vec::<u8>::from_hex(badchar2), Err(InvalidCharError { invalid: b'Y' }.into()));
-        assert_eq!(Vec::<u8>::from_hex(badchar3), Err(InvalidCharError { invalid: 194 }.into()));
+        assert_eq!(
+            Vec::<u8>::from_hex(badchar2),
+            Err(FromHexError::Invalid(InvalidCharError { invalid: b'Y' }))
+        );
+        assert_eq!(
+            Vec::<u8>::from_hex(badchar3),
+            Err(FromHexError::Invalid(InvalidCharError { invalid: 194 }))
+        );
     }
 
     #[test]
@@ -100,7 +136,7 @@ mod tests {
         let len_sixteen = "0123456789abcdef";
         assert_eq!(
             <[u8; 4]>::from_hex(len_sixteen),
-            Err(InvalidLengthError { expected: 8, got: 16 }.into())
+            Err(FromHexError::Invalid(InvalidLengthError { expected: 8, got: 16 }.into()))
         )
     }
 

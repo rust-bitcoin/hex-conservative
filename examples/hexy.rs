@@ -7,7 +7,7 @@ use std::fmt;
 use std::str::FromStr;
 
 use hex_conservative::{
-    fmt_hex_exact, Case, DisplayHex, FromHex, HexToArrayError, HexToBytesError,
+    fmt_hex_exact, Case, DisplayHex, FromHex, FromHexError, HexToArrayError, InvalidCharError,
 };
 
 fn main() {
@@ -23,7 +23,7 @@ fn main() {
 
 /// A struct that always uses hex when in string form.
 pub struct Hexy {
-    // Some opaque data.
+    // Some opaque data, this exampled is explicitly meant to be more than just wrapping an array.
     data: [u8; 32],
 }
 
@@ -46,7 +46,7 @@ impl fmt::Display for Hexy {
 }
 
 impl FromStr for Hexy {
-    type Err = HexToArrayError;
+    type Err = FromHexError<CustomError>;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> { Hexy::from_hex(s) }
 }
@@ -72,14 +72,36 @@ impl fmt::UpperHex for Hexy {
 // And use a fixed size array to convert from hex.
 
 impl FromHex for Hexy {
-    type Error = HexToArrayError;
+    type Error = CustomError;
 
     fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
     where
-        I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
+        I: Iterator<Item = Result<u8, InvalidCharError>> + ExactSizeIterator + DoubleEndedIterator,
     {
         // Errors if the iterator is the wrong length.
-        let a = <[u8; 32] as FromHex>::from_byte_iter(iter)?;
+        let a = <[u8; 32] as FromHex>::from_byte_iter(iter).map_err(CustomError::Hex)?;
+
+        // An example of some application specific error.
+        if a == [0; 32] {
+            return Err(CustomError::AllZeros);
+        }
+
         Ok(Hexy { data: a })
     }
 }
+
+/// Example Error.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum CustomError {
+    /// Invalid hex to bytes conversion.
+    Hex(HexToArrayError),
+    /// Some other application/type specific error case.
+    AllZeros,
+}
+
+impl fmt::Display for CustomError {
+    fn fmt(&self, _: &mut fmt::Formatter) -> fmt::Result { todo!() }
+}
+
+#[cfg(feature = "std")]
+impl std::error::Error for CustomError {}

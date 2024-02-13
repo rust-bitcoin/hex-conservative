@@ -46,7 +46,7 @@ extern crate alloc;
 
 pub mod buf_encoder;
 pub mod display;
-mod error;
+pub mod error;
 mod iter;
 pub mod parse;
 #[cfg(feature = "serde")]
@@ -65,7 +65,8 @@ pub(crate) use table::Table;
 pub use self::{
     display::DisplayHex,
     iter::{BytesToHexIter, HexToBytesIter, OddLengthStringError},
-    parse::{FromHex, HexToArrayError, HexToBytesError},
+    parse::{FromHex, FromHexError, FromNoPrefixHexError, FromPrefixedHexError, HexToArrayError, InvalidCharError},
+    // Note, we do not re-export inner error types, niche users to get those from `hex::error`.
 };
 
 /// Possible case of hex.
