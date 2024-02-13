@@ -217,35 +217,64 @@ pub enum hex_conservative::parse::FromNoPrefixHexError<E>
 pub enum hex_conservative::parse::FromPrefixedHexError<E>
 pub enum hex_conservative::parse::HexToArrayError
 pub fn &'a [u8; 1024]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 1024]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 10]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 10]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 11]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 11]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 128]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 128]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 12]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 12]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 13]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 13]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 14]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 14]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 15]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 15]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 16]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 16]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 1]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 1]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 2048]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 2048]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 20]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 20]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 256]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 256]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 2]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 2]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 32]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 32]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 33]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 33]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 3]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 3]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 4096]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 4096]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 4]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 4]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 512]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 512]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 5]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 5]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 64]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 64]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 65]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 65]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 6]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 6]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 7]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 7]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 8]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 8]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8; 9]::as_hex(self) -> Self::Display
+pub fn &'a [u8; 9]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8]::as_hex(self) -> Self::Display
+pub fn &'a [u8]::as_hex_backwards(self) -> Self::Display
 pub fn &'a [u8]::hex_reserve_suggestion(self) -> usize
 pub fn &'a alloc::vec::Vec<u8>::as_hex(self) -> Self::Display
+pub fn &'a alloc::vec::Vec<u8>::as_hex_backwards(self) -> Self::Display
 pub fn &'a alloc::vec::Vec<u8>::hex_reserve_suggestion(self) -> usize
 pub fn [u8; LEN]::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Error> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::error::InvalidCharError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
 pub fn alloc::vec::Vec<u8>::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::Error> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::error::InvalidCharError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
@@ -261,6 +290,7 @@ pub fn hex_conservative::Case::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> c
 pub fn hex_conservative::Case::hash<__H: core::hash::Hasher>(&self, state: &mut __H)
 pub fn hex_conservative::DisplayHex::append_hex_to_string(self, case: hex_conservative::Case, string: &mut alloc::string::String)
 pub fn hex_conservative::DisplayHex::as_hex(self) -> Self::Display
+pub fn hex_conservative::DisplayHex::as_hex_backwards(self) -> Self::Display
 pub fn hex_conservative::DisplayHex::hex_reserve_suggestion(self) -> usize
 pub fn hex_conservative::DisplayHex::to_hex_string(self, case: hex_conservative::Case) -> alloc::string::String
 pub fn hex_conservative::DisplayHex::to_lower_hex_string(self) -> alloc::string::String
@@ -282,12 +312,14 @@ pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::is_full(&self) -> bool
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::new() -> Self
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::put_byte(&mut self, byte: u8, case: hex_conservative::Case)
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::put_bytes<I>(&mut self, bytes: I, case: hex_conservative::Case) where I: core::iter::traits::collect::IntoIterator, <I as core::iter::traits::collect::IntoIterator>::Item: core::borrow::Borrow<u8>
+pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::put_bytes_backwards<I>(&mut self, bytes: I, case: hex_conservative::Case) where I: core::iter::traits::collect::IntoIterator, <I as core::iter::traits::collect::IntoIterator>::Item: core::borrow::Borrow<u8>, <I as core::iter::traits::collect::IntoIterator>::IntoIter: core::iter::traits::double_ended::DoubleEndedIterator
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::put_bytes_min<'a>(&mut self, bytes: &'a [u8], case: hex_conservative::Case) -> &'a [u8]
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::space_remaining(&self) -> usize
 pub fn hex_conservative::display::DisplayArray<'a, LEN>::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 pub fn hex_conservative::display::DisplayByteSlice<'a>::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 pub fn hex_conservative::display::DisplayHex::append_hex_to_string(self, case: hex_conservative::Case, string: &mut alloc::string::String)
 pub fn hex_conservative::display::DisplayHex::as_hex(self) -> Self::Display
+pub fn hex_conservative::display::DisplayHex::as_hex_backwards(self) -> Self::Display
 pub fn hex_conservative::display::DisplayHex::hex_reserve_suggestion(self) -> usize
 pub fn hex_conservative::display::DisplayHex::to_hex_string(self, case: hex_conservative::Case) -> alloc::string::String
 pub fn hex_conservative::display::DisplayHex::to_lower_hex_string(self) -> alloc::string::String
@@ -340,6 +372,7 @@ pub fn hex_conservative::parse::FromHex::from_no_prefix_hex(s: &str) -> core::re
 pub fn hex_conservative::parse::FromHex::from_prefixed_hex(s: &str) -> core::result::Result<Self, hex_conservative::error::FromPrefixedHexError<Self::Error>>
 pub fn hex_conservative::prelude::DisplayHex::append_hex_to_string(self, case: hex_conservative::Case, string: &mut alloc::string::String)
 pub fn hex_conservative::prelude::DisplayHex::as_hex(self) -> Self::Display
+pub fn hex_conservative::prelude::DisplayHex::as_hex_backwards(self) -> Self::Display
 pub fn hex_conservative::prelude::DisplayHex::hex_reserve_suggestion(self) -> usize
 pub fn hex_conservative::prelude::DisplayHex::to_hex_string(self, case: hex_conservative::Case) -> alloc::string::String
 pub fn hex_conservative::prelude::DisplayHex::to_lower_hex_string(self) -> alloc::string::String
