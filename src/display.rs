@@ -154,7 +154,6 @@ pub struct DisplayByteSlice<'a> {
 
 impl<'a> DisplayByteSlice<'a> {
     fn display(&self, f: &mut fmt::Formatter, case: Case) -> fmt::Result {
-        use fmt::Write;
         // There are at least two optimizations left:
         //
         // * Reusing the buffer (encoder) which may decrease the number of virtual calls
@@ -166,8 +165,14 @@ impl<'a> DisplayByteSlice<'a> {
 
         let pad_right = if let Some(width) = f.width() {
             let string_len = match f.precision() {
-                Some(max) if self.bytes.len() * 2 > (max + 1) / 2 => max,
-                Some(_) | None => self.bytes.len() * 2,
+                #[rustfmt::skip]
+                Some(max) => {
+                    // Odd max width which makes no sense for hex strings, honour max but use even length.
+                    let max = if max % 2 == 1 { max - 1 } else { max };
+                    let hex_length = self.bytes.len() * 2;
+                    if hex_length > max { max } else { hex_length }
+                }
+                None => self.bytes.len() * 2,
             };
 
             if string_len < width {
@@ -197,13 +202,10 @@ impl<'a> DisplayByteSlice<'a> {
         };
 
         match f.precision() {
-            Some(max) if self.bytes.len() > (max + 1) / 2 => {
+            // Do ceil division on max so as to ignore odd length max width which makes
+            // no sense for hex strings i.e., honour max but use even length.
+            Some(max) if self.bytes.len() > max / 2 => {
                 write!(f, "{}", self.bytes[..(max / 2)].as_hex())?;
-                if max % 2 == 1 && self.bytes.len() > max / 2 + 1 {
-                    f.write_char(
-                        case.table().byte_to_hex(self.bytes[max / 2 + 1]).as_bytes()[1].into(),
-                    )?;
-                }
             }
             Some(_) | None => {
                 let mut chunks = self.bytes.chunks_exact(512);
@@ -443,10 +445,25 @@ mod tests {
         }
 
         #[test]
+        fn odd_precision_truncates() {
+            // Precision gets the most significant bytes.
+            let v = vec![0x12, 0x34, 0x56, 0x78];
+            // Remember the integer is number of hex chars not number of bytes.
+            assert_eq!(format!("{0:.5}", v.as_hex()), "1234");
+        }
+
+        #[test]
         fn precision_with_padding_truncates() {
             // Precision gets the most significant bytes.
             let v = vec![0x12, 0x34, 0x56, 0x78];
             assert_eq!(format!("{0:10.4}", v.as_hex()), "1234      ");
+        }
+
+        #[test]
+        fn odd_precision_with_padding_truncates() {
+            // Precision gets the most significant bytes.
+            let v = vec![0x12, 0x34, 0x56, 0x78];
+            assert_eq!(format!("{0:10.5}", v.as_hex()), "1234      ");
         }
 
         #[test]
