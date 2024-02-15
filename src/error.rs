@@ -1,5 +1,9 @@
 // SPDX-License-Identifier: CC0-1.0
 
+//! Error types for the hex crate.
+
+#[cfg(all(feature = "alloc", not(feature = "std")))]
+use alloc::string::{String, ToString};
 use core::fmt;
 
 use crate::write_err;
@@ -28,88 +32,53 @@ macro_rules! write_err {
 
 /// Hex decoding error.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum HexToBytesError {
-    /// Non-hexadecimal character.
-    InvalidChar(InvalidCharError),
+pub enum HexToVecError {
     /// Purported hex string had odd length.
-    OddLengthString(OddLengthStringError),
+    OddLength(OddLengthError),
+    /// Invalid character while parsing hex string.
+    InvalidChar(InvalidCharError),
 }
 
-impl fmt::Display for HexToBytesError {
+impl fmt::Display for HexToVecError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use HexToBytesError::*;
+        use HexToVecError::*;
 
         match *self {
+            OddLength(ref e) => write_err!(f, "odd length, failed to create bytes from hex"; e),
             InvalidChar(ref e) => write_err!(f, "invalid char, failed to create bytes from hex"; e),
-            OddLengthString(ref e) =>
-                write_err!(f, "odd length, failed to create bytes from hex"; e),
         }
     }
 }
 
 #[cfg(feature = "std")]
-impl std::error::Error for HexToBytesError {
+impl std::error::Error for HexToVecError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        use HexToBytesError::*;
+        use HexToVecError::*;
 
         match *self {
+            OddLength(ref e) => Some(e),
             InvalidChar(ref e) => Some(e),
-            OddLengthString(ref e) => Some(e),
         }
     }
 }
 
-impl From<InvalidCharError> for HexToBytesError {
+impl From<OddLengthError> for HexToVecError {
+    #[inline]
+    fn from(e: OddLengthError) -> Self { Self::OddLength(e) }
+}
+
+impl From<InvalidCharError> for HexToVecError {
     #[inline]
     fn from(e: InvalidCharError) -> Self { Self::InvalidChar(e) }
-}
-
-impl From<OddLengthStringError> for HexToBytesError {
-    #[inline]
-    fn from(e: OddLengthStringError) -> Self { Self::OddLengthString(e) }
-}
-
-/// Invalid hex character.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct InvalidCharError {
-    pub(crate) invalid: u8,
-}
-
-impl fmt::Display for InvalidCharError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "invalid hex char {}", self.invalid)
-    }
-}
-
-#[cfg(feature = "std")]
-impl std::error::Error for InvalidCharError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { None }
-}
-
-/// Purported hex string had odd length.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct OddLengthStringError {
-    pub(crate) len: usize,
-}
-
-impl fmt::Display for OddLengthStringError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "odd hex string length {}", self.len)
-    }
-}
-
-#[cfg(feature = "std")]
-impl std::error::Error for OddLengthStringError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { None }
 }
 
 /// Hex decoding error.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum HexToArrayError {
-    /// Conversion error while parsing hex string.
-    Conversion(HexToBytesError),
-    /// Tried to parse fixed-length hash from a string with the wrong length (got, want).
+    /// Tried to parse fixed-length hash from a string with the wrong length.
     InvalidLength(InvalidLengthError),
+    /// Invalid character while parsing hex string.
+    InvalidChar(InvalidCharError),
 }
 
 impl fmt::Display for HexToArrayError {
@@ -117,10 +86,10 @@ impl fmt::Display for HexToArrayError {
         use HexToArrayError::*;
 
         match *self {
-            Conversion(ref e) =>
-                crate::write_err!(f, "conversion error, failed to create array from hex"; e),
             InvalidLength(ref e) =>
                 write_err!(f, "invalid length, failed to create array from hex"; e),
+            InvalidChar(ref e) =>
+                crate::write_err!(f, "invalid char, failed to create array from hex"; e),
         }
     }
 }
@@ -131,15 +100,15 @@ impl std::error::Error for HexToArrayError {
         use HexToArrayError::*;
 
         match *self {
-            Conversion(ref e) => Some(e),
+            InvalidChar(ref e) => Some(e),
             InvalidLength(ref e) => Some(e),
         }
     }
 }
 
-impl From<HexToBytesError> for HexToArrayError {
+impl From<InvalidCharError> for HexToArrayError {
     #[inline]
-    fn from(e: HexToBytesError) -> Self { Self::Conversion(e) }
+    fn from(e: InvalidCharError) -> Self { Self::InvalidChar(e) }
 }
 
 impl From<InvalidLengthError> for HexToArrayError {
@@ -147,11 +116,68 @@ impl From<InvalidLengthError> for HexToArrayError {
     fn from(e: InvalidLengthError) -> Self { Self::InvalidLength(e) }
 }
 
-/// Tried to parse fixed-length hash from a string with the wrong length.
-#[derive(Debug, Clone, PartialEq, Eq)]
+/// Invalid hex character in input string.
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub struct InvalidCharError {
+    pub(crate) invalid: u8,
+}
+
+impl InvalidCharError {
+    /// Creates a new invalid char error.
+    pub fn new(invalid: u8) -> Self { Self { invalid } }
+
+    /// Returns the invalid character.
+    pub fn invalid_char(&self) -> u8 { self.invalid }
+}
+
+impl fmt::Display for InvalidCharError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "invalid hex char {}", self.invalid)
+    }
+}
+
+#[cfg(feature = "std")]
+impl std::error::Error for InvalidCharError {}
+
+/// Purported hex string had odd length.
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub struct OddLengthError {
+    pub(crate) len: usize,
+}
+
+impl OddLengthError {
+    /// Creates a new error from `len` (the input hex string length).
+    pub fn new(len: usize) -> Self { Self { len } }
+
+    /// Returns the length of the input string that caused this error.
+    pub fn input_string_length(&self) -> usize { self.len }
+}
+
+impl fmt::Display for OddLengthError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "odd hex string length {}", self.len)
+    }
+}
+
+#[cfg(feature = "std")]
+impl std::error::Error for OddLengthError {}
+
+/// Tried to parse fixed-length object from a string with the wrong length.
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct InvalidLengthError {
-    pub(crate) expected: usize,
+    pub(crate) expected: usize, // Number of hex characters.
     pub(crate) got: usize,
+}
+
+impl InvalidLengthError {
+    /// Creates a new `InvalidLengthError`.
+    pub fn new(got: usize, expected: usize) -> Self { Self { expected, got } }
+
+    /// Returns the expected length of the hex string.
+    pub fn expected_length(&self) -> usize { self.expected }
+
+    /// Returns the invalid length of the parsed hex string.
+    pub fn invalid_length(&self) -> usize { self.got }
 }
 
 impl fmt::Display for InvalidLengthError {
@@ -161,6 +187,4 @@ impl fmt::Display for InvalidLengthError {
 }
 
 #[cfg(feature = "std")]
-impl std::error::Error for InvalidLengthError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { None }
-}
+impl std::error::Error for InvalidLengthError {}

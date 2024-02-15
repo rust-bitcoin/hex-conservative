@@ -12,45 +12,45 @@ use core2::io;
 
 use crate::error::InvalidCharError;
 
-#[rustfmt::skip]                // Keep public re-exports separate.
-pub use crate::error::{HexToBytesError, OddLengthStringError};
-
 /// Iterator over a hex-encoded string slice which decodes hex and yields bytes.
 pub struct HexToBytesIter<'a> {
     /// The [`Bytes`] iterator whose next two bytes will be decoded to yield the next byte.
-    ///
-    /// # Invariants
-    ///
-    /// `iter` is guaranteed to be of even length.
-    ///
-    /// [`Bytes`]: core::str::Bytes
     iter: str::Bytes<'a>,
+    pad: Option<u8>,
 }
 
 impl<'a> HexToBytesIter<'a> {
     /// Constructs a new `HexToBytesIter` from a string slice.
     ///
-    /// # Errors
-    ///
-    /// If the input string is of odd length.
+    /// Note, if input string has odd length the byte iterator will yield as if there was an
+    /// additional leading "0".
     #[inline]
-    pub fn new(s: &'a str) -> Result<HexToBytesIter<'a>, OddLengthStringError> {
-        if s.len() % 2 != 0 {
-            Err(OddLengthStringError { len: s.len() })
-        } else {
-            Ok(HexToBytesIter { iter: s.bytes() })
-        }
+    #[rustfmt::skip]
+    pub fn new(s: &'a str) -> HexToBytesIter<'a> {
+        // 48 is '0' in ascii.
+        let pad = if s.len() % 2 == 1 { Some(48) } else { None };
+
+        HexToBytesIter { iter: s.bytes(), pad }
     }
 }
 
 impl<'a> Iterator for HexToBytesIter<'a> {
-    type Item = Result<u8, HexToBytesError>;
+    type Item = Result<u8, InvalidCharError>;
 
     #[inline]
-    fn next(&mut self) -> Option<Result<u8, HexToBytesError>> {
-        let hi = self.iter.next()?;
-        let lo = self.iter.next().expect("iter length invariant violated, this is a bug");
-        Some(hex_chars_to_byte(hi, lo))
+    fn next(&mut self) -> Option<Result<u8, InvalidCharError>> {
+        match self.pad {
+            Some(pad) => {
+                self.pad = None;
+                let lo = self.iter.next().expect("unreachable, this is a bug");
+                Some(hex_chars_to_byte(pad, lo))
+            }
+            None => {
+                let hi = self.iter.next()?;
+                let lo = self.iter.next().expect("unreachable, this is a bug");
+                Some(hex_chars_to_byte(hi, lo))
+            }
+        }
     }
 
     #[inline]
@@ -62,9 +62,15 @@ impl<'a> Iterator for HexToBytesIter<'a> {
 
 impl<'a> DoubleEndedIterator for HexToBytesIter<'a> {
     #[inline]
-    fn next_back(&mut self) -> Option<Result<u8, HexToBytesError>> {
+    fn next_back(&mut self) -> Option<Result<u8, InvalidCharError>> {
         let lo = self.iter.next_back()?;
-        let hi = self.iter.next_back().expect("iter length invariant violated, this is a bug");
+        let hi = match self.iter.next_back() {
+            Some(hi) => hi,
+            None => match self.pad {
+                Some(pad) => pad,
+                None => unreachable!("this is a bug"),
+            },
+        };
         Some(hex_chars_to_byte(hi, lo))
     }
 }
@@ -95,7 +101,7 @@ impl<'a> io::Read for HexToBytesIter<'a> {
 }
 
 /// `hi` and `lo` are bytes representing hex characters.
-fn hex_chars_to_byte(hi: u8, lo: u8) -> Result<u8, HexToBytesError> {
+fn hex_chars_to_byte(hi: u8, lo: u8) -> Result<u8, InvalidCharError> {
     let hih = (hi as char).to_digit(16).ok_or(InvalidCharError { invalid: hi })?;
     let loh = (lo as char).to_digit(16).ok_or(InvalidCharError { invalid: lo })?;
 
@@ -212,7 +218,7 @@ mod tests {
         let hex = "deadbeef";
         let bytes = [0xde, 0xad, 0xbe, 0xef];
 
-        for (i, b) in HexToBytesIter::new(hex).unwrap().enumerate() {
+        for (i, b) in HexToBytesIter::new(hex).enumerate() {
             assert_eq!(b.unwrap(), bytes[i]);
         }
     }
@@ -222,7 +228,17 @@ mod tests {
         let hex = "deadbeef";
         let bytes = [0xef, 0xbe, 0xad, 0xde];
 
-        for (i, b) in HexToBytesIter::new(hex).unwrap().rev().enumerate() {
+        for (i, b) in HexToBytesIter::new(hex).rev().enumerate() {
+            assert_eq!(b.unwrap(), bytes[i]);
+        }
+    }
+
+    #[test]
+    fn decode_iter_forward_odd_length() {
+        let hex = "b";
+        let bytes = [0x0b];
+
+        for (i, b) in HexToBytesIter::new(hex).enumerate() {
             assert_eq!(b.unwrap(), bytes[i]);
         }
     }
@@ -250,7 +266,7 @@ mod tests {
     #[test]
     fn roundtrip_forward() {
         let hex = "deadbeefcafebabe";
-        let bytes_iter = HexToBytesIter::new(hex).unwrap().map(|res| res.unwrap());
+        let bytes_iter = HexToBytesIter::new(hex).map(|res| res.unwrap());
         let got = BytesToHexIter::new(bytes_iter).collect::<String>();
         assert_eq!(got, hex);
     }
@@ -258,7 +274,7 @@ mod tests {
     #[test]
     fn roundtrip_backward() {
         let hex = "deadbeefcafebabe";
-        let bytes_iter = HexToBytesIter::new(hex).unwrap().rev().map(|res| res.unwrap());
+        let bytes_iter = HexToBytesIter::new(hex).rev().map(|res| res.unwrap());
         let got = BytesToHexIter::new(bytes_iter).rev().collect::<String>();
         assert_eq!(got, hex);
     }

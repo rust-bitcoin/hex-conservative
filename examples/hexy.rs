@@ -7,7 +7,8 @@ use std::fmt;
 use std::str::FromStr;
 
 use hex_conservative::{
-    fmt_hex_exact, Case, DisplayHex, FromHex, HexToArrayError, HexToBytesError,
+    fmt_hex_exact, Case, DisplayHex, FromHex, HexToArrayError, HexToBytesIter, InvalidCharError,
+    InvalidLengthError,
 };
 
 fn main() {
@@ -23,7 +24,7 @@ fn main() {
 
 /// A struct that always uses hex when in string form.
 pub struct Hexy {
-    // Some opaque data.
+    // Some opaque data, this exampled is explicitly meant to be more than just wrapping an array.
     data: [u8; 32],
 }
 
@@ -46,7 +47,7 @@ impl fmt::Display for Hexy {
 }
 
 impl FromStr for Hexy {
-    type Err = HexToArrayError;
+    type Err = CustomFromHexError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> { Hexy::from_hex(s) }
 }
@@ -72,14 +73,79 @@ impl fmt::UpperHex for Hexy {
 // And use a fixed size array to convert from hex.
 
 impl FromHex for Hexy {
-    type Error = HexToArrayError;
+    type FromByteIterError = CustomFromByteIterError;
+    type FromHexError = CustomFromHexError;
 
-    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
+    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::FromByteIterError>
     where
-        I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
+        I: Iterator<Item = Result<u8, InvalidCharError>> + ExactSizeIterator + DoubleEndedIterator,
     {
         // Errors if the iterator is the wrong length.
         let a = <[u8; 32] as FromHex>::from_byte_iter(iter)?;
+
+        // An example of some application specific error.
+        if a == [0; 32] {
+            return Err(CustomFromByteIterError::AllZeros);
+        }
+
         Ok(Hexy { data: a })
     }
+
+    fn from_hex(s: &str) -> Result<Self, Self::FromHexError> {
+        let expected = 32 * 2; // 2 hex characters per byte.
+
+        // We don't want to any padding so we check the length.
+        if s.len() != expected {
+            return Err(
+                HexToArrayError::InvalidLength(InvalidLengthError::new(s.len(), expected)).into()
+            );
+        }
+
+        let iter = HexToBytesIter::new(s);
+        Ok(Self::from_byte_iter(iter)?)
+    }
+}
+
+/// Example error returned `from_bytes_iter`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum CustomFromByteIterError {
+    /// Invalid hex to bytes conversion.
+    Hex(HexToArrayError),
+    /// Some other application/type specific error case.
+    AllZeros,
+}
+
+impl fmt::Display for CustomFromByteIterError {
+    fn fmt(&self, _: &mut fmt::Formatter) -> fmt::Result { todo!() }
+}
+
+#[cfg(feature = "std")]
+impl std::error::Error for CustomFromByteIterError {}
+
+impl From<HexToArrayError> for CustomFromByteIterError {
+    fn from(e: HexToArrayError) -> Self { Self::Hex(e) }
+}
+
+/// Example error returned `from_hex`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum CustomFromHexError {
+    /// Invalid hex to bytes conversion.
+    Hex(HexToArrayError),
+    /// Custom conversion error.
+    Custom(CustomFromByteIterError),
+}
+
+impl fmt::Display for CustomFromHexError {
+    fn fmt(&self, _: &mut fmt::Formatter) -> fmt::Result { todo!() }
+}
+
+#[cfg(feature = "std")]
+impl std::error::Error for CustomFromHexError {}
+
+impl From<HexToArrayError> for CustomFromHexError {
+    fn from(e: HexToArrayError) -> Self { Self::Hex(e) }
+}
+
+impl From<CustomFromByteIterError> for CustomFromHexError {
+    fn from(e: CustomFromByteIterError) -> Self { Self::Custom(e) }
 }
