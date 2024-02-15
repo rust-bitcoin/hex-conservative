@@ -5,7 +5,7 @@
 //! For an example using the standard library `fmt` traits see `./wrap_array_fmt_traits.rs`.
 
 use hex_conservative::display::DisplayArray;
-use hex_conservative::{DisplayHex, FromHex, HexToArrayError, HexToBytesError};
+use hex_conservative::{DisplayHex, FromHex, HexToArrayError, InvalidCharError};
 
 fn main() {
     let hex = "00000000cafebabedeadbeefcafebabedeadbeefcafebabedeadbeefcafebabe";
@@ -18,8 +18,9 @@ fn main() {
     println!("LowerHex: {:x}", array.as_hex());
     println!("UpperHex: {:X}", array.as_hex());
     println!("Display: {}", array.as_hex());
+    println!("Alternate: {:#}", wrap.as_hex());
     println!("Debug: {:?}", array.as_hex());
-    println!("Debug pretty: {:#?}", array.as_hex());
+    println!("Alternate: {:#?}", array.as_hex());
 
     println!("\n");
 
@@ -29,8 +30,9 @@ fn main() {
     println!("LowerHex: {:x}", wrap.as_hex());
     println!("UpperHex: {:X}", wrap.as_hex());
     println!("Display: {}", wrap.as_hex());
+    println!("Alternate: {:#}", wrap.as_hex());
     println!("Debug: {:?}", wrap.as_hex());
-    println!("Debug pretty: {:#?}", wrap.as_hex());
+    println!("Alternate: {:#?}", wrap.as_hex());
 
     #[cfg(feature = "alloc")]
     {
@@ -45,14 +47,17 @@ fn main() {
 pub struct Wrap([u8; 32]);
 
 impl FromHex for Wrap {
-    type Error = HexToArrayError;
+    type FromByteIterError = HexToArrayError;
+    type FromHexError = HexToArrayError;
 
-    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
+    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::FromByteIterError>
     where
-        I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
+        I: Iterator<Item = Result<u8, InvalidCharError>> + ExactSizeIterator + DoubleEndedIterator,
     {
         Ok(Self(FromHex::from_byte_iter(iter)?))
     }
+
+    fn from_hex(s: &str) -> Result<Self, Self::FromHexError> { Ok(Self(FromHex::from_hex(s)?)) }
 }
 
 /// Use `DisplayArray` to display the `Wrap` type.

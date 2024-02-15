@@ -2,54 +2,78 @@
 
 //! Hex encoding and decoding.
 
+#[cfg(all(feature = "alloc", not(feature = "std")))]
+use alloc::vec::Vec;
 use core::{fmt, str};
 
 use arrayvec::ArrayVec;
 
-#[cfg(all(feature = "alloc", not(feature = "std")))]
-use crate::alloc::vec::Vec;
-use crate::error::InvalidLengthError;
+use crate::error::{InvalidLengthError, OddLengthError};
 use crate::iter::HexToBytesIter;
 
 #[rustfmt::skip]                // Keep public re-exports separate.
-pub use crate::error::{HexToBytesError, HexToArrayError};
+#[doc(inline)]
+pub use crate::error::{HexToVecError, HexToArrayError, InvalidCharError};
 
 /// Trait for objects that can be deserialized from hex strings.
 pub trait FromHex: Sized {
-    /// Error type returned while parsing hex string.
-    type Error: From<HexToBytesError> + Sized + fmt::Debug + fmt::Display;
+    /// Error type returned while constructing type from byte iterator.
+    type FromByteIterError: fmt::Debug + fmt::Display;
+
+    /// Error type returned by `from_hex`.
+    type FromHexError: From<Self::FromByteIterError> + fmt::Debug + fmt::Display;
 
     /// Produces an object from a byte iterator.
-    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
+    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::FromByteIterError>
     where
-        I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator;
+        I: Iterator<Item = Result<u8, InvalidCharError>> + ExactSizeIterator + DoubleEndedIterator;
 
     /// Produces an object from a hex string.
-    fn from_hex(s: &str) -> Result<Self, Self::Error> {
-        let iter = HexToBytesIter::new(s).map_err(Into::into)?;
-        Self::from_byte_iter(iter)
+    ///
+    /// Override this method if you want to do checks on the input string e.g., length checks or
+    /// prefix (`0x`) checks. Also note that the [`HexToBytesIter`] pads with a leading 0 if the
+    /// input hex string is odd length, if you do not want that behaviour you must check the length
+    /// in this method.
+    ///
+    /// You will get an [`InvalidCharError`] for the `x` if `s` includes a prefix.
+    ///
+    /// The default implementation returns `Self::FromByteIterError`.
+    fn from_hex(s: &str) -> Result<Self, Self::FromHexError> {
+        let iter = HexToBytesIter::new(s);
+        Ok(Self::from_byte_iter(iter)?)
     }
 }
 
 #[cfg(any(test, feature = "std", feature = "alloc"))]
 impl FromHex for Vec<u8> {
-    type Error = HexToBytesError;
+    type FromByteIterError = InvalidCharError;
+    type FromHexError = HexToVecError;
 
     #[inline]
-    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
+    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::FromByteIterError>
     where
-        I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
+        I: Iterator<Item = Result<u8, InvalidCharError>> + ExactSizeIterator + DoubleEndedIterator,
     {
         iter.collect()
+    }
+
+    #[inline]
+    fn from_hex(s: &str) -> Result<Self, Self::FromHexError> {
+        if s.len() % 2 == 1 {
+            return Err(OddLengthError::new(s.len()).into());
+        }
+        let iter = HexToBytesIter::new(s);
+        Ok(Self::from_byte_iter(iter)?)
     }
 }
 
 impl<const LEN: usize> FromHex for [u8; LEN] {
-    type Error = HexToArrayError;
+    type FromByteIterError = HexToArrayError;
+    type FromHexError = HexToArrayError;
 
-    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
+    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::FromByteIterError>
     where
-        I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
+        I: Iterator<Item = Result<u8, InvalidCharError>> + ExactSizeIterator + DoubleEndedIterator,
     {
         if iter.len() == LEN {
             let mut ret = ArrayVec::<u8, LEN>::new();
@@ -60,6 +84,19 @@ impl<const LEN: usize> FromHex for [u8; LEN] {
         } else {
             Err(InvalidLengthError { expected: 2 * LEN, got: 2 * iter.len() }.into())
         }
+    }
+
+    #[inline]
+    fn from_hex(s: &str) -> Result<Self, Self::FromHexError> {
+        let expected = LEN * 2; // 2 hex characters per byte.
+
+        // We don't want to any padding so we check the length.
+        if s.len() != expected {
+            return Err(InvalidLengthError::new(s.len(), expected).into());
+        }
+
+        let iter = HexToBytesIter::new(s);
+        Self::from_byte_iter(iter)
     }
 }
 
@@ -72,17 +109,17 @@ mod tests {
     #[test]
     #[cfg(feature = "alloc")]
     fn hex_error() {
-        use crate::error::{InvalidCharError, OddLengthStringError};
+        use crate::error::{InvalidCharError, InvalidLengthError, OddLengthError};
 
         let oddlen = "0123456789abcdef0";
         let badchar1 = "Z123456789abcdef";
         let badchar2 = "012Y456789abcdeb";
         let badchar3 = "«23456789abcdef";
 
-        assert_eq!(Vec::<u8>::from_hex(oddlen), Err(OddLengthStringError { len: 17 }.into()));
+        assert_eq!(Vec::<u8>::from_hex(oddlen), Err(OddLengthError::new(17).into()));
         assert_eq!(
             <[u8; 4]>::from_hex(oddlen),
-            Err(HexToBytesError::OddLengthString(OddLengthStringError { len: 17 }).into())
+            Err(HexToArrayError::InvalidLength(InvalidLengthError::new(17, 8)))
         );
         assert_eq!(Vec::<u8>::from_hex(badchar1), Err(InvalidCharError { invalid: b'Z' }.into()));
         assert_eq!(Vec::<u8>::from_hex(badchar2), Err(InvalidCharError { invalid: b'Y' }.into()));

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: CC0-1.0
 
-//! Hex encode/decode a type that wraps an array - using implementations of the standard library
+//! Hex encode/decode a type that wraps an array - using implementations of the standard library `fmt` traits.
 //!
-//! `fmt` traits. For an example using the `DisplayHex` trait see `./wrap_array_display_hex.rs`.
+//! For an example using the `DisplayHex` trait see `./wrap_array_display_hex.rs`.
 
 use core::fmt;
 use core::str::FromStr;
@@ -20,8 +20,9 @@ fn main() {
     println!("LowerHex: {:x}", array.as_hex());
     println!("UpperHex: {:X}", array.as_hex());
     println!("Display: {}", array.as_hex());
+    println!("Alternate: {:#}", array.as_hex());
     println!("Debug: {:?}", array.as_hex());
-    println!("Debug pretty: {:#?}", array.as_hex());
+    println!("Alternate: {:#?}", array.as_hex());
 
     println!("\n");
 
@@ -31,8 +32,9 @@ fn main() {
     println!("LowerHex: {:x}", wrap);
     println!("UpperHex: {:X}", wrap);
     println!("Display: {}", wrap);
+    println!("Alternate: {:#}", wrap);
     println!("Debug: {:?}", wrap);
-    println!("Debug pretty: {:#?}", wrap);
+    println!("Alternate: {:#?}", wrap);
 
     // We cannot call `to_lower_hex_string` on the wrapped type to allocate a string, if you wish to
     // use that trait method see `./wrap_array_display_hex_trait.rs`.
