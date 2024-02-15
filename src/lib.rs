@@ -47,6 +47,7 @@ extern crate alloc;
 pub mod buf_encoder;
 pub mod display;
 pub mod error;
+pub mod integer;
 mod iter;
 pub mod parse;
 #[cfg(feature = "serde")]
