@@ -76,6 +76,10 @@ impl core::panic::unwind_safe::UnwindSafe for hex_conservative::error::OddLength
 impl hex_conservative::error::InvalidCharError
 impl hex_conservative::error::InvalidLengthError
 impl hex_conservative::error::OddLengthError
+impl hex_conservative::parse::FromHex for u16
+impl hex_conservative::parse::FromHex for u32
+impl hex_conservative::parse::FromHex for u64
+impl hex_conservative::parse::FromHex for u8
 impl<'a, const CAP: usize> core::marker::Send for hex_conservative::display::DisplayArray<'a, CAP>
 impl<'a, const CAP: usize> core::marker::Sync for hex_conservative::display::DisplayArray<'a, CAP>
 impl<'a, const CAP: usize> core::marker::Unpin for hex_conservative::display::DisplayArray<'a, CAP>
@@ -254,6 +258,14 @@ pub fn hex_conservative::prelude::DisplayHex::as_hex(self) -> Self::Display
 pub fn hex_conservative::prelude::DisplayHex::hex_reserve_suggestion(self) -> usize
 pub fn hex_conservative::prelude::FromHex::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::FromByteIterError> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::error::InvalidCharError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
 pub fn hex_conservative::prelude::FromHex::from_hex(s: &str) -> core::result::Result<Self, Self::FromHexError>
+pub fn u16::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::FromByteIterError> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::error::InvalidCharError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn u16::from_hex(s: &str) -> core::result::Result<Self, Self::FromHexError>
+pub fn u32::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::FromByteIterError> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::error::InvalidCharError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn u32::from_hex(s: &str) -> core::result::Result<Self, Self::FromHexError>
+pub fn u64::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::FromByteIterError> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::error::InvalidCharError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn u64::from_hex(s: &str) -> core::result::Result<Self, Self::FromHexError>
+pub fn u8::from_byte_iter<I>(iter: I) -> core::result::Result<Self, Self::FromByteIterError> where I: core::iter::traits::iterator::Iterator<Item = core::result::Result<u8, hex_conservative::error::InvalidCharError>> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::double_ended::DoubleEndedIterator
+pub fn u8::from_hex(s: &str) -> core::result::Result<Self, Self::FromHexError>
 pub hex_conservative::Case::Lower
 pub hex_conservative::Case::Upper
 pub hex_conservative::HexToArrayError::InvalidChar(hex_conservative::error::InvalidCharError)
@@ -276,6 +288,7 @@ pub mod hex_conservative
 pub mod hex_conservative::buf_encoder
 pub mod hex_conservative::display
 pub mod hex_conservative::error
+pub mod hex_conservative::integer
 pub mod hex_conservative::parse
 pub mod hex_conservative::prelude
 pub struct hex_conservative::BytesToHexIter<I: core::iter::traits::iterator::Iterator<Item = u8>>
@@ -337,3 +350,11 @@ pub type hex_conservative::parse::FromHex::FromHexError: core::convert::From<Sel
 pub type hex_conservative::prelude::DisplayHex::Display: core::fmt::Display + core::fmt::Debug + core::fmt::LowerHex + core::fmt::UpperHex
 pub type hex_conservative::prelude::FromHex::FromByteIterError: core::fmt::Debug + core::fmt::Display
 pub type hex_conservative::prelude::FromHex::FromHexError: core::convert::From<Self::FromByteIterError> + core::fmt::Debug + core::fmt::Display
+pub type u16::FromByteIterError = hex_conservative::error::InvalidCharError
+pub type u16::FromHexError = hex_conservative::error::InvalidCharError
+pub type u32::FromByteIterError = hex_conservative::error::InvalidCharError
+pub type u32::FromHexError = hex_conservative::error::InvalidCharError
+pub type u64::FromByteIterError = hex_conservative::error::InvalidCharError
+pub type u64::FromHexError = hex_conservative::error::InvalidCharError
+pub type u8::FromByteIterError = hex_conservative::error::InvalidCharError
+pub type u8::FromHexError = hex_conservative::error::InvalidCharError
