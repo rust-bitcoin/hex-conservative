@@ -38,7 +38,8 @@ impl<const LEN: usize> FromHex for [u8; LEN] {
     fn from_hex(s: &str) -> Result<Self, Self::Error> {
         if s.len() == LEN * 2 {
             let mut ret = ArrayVec::<u8, LEN>::new();
-            for byte in HexToBytesIter::new(s).expect("length checked above") {
+            // checked above
+            for byte in HexToBytesIter::new_unchecked(s) {
                 ret.push(byte?);
             }
             Ok(ret.into_inner().expect("inner is full"))
