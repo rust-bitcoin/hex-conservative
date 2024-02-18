@@ -1,62 +1,13 @@
-use std::fmt;
-use std::str::FromStr;
-
-use hex::{fmt_hex_exact, Case, FromHex, HexToArrayError, HexToBytesError};
+use hex::{DisplayHex, FromHex};
 use honggfuzz::fuzz;
 
 const LEN: usize = 32; // Arbitrary amount of data.
 
-/// A struct that always uses hex when in string form.
-pub struct Hexy {
-    // Some opaque data.
-    data: [u8; LEN],
-}
-
-impl Hexy {
-    /// Demonstrates getting internal opaque data as a byte slice.
-    pub fn as_bytes(&self) -> &[u8] { &self.data }
-}
-
-impl fmt::Display for Hexy {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
-}
-
-impl FromStr for Hexy {
-    type Err = HexToArrayError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> { Hexy::from_hex(s) }
-}
-
-impl fmt::LowerHex for Hexy {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        fmt_hex_exact!(f, 32, self.as_bytes(), Case::Lower)
-    }
-}
-
-impl fmt::UpperHex for Hexy {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        fmt_hex_exact!(f, 32, self.as_bytes(), Case::Upper)
-    }
-}
-
-impl FromHex for Hexy {
-    type Error = HexToArrayError;
-
-    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
-    where
-        I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
-    {
-        // Errors if the iterator is the wrong length.
-        let a = <[u8; 32] as FromHex>::from_byte_iter(iter)?;
-        Ok(Hexy { data: a })
-    }
-}
-
 fn do_test(data: &[u8]) {
     match std::str::from_utf8(data) {
-        Ok(s) => match Hexy::from_str(s) {
+        Ok(s) => match <[u8; LEN]>::from_hex(s) {
             Ok(hexy) => {
-                let got = format!("{:x}", hexy);
+                let got = format!("{:x}", hexy.as_hex());
                 assert_eq!(got, s.to_lowercase());
             }
             Err(_) => return,

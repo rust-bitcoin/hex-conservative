@@ -106,8 +106,8 @@ impl std::error::Error for OddLengthStringError {
 /// Hex decoding error.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum HexToArrayError {
-    /// Conversion error while parsing hex string.
-    Conversion(HexToBytesError),
+    /// Non-hexadecimal character.
+    InvalidChar(InvalidCharError),
     /// Tried to parse fixed-length hash from a string with the wrong length (got, want).
     InvalidLength(InvalidLengthError),
 }
@@ -117,10 +117,8 @@ impl fmt::Display for HexToArrayError {
         use HexToArrayError::*;
 
         match *self {
-            Conversion(ref e) =>
-                crate::write_err!(f, "conversion error, failed to create array from hex"; e),
-            InvalidLength(ref e) =>
-                write_err!(f, "invalid length, failed to create array from hex"; e),
+            InvalidChar(ref e) => crate::write_err!(f, "failed to parse hex digit"; e),
+            InvalidLength(ref e) => write_err!(f, "failed to parse hex"; e),
         }
     }
 }
@@ -131,15 +129,15 @@ impl std::error::Error for HexToArrayError {
         use HexToArrayError::*;
 
         match *self {
-            Conversion(ref e) => Some(e),
+            InvalidChar(ref e) => Some(e),
             InvalidLength(ref e) => Some(e),
         }
     }
 }
 
-impl From<HexToBytesError> for HexToArrayError {
+impl From<InvalidCharError> for HexToArrayError {
     #[inline]
-    fn from(e: HexToBytesError) -> Self { Self::Conversion(e) }
+    fn from(e: InvalidCharError) -> Self { Self::InvalidChar(e) }
 }
 
 impl From<InvalidLengthError> for HexToArrayError {
