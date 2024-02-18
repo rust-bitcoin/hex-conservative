@@ -17,48 +17,33 @@ pub use crate::error::{HexToBytesError, HexToArrayError};
 /// Trait for objects that can be deserialized from hex strings.
 pub trait FromHex: Sized {
     /// Error type returned while parsing hex string.
-    type Error: From<HexToBytesError> + Sized + fmt::Debug + fmt::Display;
-
-    /// Produces an object from a byte iterator.
-    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
-    where
-        I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator;
+    type Error: Sized + fmt::Debug + fmt::Display;
 
     /// Produces an object from a hex string.
-    fn from_hex(s: &str) -> Result<Self, Self::Error> {
-        let iter = HexToBytesIter::new(s).map_err(Into::into)?;
-        Self::from_byte_iter(iter)
-    }
+    fn from_hex(s: &str) -> Result<Self, Self::Error>;
 }
 
 #[cfg(any(test, feature = "std", feature = "alloc"))]
 impl FromHex for Vec<u8> {
     type Error = HexToBytesError;
 
-    #[inline]
-    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
-    where
-        I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
-    {
-        iter.collect()
+    fn from_hex(s: &str) -> Result<Self, Self::Error> {
+        HexToBytesIter::new(s)?.map(|result| result.map_err(Into::into)).collect()
     }
 }
 
 impl<const LEN: usize> FromHex for [u8; LEN] {
     type Error = HexToArrayError;
 
-    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
-    where
-        I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
-    {
-        if iter.len() == LEN {
+    fn from_hex(s: &str) -> Result<Self, Self::Error> {
+        if s.len() == LEN * 2 {
             let mut ret = ArrayVec::<u8, LEN>::new();
-            for byte in iter {
+            for byte in HexToBytesIter::new(s).expect("length checked above") {
                 ret.push(byte?);
             }
             Ok(ret.into_inner().expect("inner is full"))
         } else {
-            Err(InvalidLengthError { expected: 2 * LEN, got: 2 * iter.len() }.into())
+            Err(InvalidLengthError { expected: 2 * LEN, got: s.len() }.into())
         }
     }
 }
@@ -81,7 +66,7 @@ mod tests {
         assert_eq!(Vec::<u8>::from_hex(oddlen), Err(OddLengthStringError { len: 17 }.into()));
         assert_eq!(
             <[u8; 4]>::from_hex(oddlen),
-            Err(HexToBytesError::OddLengthString(OddLengthStringError { len: 17 }).into())
+            Err(InvalidLengthError { got: 17, expected: 8 }.into())
         );
         assert_eq!(Vec::<u8>::from_hex(badchar1), Err(InvalidCharError { invalid: b'Z' }.into()));
         assert_eq!(Vec::<u8>::from_hex(badchar2), Err(InvalidCharError { invalid: b'Y' }.into()));

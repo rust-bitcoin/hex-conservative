@@ -66,12 +66,9 @@ impl FromStr for ALittleBitHexy {
 impl FromHex for ALittleBitHexy {
     type Error = HexToArrayError;
 
-    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
-    where
-        I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
-    {
-        // Errors if the iterator is the wrong length.
-        let data = <[u8; 32] as FromHex>::from_byte_iter(iter)?;
+    fn from_hex(s: &str) -> Result<Self, Self::Error> {
+        // Errors if the input is invalid
+        let data = <[u8; 32] as FromHex>::from_hex(s)?;
         // This is a contrived example (using x==0).
         Ok(ALittleBitHexy { data, x: 0 })
     }

@@ -6,9 +6,7 @@
 use std::fmt;
 use std::str::FromStr;
 
-use hex_conservative::{
-    fmt_hex_exact, Case, DisplayHex, FromHex, HexToArrayError, HexToBytesError,
-};
+use hex_conservative::{fmt_hex_exact, Case, DisplayHex, FromHex, HexToArrayError};
 
 fn main() {
     let s = "deadbeefcafebabedeadbeefcafebabedeadbeefcafebabedeadbeefcafebabe";
@@ -74,12 +72,9 @@ impl fmt::UpperHex for Hexy {
 impl FromHex for Hexy {
     type Error = HexToArrayError;
 
-    fn from_byte_iter<I>(iter: I) -> Result<Self, Self::Error>
-    where
-        I: Iterator<Item = Result<u8, HexToBytesError>> + ExactSizeIterator + DoubleEndedIterator,
-    {
-        // Errors if the iterator is the wrong length.
-        let a = <[u8; 32] as FromHex>::from_byte_iter(iter)?;
+    fn from_hex(s: &str) -> Result<Self, Self::Error> {
+        // Errors if the input is invalid
+        let a = <[u8; 32] as FromHex>::from_hex(s)?;
         Ok(Hexy { data: a })
     }
 }
