@@ -108,7 +108,7 @@ impl std::error::Error for OddLengthStringError {
 pub enum HexToArrayError {
     /// Non-hexadecimal character.
     InvalidChar(InvalidCharError),
-    /// Tried to parse fixed-length hash from a string with the wrong length (got, want).
+    /// Tried to parse fixed-length hash from a string with the wrong length.
     InvalidLength(InvalidLengthError),
 }
 
