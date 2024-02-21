@@ -66,7 +66,6 @@ impl<const LEN: usize> FromHex for [u8; LEN] {
 mod tests {
     use super::*;
     use crate::display::DisplayHex;
-    use crate::error::InvalidLengthError;
 
     #[test]
     #[cfg(feature = "alloc")]
