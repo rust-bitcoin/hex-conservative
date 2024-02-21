@@ -25,7 +25,7 @@
 //! assert_eq!(format!("{:0>8}", v.as_hex()), "0000abab");
 //!```
 
-#[cfg(feature = "alloc")]
+#[cfg(all(feature = "alloc", not(feature = "std")))]
 use alloc::string::String;
 use core::borrow::Borrow;
 use core::fmt;
