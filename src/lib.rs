@@ -46,7 +46,7 @@ extern crate alloc;
 
 pub mod buf_encoder;
 pub mod display;
-mod error;
+pub mod error;
 mod iter;
 pub mod parse;
 #[cfg(feature = "serde")]
@@ -64,7 +64,7 @@ pub(crate) use table::Table;
 #[doc(inline)]
 pub use self::{
     display::DisplayHex,
-    error::{OddLengthStringError, HexToBytesError, HexToArrayError},
+    error::{OddLengthStringError, HexToBytesError, HexToArrayError, InvalidCharError},
     iter::{BytesToHexIter, HexToBytesIter, HexSliceToBytesIter},
     parse::FromHex,
 };
