@@ -11,10 +11,7 @@ use std::io;
 #[cfg(all(feature = "core2", not(feature = "std")))]
 use core2::io;
 
-use crate::error::InvalidCharError;
-
-#[rustfmt::skip]                // Keep public re-exports separate.
-pub use crate::error::OddLengthStringError;
+use crate::error::{InvalidCharError, OddLengthStringError};
 
 /// Convenience alias for `HexToBytesIter<HexDigitsIter<'a>>`.
 pub type HexSliceToBytesIter<'a> = HexToBytesIter<HexDigitsIter<'a>>;
