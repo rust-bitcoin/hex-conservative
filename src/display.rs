@@ -420,8 +420,9 @@ mod tests {
                     fmt_hex_exact!(f, 32, &self.0, Case::Lower)
                 }
             }
-
-            assert_eq!(Dummy([42; 32]).to_string(), "2a".repeat(32));
+            let dummy = Dummy([42; 32]);
+            assert_eq!(dummy.to_string(), "2a".repeat(32));
+            assert_eq!(format!("{:.10}", dummy), "2a".repeat(5));
         }
 
         #[test]
