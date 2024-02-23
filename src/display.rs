@@ -344,6 +344,10 @@ macro_rules! fmt_hex_exact {
 pub use fmt_hex_exact;
 
 // Implementation detail of `write_hex_exact` macro to de-duplicate the code
+//
+// Whether hex is an integer or a string is debatable, we cater a little bit to each.
+// - We support users adding `0x` prefix using "{:#}" (treating hex like an integer).
+// - We support limiting the output using precision "{:.10}" (treating hex like a string).
 #[doc(hidden)]
 #[inline]
 pub fn fmt_hex_exact_fn<I, const N: usize>(
@@ -357,7 +361,14 @@ where
 {
     let mut encoder = BufEncoder::<N>::new();
     encoder.put_bytes(bytes, case);
-    f.pad_integral(true, "0x", encoder.as_str())
+    let encoded = encoder.as_str();
+
+    if let Some(precision) = f.precision() {
+        if encoded.len() > precision {
+            return f.pad_integral(true, "0x", &encoded[..precision]);
+        }
+    }
+    f.pad_integral(true, "0x", encoded)
 }
 
 #[cfg(test)]
@@ -409,8 +420,9 @@ mod tests {
                     fmt_hex_exact!(f, 32, &self.0, Case::Lower)
                 }
             }
-
-            assert_eq!(Dummy([42; 32]).to_string(), "2a".repeat(32));
+            let dummy = Dummy([42; 32]);
+            assert_eq!(dummy.to_string(), "2a".repeat(32));
+            assert_eq!(format!("{:.10}", dummy), "2a".repeat(5));
         }
 
         #[test]
