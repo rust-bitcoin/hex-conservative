@@ -159,14 +159,17 @@ impl From<InvalidLengthError> for HexToArrayError {
 
 /// Tried to parse fixed-length hash from a string with the wrong length.
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[non_exhaustive]
 pub struct InvalidLengthError {
-    pub(crate) expected: usize,
-    pub(crate) got: usize,
+    /// The expected length.
+    pub expected: usize,
+    /// The invalid length.
+    pub invalid: usize,
 }
 
 impl fmt::Display for InvalidLengthError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "bad hex string length {} (expected {})", self.got, self.expected)
+        write!(f, "invilad hex string length {} (expected {})", self.invalid, self.expected)
     }
 }
 

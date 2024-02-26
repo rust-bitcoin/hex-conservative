@@ -44,7 +44,7 @@ impl<const LEN: usize> FromHex for [u8; LEN] {
             }
             Ok(ret.into_inner().expect("inner is full"))
         } else {
-            Err(InvalidLengthError { expected: 2 * LEN, got: s.len() }.into())
+            Err(InvalidLengthError { invalid: s.len(), expected: 2 * LEN }.into())
         }
     }
 }
@@ -67,7 +67,7 @@ mod tests {
         assert_eq!(Vec::<u8>::from_hex(oddlen), Err(OddLengthStringError { len: 17 }.into()));
         assert_eq!(
             <[u8; 4]>::from_hex(oddlen),
-            Err(InvalidLengthError { got: 17, expected: 8 }.into())
+            Err(InvalidLengthError { invalid: 17, expected: 8 }.into())
         );
         assert_eq!(Vec::<u8>::from_hex(badchar1), Err(InvalidCharError { invalid: b'Z' }.into()));
         assert_eq!(Vec::<u8>::from_hex(badchar2), Err(InvalidCharError { invalid: b'Y' }.into()));
@@ -85,7 +85,7 @@ mod tests {
         let len_sixteen = "0123456789abcdef";
         assert_eq!(
             <[u8; 4]>::from_hex(len_sixteen),
-            Err(InvalidLengthError { expected: 8, got: 16 }.into())
+            Err(InvalidLengthError { invalid: 16, expected: 8 }.into())
         )
     }
 
