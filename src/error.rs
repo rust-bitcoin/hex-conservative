@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: CC0-1.0
 
+//! Error code for the `hex-conservative` crate.
+
 use core::fmt;
 
 use crate::write_err;
@@ -75,6 +77,11 @@ pub struct InvalidCharError {
     pub(crate) invalid: u8,
 }
 
+impl InvalidCharError {
+    /// Returns the invalid character byte.
+    pub fn invalid_char(&self) -> u8 { self.invalid }
+}
+
 impl fmt::Display for InvalidCharError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "invalid hex char {}", self.invalid)
@@ -90,6 +97,11 @@ impl std::error::Error for InvalidCharError {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OddLengthStringError {
     pub(crate) len: usize,
+}
+
+impl OddLengthStringError {
+    /// Returns the odd length of the input string.
+    pub fn length(&self) -> usize { self.len }
 }
 
 impl fmt::Display for OddLengthStringError {
@@ -147,14 +159,17 @@ impl From<InvalidLengthError> for HexToArrayError {
 
 /// Tried to parse fixed-length hash from a string with the wrong length.
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[non_exhaustive]
 pub struct InvalidLengthError {
-    pub(crate) expected: usize,
-    pub(crate) got: usize,
+    /// The expected length.
+    pub expected: usize,
+    /// The invalid length.
+    pub invalid: usize,
 }
 
 impl fmt::Display for InvalidLengthError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "bad hex string length {} (expected {})", self.got, self.expected)
+        write!(f, "invilad hex string length {} (expected {})", self.invalid, self.expected)
     }
 }
 
