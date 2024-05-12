@@ -85,7 +85,9 @@ macro_rules! impl_fromhex_array {
                     }
                     Ok(ret)
                 } else {
-                    Err(HexToArrayError::InvalidLength(2 * $len, 2 * iter.len()))
+                    let got = 2 * iter.len();
+                    let want = 2 * $len;
+                    Err(HexToArrayError::InvalidLength(got, want))
                 }
             }
         }
@@ -183,7 +185,9 @@ mod tests {
     fn hex_to_array_error() {
         use HexToArrayError::*;
         let len_sixteen = "0123456789abcdef";
-        assert_eq!(<[u8; 4]>::from_hex(len_sixteen), Err(InvalidLength(8, 16)));
+        let result = <[u8; 4]>::from_hex(len_sixteen);
+        assert_eq!(result, Err(InvalidLength(16, 8)));
+        assert_eq!(&result.unwrap_err().to_string(), "bad hex string length 16 (expected 8)");
     }
 
     #[test]
