@@ -44,6 +44,14 @@
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
+#[doc(hidden)]
+pub mod _export {
+    /// A re-export of core::*
+    pub mod _core {
+        pub use core::*;
+    }
+}
+
 pub mod buf_encoder;
 pub mod display;
 pub mod error;
