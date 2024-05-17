@@ -1,3 +1,8 @@
+# 0.2.1 - 2024-05-17
+
+- Add a new `impl_fmt_traits` macro that can be used to implement `fmt::{LowerHex, UpperHex,
+  Display, Debug}` [#90](https://github.com/rust-bitcoin/hex-conservative/pull/90)
+
 # 0.2.0 - 2024-02-27
 
 ### Breaking changes
