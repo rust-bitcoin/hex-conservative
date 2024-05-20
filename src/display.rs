@@ -343,6 +343,168 @@ macro_rules! fmt_hex_exact {
 }
 pub use fmt_hex_exact;
 
+/// Adds `core::fmt` trait implementations to type `$ty`.
+///
+/// Implements:
+///
+/// - `fmt::{LowerHex, UpperHex}` using [`fmt_hex_exact`].
+/// - `fmt::{Display, Debug}` by calling `LowerHex`.
+///
+/// Requires:
+///
+/// - `$ty` must implement `IntoIterator<Item=Borrow<u8>>`.
+///
+/// ## Parameters
+///
+/// * `$ty` - the type to implement traits on.
+/// * `$len` - known length of `$bytes`, must be a const expression.
+/// * `$bytes` - bytes to be encoded, most likely a reference to an array.
+/// * `$reverse` - true if you want the array to be displayed backwards.
+/// * `$gen: $gent` - optional generic type(s) and trait bound(s) to put on `$ty` e.g, `F: Foo`.
+///
+/// ## Examples
+///
+/// ```
+/// # use core::borrow::Borrow;
+/// # use hex_conservative::impl_fmt_traits;
+/// struct Wrapper([u8; 4]);
+///
+/// impl Borrow<[u8]> for Wrapper {
+///     fn borrow(&self) -> &[u8] { &self.0[..] }
+/// }
+///
+/// impl_fmt_traits! {
+///     impl fmt_traits for Wrapper {
+///         const LENGTH: usize = 4;
+///     }
+/// }
+///
+/// let w = Wrapper([0x12, 0x34, 0x56, 0x78]);
+/// assert_eq!(format!("{}", w), "12345678");
+/// ```
+///
+/// We support generics on `$ty`:
+///
+/// ```
+/// # use core::borrow::Borrow;
+/// # use core::marker::PhantomData;
+/// # use hex_conservative::impl_fmt_traits;
+/// struct Wrapper<T>([u8; 4], PhantomData<T>);
+///
+/// // `Clone` is just some arbitrary trait.
+/// impl<T: Clone> Borrow<[u8]> for Wrapper<T> {
+///     fn borrow(&self) -> &[u8] { &self.0[..] }
+/// }
+///
+/// impl_fmt_traits! {
+///     impl<T: Clone> fmt_traits for Wrapper<T> {
+///         const LENGTH: usize = 4;
+///     }
+/// }
+///
+/// let w = Wrapper([0x12, 0x34, 0x56, 0x78], PhantomData::<u32>);
+/// assert_eq!(format!("{}", w), "12345678");
+/// ```
+///
+/// And also, as is required by `rust-bitcoin`, we support displaying
+/// the hex string byte-wise backwards:
+///
+/// ```
+/// # use core::borrow::Borrow;
+/// # use hex_conservative::impl_fmt_traits;
+/// struct Wrapper([u8; 4]);
+///
+/// impl Borrow<[u8]> for Wrapper {
+///     fn borrow(&self) -> &[u8] { &self.0[..] }
+/// }
+///
+/// impl_fmt_traits! {
+///     #[display_backward(true)]
+///     impl fmt_traits for Wrapper {
+///         const LENGTH: usize = 4;
+///     }
+/// }
+/// let w = Wrapper([0x12, 0x34, 0x56, 0x78]);
+/// assert_eq!(format!("{}", w), "78563412");
+/// ```
+#[macro_export]
+macro_rules! impl_fmt_traits {
+    // Without generic and trait bounds and without display_backward attribute.
+    (impl fmt_traits for $ty:ident { const LENGTH: usize = $len:expr; }) => {
+        $crate::impl_fmt_traits! {
+            #[display_backward(false)]
+            impl<> fmt_traits for $ty<> {
+                const LENGTH: usize = $len;
+            }
+        }
+    };
+    // Without generic and trait bounds and with display_backward attribute.
+    (#[display_backward($reverse:expr)] impl fmt_traits for $ty:ident { const LENGTH: usize = $len:expr; }) => {
+        $crate::impl_fmt_traits! {
+            #[display_backward($reverse)]
+            impl<> fmt_traits for $ty<> {
+                const LENGTH: usize = $len;
+            }
+        }
+    };
+    // With generic and trait bounds and without display_backward attribute.
+    (impl<$($gen:ident: $gent:ident),*> fmt_traits for $ty:ident<$($unused:ident),*> { const LENGTH: usize = $len:expr; }) => {
+        $crate::impl_fmt_traits! {
+            #[display_backward(false)]
+            impl<$($gen: $gent),*> fmt_traits for $ty<$($unused),*> {
+                const LENGTH: usize = $len;
+            }
+        }
+    };
+    // With generic and trait bounds and display_backward attribute.
+    (#[display_backward($reverse:expr)] impl<$($gen:ident: $gent:ident),*> fmt_traits for $ty:ident<$($unused:ident),*> { const LENGTH: usize = $len:expr; }) => {
+        impl<$($gen: $gent),*> $crate::_export::_core::fmt::LowerHex for $ty<$($gen),*> {
+            #[inline]
+            fn fmt(&self, f: &mut $crate::_export::_core::fmt::Formatter) -> $crate::_export::_core::fmt::Result {
+                let case = $crate::Case::Lower;
+
+                if $reverse {
+                    let bytes = $crate::_export::_core::borrow::Borrow::<[u8]>::borrow(self).iter().rev();
+                    $crate::fmt_hex_exact!(f, $len, bytes, case)
+                } else {
+                    let bytes = $crate::_export::_core::borrow::Borrow::<[u8]>::borrow(self).iter();
+                    $crate::fmt_hex_exact!(f, $len, bytes, case)
+                }
+            }
+        }
+
+        impl<$($gen: $gent),*> $crate::_export::_core::fmt::UpperHex for $ty<$($gen),*> {
+            #[inline]
+            fn fmt(&self, f: &mut $crate::_export::_core::fmt::Formatter) -> $crate::_export::_core::fmt::Result {
+                let case = $crate::Case::Upper;
+
+                if $reverse {
+                    let bytes = $crate::_export::_core::borrow::Borrow::<[u8]>::borrow(self).iter().rev();
+                    $crate::fmt_hex_exact!(f, $len, bytes, case)
+                } else {
+                    let bytes = $crate::_export::_core::borrow::Borrow::<[u8]>::borrow(self).iter();
+                    $crate::fmt_hex_exact!(f, $len, bytes, case)
+                }
+            }
+        }
+
+        impl<$($gen: $gent),*> $crate::_export::_core::fmt::Display for $ty<$($gen),*> {
+            #[inline]
+            fn fmt(&self, f: &mut $crate::_export::_core::fmt::Formatter) -> $crate::_export::_core::fmt::Result {
+                $crate::_export::_core::fmt::LowerHex::fmt(self, f)
+            }
+        }
+
+        impl<$($gen: $gent),*> $crate::_export::_core::fmt::Debug for $ty<$($gen),*> {
+            #[inline]
+            fn fmt(&self, f: &mut $crate::_export::_core::fmt::Formatter) -> $crate::_export::_core::fmt::Result {
+                $crate::_export::_core::fmt::LowerHex::fmt(&self, f)
+            }
+        }
+    };
+}
+pub use impl_fmt_traits;
+
 // Implementation detail of `write_hex_exact` macro to de-duplicate the code
 //
 // Whether hex is an integer or a string is debatable, we cater a little bit to each.
@@ -378,6 +540,8 @@ mod tests {
 
     #[cfg(feature = "alloc")]
     mod alloc {
+        use core::marker::PhantomData;
+
         use super::*;
 
         fn check_encoding(bytes: &[u8]) {
@@ -501,6 +665,96 @@ mod tests {
         fn padding_does_not_truncate() {
             let v = vec![0x12, 0x34, 0x56, 0x78];
             assert_eq!(format!("{:0>4}", v.as_hex()), "12345678");
+        }
+
+        #[test]
+        fn hex_fmt_impl_macro_forward() {
+            struct Wrapper([u8; 4]);
+
+            impl Borrow<[u8]> for Wrapper {
+                fn borrow(&self) -> &[u8] { &self.0[..] }
+            }
+
+            impl_fmt_traits! {
+                #[display_backward(false)]
+                impl fmt_traits for Wrapper {
+                    const LENGTH: usize = 4;
+                }
+            }
+
+            let tc = Wrapper([0x12, 0x34, 0x56, 0x78]);
+
+            let want = "12345678";
+            let got = format!("{}", tc);
+            assert_eq!(got, want);
+        }
+
+        #[test]
+        fn hex_fmt_impl_macro_backwards() {
+            struct Wrapper([u8; 4]);
+
+            impl Borrow<[u8]> for Wrapper {
+                fn borrow(&self) -> &[u8] { &self.0[..] }
+            }
+
+            impl_fmt_traits! {
+                #[display_backward(true)]
+                impl fmt_traits for Wrapper {
+                    const LENGTH: usize = 4;
+                }
+            }
+
+            let tc = Wrapper([0x12, 0x34, 0x56, 0x78]);
+
+            let want = "78563412";
+            let got = format!("{}", tc);
+            assert_eq!(got, want);
+        }
+
+        #[test]
+        fn hex_fmt_impl_macro_gen_forward() {
+            struct Wrapper<T>([u8; 4], PhantomData<T>);
+
+            impl<T: Clone> Borrow<[u8]> for Wrapper<T> {
+                fn borrow(&self) -> &[u8] { &self.0[..] }
+            }
+
+            impl_fmt_traits! {
+                #[display_backward(false)]
+                impl<T: Clone> fmt_traits for Wrapper<T> {
+                    const LENGTH: usize = 4;
+                }
+            }
+
+            // We just use `u32` here as some arbitrary type that implements some arbitrary trait.
+            let tc = Wrapper([0x12, 0x34, 0x56, 0x78], PhantomData::<u32>);
+
+            let want = "12345678";
+            let got = format!("{}", tc);
+            assert_eq!(got, want);
+        }
+
+        #[test]
+        fn hex_fmt_impl_macro_gen_backwards() {
+            struct Wrapper<T>([u8; 4], PhantomData<T>);
+
+            impl<T: Clone> Borrow<[u8]> for Wrapper<T> {
+                fn borrow(&self) -> &[u8] { &self.0[..] }
+            }
+
+            impl_fmt_traits! {
+                #[display_backward(true)]
+                impl<T: Clone> fmt_traits for Wrapper<T> {
+                    const LENGTH: usize = 4;
+                }
+            }
+
+            // We just use `u32` here as some arbitrary type that implements some arbitrary trait.
+            let tc = Wrapper([0x12, 0x34, 0x56, 0x78], PhantomData::<u32>);
+
+            let want = "78563412";
+            let got = format!("{}", tc);
+            assert_eq!(got, want);
         }
     }
 }
