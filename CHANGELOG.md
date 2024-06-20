@@ -1,3 +1,7 @@
+# 0.2.2 - 2024-06-20
+
+- Introduce more serde utilities [#92](https://github.com/rust-bitcoin/hex-conservative/pull/92)
+
 # 0.2.1 - 2024-05-17
 
 - Add a new `impl_fmt_traits` macro that can be used to implement `fmt::{LowerHex, UpperHex,
