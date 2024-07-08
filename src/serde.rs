@@ -71,6 +71,42 @@ where
     }
 }
 
+/// Byte slice wrapper to serialize as a hex string in lowercase characters.
+pub struct SerializeBytesAsHex<'a>(pub &'a [u8]);
+
+impl<'a> serde::Serialize for SerializeBytesAsHex<'a> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serialize_lower(self.0, serializer)
+    }
+}
+
+/// Byte slice wrapper to serialize as a hex string in lowercase characters.
+pub struct SerializeBytesAsHexLower<'a>(pub &'a [u8]);
+
+impl<'a> serde::Serialize for SerializeBytesAsHexLower<'a> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serialize_lower(self.0, serializer)
+    }
+}
+
+/// Byte slice wrapper to serialize as a hex string in uppercase characters.
+pub struct SerializeBytesAsHexUpper<'a>(pub &'a [u8]);
+
+impl<'a> serde::Serialize for SerializeBytesAsHexUpper<'a> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serialize_upper(self.0, serializer)
+    }
+}
+
 /// Deserializes a hex string into raw bytes.
 ///
 /// Allows upper, lower, and mixed case characters (e.g. `a5b3c1`, `A5B3C1` and `A5b3C1`).
