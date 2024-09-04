@@ -3,7 +3,7 @@
 set -ex
 
 FEATURES="std alloc serde"
-MSRV="1\.48\.0"
+MSRV="1\.63\.0"
 
 cargo --version
 rustc --version
@@ -12,15 +12,6 @@ rustc --version
 NIGHTLY=false
 if cargo --version | grep nightly >/dev/null; then
     NIGHTLY=true
-fi
-
-if cargo --version | grep ${MSRV}; then
-    cargo update -p serde_json --precise 1.0.99
-    cargo update -p serde --precise 1.0.156
-    cargo update -p quote --precise 1.0.30
-    cargo update -p proc-macro2 --precise 1.0.63
-    # memchr 2.6.0 uses edition 2021
-    cargo update -p memchr --precise 2.5.0
 fi
 
 # Make all cargo invocations verbose
