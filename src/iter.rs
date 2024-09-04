@@ -5,11 +5,6 @@
 use core::convert::TryInto;
 use core::iter::FusedIterator;
 use core::str;
-#[cfg(feature = "std")]
-use std::io;
-
-#[cfg(all(feature = "core2", not(feature = "std")))]
-use core2::io;
 
 use crate::error::{InvalidCharError, OddLengthStringError};
 
@@ -87,10 +82,27 @@ impl<T: Iterator<Item = [u8; 2]> + ExactSizeIterator> ExactSizeIterator for HexT
 
 impl<T: Iterator<Item = [u8; 2]> + FusedIterator> FusedIterator for HexToBytesIter<T> {}
 
-#[cfg(any(feature = "std", feature = "core2"))]
-impl<T: Iterator<Item = [u8; 2]> + FusedIterator> io::Read for HexToBytesIter<T> {
+#[cfg(feature = "std")]
+impl<T: Iterator<Item = [u8; 2]> + FusedIterator> std::io::Read for HexToBytesIter<T> {
     #[inline]
-    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        let mut bytes_read = 0usize;
+        for dst in buf {
+            match self.next() {
+                Some(Ok(src)) => {
+                    *dst = src;
+                    bytes_read += 1;
+                }
+                _ => break,
+            }
+        }
+        Ok(bytes_read)
+    }
+}
+#[cfg(feature = "bitcoin-io")]
+impl<T: Iterator<Item = [u8; 2]> + FusedIterator> bitcoin_io::Read for HexToBytesIter<T> {
+    #[inline]
+    fn read(&mut self, buf: &mut [u8]) -> bitcoin_io::Result<usize> {
         let mut bytes_read = 0usize;
         for dst in buf {
             match self.next() {
