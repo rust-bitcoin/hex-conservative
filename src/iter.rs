@@ -16,6 +16,7 @@ pub type HexSliceToBytesIter<'a> = HexToBytesIter<HexDigitsIter<'a>>;
 /// Iterator yielding bytes decoded from an iterator of pairs of hex digits.
 pub struct HexToBytesIter<T: Iterator<Item = [u8; 2]>> {
     iter: T,
+    original_len: usize,
 }
 
 impl<'a> HexToBytesIter<HexDigitsIter<'a>> {
@@ -38,19 +39,26 @@ impl<'a> HexToBytesIter<HexDigitsIter<'a>> {
     }
 }
 
-impl<T: Iterator<Item = [u8; 2]>> HexToBytesIter<T> {
+impl<T: Iterator<Item = [u8; 2]> + ExactSizeIterator> HexToBytesIter<T> {
     /// Constructs a custom hex decoding iterator from another iterator.
     #[inline]
-    pub fn from_pairs(iter: T) -> Self { Self { iter } }
+    pub fn from_pairs(iter: T) -> Self { Self { original_len: iter.len(), iter } }
 }
 
-impl<T: Iterator<Item = [u8; 2]>> Iterator for HexToBytesIter<T> {
+impl<T: Iterator<Item = [u8; 2]> + ExactSizeIterator> Iterator for HexToBytesIter<T> {
     type Item = Result<u8, InvalidCharError>;
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         let [hi, lo] = self.iter.next()?;
-        Some(hex_chars_to_byte(hi, lo))
+        Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| InvalidCharError {
+            invalid: c,
+            pos: if is_high {
+                (self.original_len - self.iter.len() - 1) * 2
+            } else {
+                (self.original_len - self.iter.len() - 1) * 2 + 1
+            },
+        }))
     }
 
     #[inline]
@@ -62,30 +70,50 @@ impl<T: Iterator<Item = [u8; 2]>> Iterator for HexToBytesIter<T> {
     #[inline]
     fn nth(&mut self, n: usize) -> Option<Self::Item> {
         let [hi, lo] = self.iter.nth(n)?;
-        Some(hex_chars_to_byte(hi, lo))
+        Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| InvalidCharError {
+            invalid: c,
+            pos: if is_high {
+                (self.original_len - self.iter.len() - 1) * 2
+            } else {
+                (self.original_len - self.iter.len() - 1) * 2 + 1
+            },
+        }))
     }
 }
 
-impl<T: Iterator<Item = [u8; 2]> + DoubleEndedIterator> DoubleEndedIterator for HexToBytesIter<T> {
+impl<T: Iterator<Item = [u8; 2]> + DoubleEndedIterator + ExactSizeIterator> DoubleEndedIterator
+    for HexToBytesIter<T>
+{
     #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
         let [hi, lo] = self.iter.next_back()?;
-        Some(hex_chars_to_byte(hi, lo))
+        Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| InvalidCharError {
+            invalid: c,
+            pos: if is_high { self.iter.len() * 2 } else { self.iter.len() * 2 + 1 },
+        }))
     }
 
     #[inline]
     fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
         let [hi, lo] = self.iter.nth_back(n)?;
-        Some(hex_chars_to_byte(hi, lo))
+        Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| InvalidCharError {
+            invalid: c,
+            pos: if is_high { self.iter.len() * 2 } else { self.iter.len() * 2 + 1 },
+        }))
     }
 }
 
 impl<T: Iterator<Item = [u8; 2]> + ExactSizeIterator> ExactSizeIterator for HexToBytesIter<T> {}
 
-impl<T: Iterator<Item = [u8; 2]> + FusedIterator> FusedIterator for HexToBytesIter<T> {}
+impl<T: Iterator<Item = [u8; 2]> + ExactSizeIterator + FusedIterator> FusedIterator
+    for HexToBytesIter<T>
+{
+}
 
 #[cfg(feature = "std")]
-impl<T: Iterator<Item = [u8; 2]> + FusedIterator> io::Read for HexToBytesIter<T> {
+impl<T: Iterator<Item = [u8; 2]> + ExactSizeIterator + FusedIterator> io::Read
+    for HexToBytesIter<T>
+{
     #[inline]
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         let mut bytes_read = 0usize;
@@ -153,9 +181,11 @@ impl<'a> ExactSizeIterator for HexDigitsIter<'a> {}
 impl<'a> core::iter::FusedIterator for HexDigitsIter<'a> {}
 
 /// `hi` and `lo` are bytes representing hex characters.
-fn hex_chars_to_byte(hi: u8, lo: u8) -> Result<u8, InvalidCharError> {
-    let hih = (hi as char).to_digit(16).ok_or(InvalidCharError { invalid: hi })?;
-    let loh = (lo as char).to_digit(16).ok_or(InvalidCharError { invalid: lo })?;
+///
+/// Returns the valid byte or the invalid input byte and a bool indicating error for `hi` or `lo`.
+fn hex_chars_to_byte(hi: u8, lo: u8) -> Result<u8, (u8, bool)> {
+    let hih = (hi as char).to_digit(16).ok_or((hi, true))?;
+    let loh = (lo as char).to_digit(16).ok_or((lo, false))?;
 
     let ret = (hih << 4) + loh;
     Ok(ret as u8)
