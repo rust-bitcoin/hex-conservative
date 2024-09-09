@@ -510,6 +510,8 @@ pub use impl_fmt_traits;
 // Whether hex is an integer or a string is debatable, we cater a little bit to each.
 // - We support users adding `0x` prefix using "{:#}" (treating hex like an integer).
 // - We support limiting the output using precision "{:.10}" (treating hex like a string).
+//
+// This assumes `bytes.len() * 2 == N`.
 #[doc(hidden)]
 #[inline]
 pub fn fmt_hex_exact_fn<I, const N: usize>(
@@ -522,14 +524,17 @@ where
     I::Item: Borrow<u8>,
 {
     let mut encoder = BufEncoder::<N>::new();
-    encoder.put_bytes(bytes, case);
-    let encoded = encoder.as_str();
-
-    if let Some(precision) = f.precision() {
-        if encoded.len() > precision {
-            return f.pad_integral(true, "0x", &encoded[..precision]);
+    let encoded = match f.precision() {
+        Some(p) if p < N => {
+            let n = (p + 1) / 2;
+            encoder.put_bytes(bytes.into_iter().take(n), case);
+            &encoder.as_str()[..p]
         }
-    }
+        _ => {
+            encoder.put_bytes(bytes, case);
+            encoder.as_str()
+        }
+    };
     f.pad_integral(true, "0x", encoded)
 }
 
@@ -587,6 +592,8 @@ mod tests {
             let dummy = Dummy([42; 32]);
             assert_eq!(dummy.to_string(), "2a".repeat(32));
             assert_eq!(format!("{:.10}", dummy), "2a".repeat(5));
+            assert_eq!(format!("{:.11}", dummy), "2a".repeat(5) + "2");
+            assert_eq!(format!("{:.65}", dummy), "2a".repeat(32));
         }
 
         #[test]
