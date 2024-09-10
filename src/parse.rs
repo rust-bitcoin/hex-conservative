@@ -69,9 +69,44 @@ mod tests {
             <[u8; 4]>::from_hex(oddlen),
             Err(InvalidLengthError { invalid: 17, expected: 8 }.into())
         );
-        assert_eq!(Vec::<u8>::from_hex(badchar1), Err(InvalidCharError { invalid: b'Z' }.into()));
-        assert_eq!(Vec::<u8>::from_hex(badchar2), Err(InvalidCharError { invalid: b'Y' }.into()));
-        assert_eq!(Vec::<u8>::from_hex(badchar3), Err(InvalidCharError { invalid: 194 }.into()));
+        assert_eq!(
+            Vec::<u8>::from_hex(badchar1),
+            Err(InvalidCharError { pos: 0, invalid: b'Z' }.into())
+        );
+        assert_eq!(
+            Vec::<u8>::from_hex(badchar2),
+            Err(InvalidCharError { pos: 3, invalid: b'Y' }.into())
+        );
+        assert_eq!(
+            Vec::<u8>::from_hex(badchar3),
+            Err(InvalidCharError { pos: 0, invalid: 194 }.into())
+        );
+    }
+
+    #[test]
+    fn hex_error_position() {
+        use crate::error::InvalidCharError;
+        let badpos1 = "Z123456789abcdef";
+        let badpos2 = "012Y456789abcdeb";
+        let badpos3 = "0123456789abcdeZ";
+        let badpos4 = "0123456789abYdef";
+
+        assert_eq!(
+            HexToBytesIter::new(badpos1).unwrap().next().unwrap(),
+            Err(InvalidCharError { pos: 0, invalid: b'Z' })
+        );
+        assert_eq!(
+            HexToBytesIter::new(badpos2).unwrap().nth(1).unwrap(),
+            Err(InvalidCharError { pos: 3, invalid: b'Y' })
+        );
+        assert_eq!(
+            HexToBytesIter::new(badpos3).unwrap().next_back().unwrap(),
+            Err(InvalidCharError { pos: 15, invalid: b'Z' })
+        );
+        assert_eq!(
+            HexToBytesIter::new(badpos4).unwrap().nth_back(1).unwrap(),
+            Err(InvalidCharError { pos: 12, invalid: b'Y' })
+        );
     }
 
     #[test]
