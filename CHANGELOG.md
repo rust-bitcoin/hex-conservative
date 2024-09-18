@@ -1,3 +1,13 @@
+# 0.3.0 - 2024-09-18
+
+- Remove the `core2` dependency [#105](https://github.com/rust-bitcoin/hex-conservative/pull/)
+- Introduce more serde utilities [#92](https://github.com/rust-bitcoin/hex-conservative/pull/92)
+- Add `impl_fmt_traits` macro [#90](https://github.com/rust-bitcoin/hex-conservative/pull/)
+- Enable serialization of byte slices [#96](https://github.com/rust-bitcoin/hex-conservative/pull/)
+- Bump MSRV to Rust `1.63.0` [#102](https://github.com/rust-bitcoin/hex-conservative/pull/)
+- Store position of invalid char in `InvalidCharError` [#107](https://github.com/rust-bitcoin/hex-conservative/pull/)
+- Only encode the bytes formatted in the hex string [#108](https://github.com/rust-bitcoin/hex-conservative/pull/)
+
 # 0.2.1 - 2024-05-17
 
 - Add a new `impl_fmt_traits` macro that can be used to implement `fmt::{LowerHex, UpperHex,
