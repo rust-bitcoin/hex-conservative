@@ -11,7 +11,7 @@ pub struct Hexy<'s> {
 
 impl<'s> Hexy<'s> {
     /// Demonstrates getting internal opaque data as a byte slice.
-    pub fn as_bytes(&self) -> &[u8] { &self.data }
+    pub fn as_bytes(&self) -> &[u8] { self.data }
 }
 
 impl<'s> fmt::LowerHex for Hexy<'s> {
@@ -34,14 +34,14 @@ fn do_test(data: &[u8]) {
     println!("lower: {}", lower);
     for c in lower.chars() {
         assert!(c.is_ascii_lowercase() || c.is_ascii_digit());
-        assert!(c.is_digit(16));
+        assert!(c.is_ascii_digit());
     }
 
     let lower = format!("{:X}", hexy);
     assert!(lower.len() % 2 == 0);
     for c in lower.chars() {
         assert!(c.is_ascii_uppercase() || c.is_ascii_digit());
-        assert!(c.is_digit(16));
+        assert!(c.is_ascii_digit());
     }
 }
 

@@ -4,15 +4,11 @@ use honggfuzz::fuzz;
 const LEN: usize = 32; // Arbitrary amount of data.
 
 fn do_test(data: &[u8]) {
-    match std::str::from_utf8(data) {
-        Ok(s) => match <[u8; LEN]>::from_hex(s) {
-            Ok(hexy) => {
-                let got = format!("{:x}", hexy.as_hex());
-                assert_eq!(got, s.to_lowercase());
-            }
-            Err(_) => return,
-        },
-        Err(_) => return,
+    if let Ok(s) = std::str::from_utf8(data) {
+        if let Ok(hexy) = <[u8; LEN]>::from_hex(s) {
+            let got = format!("{:x}", hexy.as_hex());
+            assert_eq!(got, s.to_lowercase());
+        }
     }
 }
 
