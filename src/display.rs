@@ -538,6 +538,51 @@ where
     f.pad_integral(true, "0x", encoded)
 }
 
+/// Given a `T:` [`fmt::Write`], `HexWriter` implements [`std::io::Write`]
+/// and writes the source bytes to its inner `T` as hex characters.
+#[cfg(any(test, feature = "std"))]
+#[cfg_attr(docsrs, doc(cfg(any(test, feature = "std"))))]
+pub struct HexWriter<T>(T, Case);
+
+#[cfg(any(test, feature = "std"))]
+#[cfg_attr(docsrs, doc(cfg(any(test, feature = "std"))))]
+impl<T> HexWriter<T> {
+    /// Creates a `HexWriter` that writes the source bytes to `dest` as hex characters
+    /// in the given `case`.
+    pub fn new(dest: T, case: Case) -> Self { Self(dest, case) }
+    /// Consumes this `HexWriter` returning the inner `T`.
+    pub fn into_inner(self) -> T { self.0 }
+}
+
+#[cfg(any(test, feature = "std"))]
+#[cfg_attr(docsrs, doc(cfg(any(test, feature = "std"))))]
+impl<T> std::io::Write for HexWriter<T>
+where
+    T: core::fmt::Write,
+{
+    /// # Errors
+    ///
+    /// If no bytes could be written to this `HexWriter`, and the provided buffer is not empty,
+    /// returns [`std::io::ErrorKind::Other`], otherwise returns `Ok`.
+    fn write(&mut self, buf: &[u8]) -> Result<usize, std::io::Error> {
+        let mut n = 0;
+        let table = self.1.table();
+        for byte in buf {
+            let pair = table.byte_to_hex(*byte);
+            if self.0.write_str(&pair).is_err() {
+                break;
+            }
+            n += 1;
+        }
+        if n == 0 && !buf.is_empty() {
+            Err(std::io::ErrorKind::Other.into())
+        } else {
+            Ok(n)
+        }
+    }
+    fn flush(&mut self) -> Result<(), std::io::Error> { Ok(()) }
+}
+
 #[cfg(test)]
 mod tests {
     #[cfg(feature = "alloc")]
@@ -762,6 +807,47 @@ mod tests {
             let want = "78563412";
             let got = format!("{}", tc);
             assert_eq!(got, want);
+        }
+    }
+
+    #[cfg(feature = "std")]
+    mod std {
+
+        #[test]
+        fn hex_writer() {
+            use std::io::{ErrorKind, Result, Write};
+
+            use arrayvec::ArrayString;
+
+            use super::Case::{Lower, Upper};
+            use super::{DisplayHex, HexWriter};
+
+            macro_rules! test_hex_writer {
+                ($cap:expr, $case: expr, $src: expr, $want: expr, $hex_result: expr) => {
+                    let dest_buf = ArrayString::<$cap>::new();
+                    let mut dest = HexWriter(dest_buf, $case);
+                    let got = dest.write($src);
+                    match $want {
+                        Ok(n) => assert_eq!(got.unwrap(), n),
+                        Err(e) => assert_eq!(got.unwrap_err().kind(), e.kind()),
+                    }
+                    assert_eq!(dest.into_inner().as_str(), $hex_result);
+                };
+            }
+
+            test_hex_writer!(0, Lower, &[], Result::Ok(0), "");
+            test_hex_writer!(0, Lower, &[0xab, 0xcd], Result::Err(ErrorKind::Other.into()), "");
+            test_hex_writer!(1, Lower, &[0xab, 0xcd], Result::Err(ErrorKind::Other.into()), "");
+            test_hex_writer!(2, Lower, &[0xab, 0xcd], Result::Ok(1), "ab");
+            test_hex_writer!(3, Lower, &[0xab, 0xcd], Result::Ok(1), "ab");
+            test_hex_writer!(4, Lower, &[0xab, 0xcd], Result::Ok(2), "abcd");
+            test_hex_writer!(8, Lower, &[0xab, 0xcd], Result::Ok(2), "abcd");
+            test_hex_writer!(8, Upper, &[0xab, 0xcd], Result::Ok(2), "ABCD");
+
+            let vec: Vec<_> = (0u8..32).collect();
+            let mut writer = HexWriter::new(String::new(), Lower);
+            writer.write_all(&vec[..]).unwrap();
+            assert_eq!(writer.into_inner(), vec.to_lower_hex_string());
         }
     }
 }
