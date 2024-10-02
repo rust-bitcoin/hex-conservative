@@ -106,6 +106,81 @@ pub trait DisplayHex: Copy + sealed::IsRef {
     fn hex_reserve_suggestion(self) -> usize { 0 }
 }
 
+fn internal_display(bytes: &[u8], f: &mut fmt::Formatter, case: Case) -> fmt::Result {
+    use fmt::Write;
+    // There are at least two optimizations left:
+    //
+    // * Reusing the buffer (encoder) which may decrease the number of virtual calls
+    // * Not recursing, avoiding another 1024B allocation and zeroing
+    //
+    // This would complicate the code so I was too lazy to do them but feel free to send a PR!
+
+    let mut encoder = BufEncoder::<1024>::new();
+
+    let pad_right = if let Some(width) = f.width() {
+        let string_len = match f.precision() {
+            Some(max) => core::cmp::min(max, bytes.len() * 2),
+            None => bytes.len() * 2,
+        };
+
+        if string_len < width {
+            let (left, right) = match f.align().unwrap_or(fmt::Alignment::Left) {
+                fmt::Alignment::Left => (0, width - string_len),
+                fmt::Alignment::Right => (width - string_len, 0),
+                fmt::Alignment::Center => ((width - string_len) / 2, (width - string_len + 1) / 2),
+            };
+            // Avoid division by zero and optimize for common case.
+            if left > 0 {
+                let c = f.fill();
+                let chunk_len = encoder.put_filler(c, left);
+                let padding = encoder.as_str();
+                for _ in 0..(left / chunk_len) {
+                    f.write_str(padding)?;
+                }
+                f.write_str(&padding[..((left % chunk_len) * c.len_utf8())])?;
+                encoder.clear();
+            }
+            right
+        } else {
+            0
+        }
+    } else {
+        0
+    };
+
+    match f.precision() {
+        Some(max) if bytes.len() > max / 2 => {
+            write!(f, "{}", bytes[..(max / 2)].as_hex())?;
+            if max % 2 == 1 {
+                f.write_char(case.table().byte_to_hex(bytes[max / 2]).as_bytes()[0].into())?;
+            }
+        }
+        Some(_) | None => {
+            let mut chunks = bytes.chunks_exact(512);
+            for chunk in &mut chunks {
+                encoder.put_bytes(chunk, case);
+                f.write_str(encoder.as_str())?;
+                encoder.clear();
+            }
+            encoder.put_bytes(chunks.remainder(), case);
+            f.write_str(encoder.as_str())?;
+        }
+    }
+
+    // Avoid division by zero and optimize for common case.
+    if pad_right > 0 {
+        encoder.clear();
+        let c = f.fill();
+        let chunk_len = encoder.put_filler(c, pad_right);
+        let padding = encoder.as_str();
+        for _ in 0..(pad_right / chunk_len) {
+            f.write_str(padding)?;
+        }
+        f.write_str(&padding[..((pad_right % chunk_len) * c.len_utf8())])?;
+    }
+    Ok(())
+}
+
 mod sealed {
     /// Trait marking a shared reference.
     pub trait IsRef: Copy {}
@@ -154,81 +229,7 @@ pub struct DisplayByteSlice<'a> {
 
 impl<'a> DisplayByteSlice<'a> {
     fn display(&self, f: &mut fmt::Formatter, case: Case) -> fmt::Result {
-        use fmt::Write;
-        // There are at least two optimizations left:
-        //
-        // * Reusing the buffer (encoder) which may decrease the number of virtual calls
-        // * Not recursing, avoiding another 1024B allocation and zeroing
-        //
-        // This would complicate the code so I was too lazy to do them but feel free to send a PR!
-
-        let mut encoder = BufEncoder::<1024>::new();
-
-        let pad_right = if let Some(width) = f.width() {
-            let string_len = match f.precision() {
-                Some(max) => core::cmp::min(max, self.bytes.len() * 2),
-                None => self.bytes.len() * 2,
-            };
-
-            if string_len < width {
-                let (left, right) = match f.align().unwrap_or(fmt::Alignment::Left) {
-                    fmt::Alignment::Left => (0, width - string_len),
-                    fmt::Alignment::Right => (width - string_len, 0),
-                    fmt::Alignment::Center =>
-                        ((width - string_len) / 2, (width - string_len + 1) / 2),
-                };
-                // Avoid division by zero and optimize for common case.
-                if left > 0 {
-                    let c = f.fill();
-                    let chunk_len = encoder.put_filler(c, left);
-                    let padding = encoder.as_str();
-                    for _ in 0..(left / chunk_len) {
-                        f.write_str(padding)?;
-                    }
-                    f.write_str(&padding[..((left % chunk_len) * c.len_utf8())])?;
-                    encoder.clear();
-                }
-                right
-            } else {
-                0
-            }
-        } else {
-            0
-        };
-
-        match f.precision() {
-            Some(max) if self.bytes.len() > max / 2 => {
-                write!(f, "{}", self.bytes[..(max / 2)].as_hex())?;
-                if max % 2 == 1 {
-                    f.write_char(
-                        case.table().byte_to_hex(self.bytes[max / 2]).as_bytes()[0].into(),
-                    )?;
-                }
-            }
-            Some(_) | None => {
-                let mut chunks = self.bytes.chunks_exact(512);
-                for chunk in &mut chunks {
-                    encoder.put_bytes(chunk, case);
-                    f.write_str(encoder.as_str())?;
-                    encoder.clear();
-                }
-                encoder.put_bytes(chunks.remainder(), case);
-                f.write_str(encoder.as_str())?;
-            }
-        }
-
-        // Avoid division by zero and optimize for common case.
-        if pad_right > 0 {
-            encoder.clear();
-            let c = f.fill();
-            let chunk_len = encoder.put_filler(c, pad_right);
-            let padding = encoder.as_str();
-            for _ in 0..(pad_right / chunk_len) {
-                f.write_str(padding)?;
-            }
-            f.write_str(&padding[..((pad_right % chunk_len) * c.len_utf8())])?;
-        }
-        Ok(())
+        internal_display(self.bytes, f, case)
     }
 }
 
@@ -268,9 +269,7 @@ impl<'a, const CAP: usize> DisplayArray<'a, CAP> {
     }
 
     fn display(&self, f: &mut fmt::Formatter, case: Case) -> fmt::Result {
-        let mut encoder = BufEncoder::<CAP>::new();
-        encoder.put_bytes(self.array, case);
-        f.pad_integral(true, "0x", encoder.as_str())
+        internal_display(self.array, f, case)
     }
 }
 
