@@ -166,8 +166,8 @@ impl<'a> DisplayByteSlice<'a> {
 
         let pad_right = if let Some(width) = f.width() {
             let string_len = match f.precision() {
-                Some(max) if self.bytes.len() * 2 > (max + 1) / 2 => max,
-                Some(_) | None => self.bytes.len() * 2,
+                Some(max) => core::cmp::min(max, self.bytes.len() * 2),
+                None => self.bytes.len() * 2,
             };
 
             if string_len < width {
@@ -197,11 +197,11 @@ impl<'a> DisplayByteSlice<'a> {
         };
 
         match f.precision() {
-            Some(max) if self.bytes.len() > (max + 1) / 2 => {
+            Some(max) if self.bytes.len() > max / 2 => {
                 write!(f, "{}", self.bytes[..(max / 2)].as_hex())?;
-                if max % 2 == 1 && self.bytes.len() > max / 2 + 1 {
+                if max % 2 == 1 {
                     f.write_char(
-                        case.table().byte_to_hex(self.bytes[max / 2 + 1]).as_bytes()[1].into(),
+                        case.table().byte_to_hex(self.bytes[max / 2]).as_bytes()[0].into(),
                     )?;
                 }
             }
@@ -623,6 +623,7 @@ mod tests {
             let v = vec![0x12, 0x34, 0x56, 0x78];
             // Remember the integer is number of hex chars not number of bytes.
             assert_eq!(format!("{0:.4}", v.as_hex()), "1234");
+            assert_eq!(format!("{0:.5}", v.as_hex()), "12345");
         }
 
         #[test]
@@ -630,12 +631,14 @@ mod tests {
             // Precision gets the most significant bytes.
             let v = vec![0x12, 0x34, 0x56, 0x78];
             assert_eq!(format!("{0:10.4}", v.as_hex()), "1234      ");
+            assert_eq!(format!("{0:10.5}", v.as_hex()), "12345     ");
         }
 
         #[test]
         fn precision_with_padding_pads_right() {
             let v = vec![0x12, 0x34, 0x56, 0x78];
             assert_eq!(format!("{0:10.20}", v.as_hex()), "12345678  ");
+            assert_eq!(format!("{0:10.14}", v.as_hex()), "12345678  ");
         }
 
         #[test]
