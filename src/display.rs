@@ -595,23 +595,30 @@ mod tests {
             assert_eq!(format!("{:.65}", dummy), "2a".repeat(32));
         }
 
+        macro_rules! test_display_hex {
+            ($fs: expr, $a: expr, $check: expr) => {
+                let to_display_array = $a;
+                let to_display_byte_slice = Vec::from($a);
+                assert_eq!(format!($fs, to_display_array.as_hex()), $check);
+                assert_eq!(format!($fs, to_display_byte_slice.as_hex()), $check);
+            };
+        }
+
         #[test]
         fn display_short_with_padding() {
-            let v = vec![0xbe, 0xef];
-            assert_eq!(format!("Hello {:<8}!", v.as_hex()), "Hello beef    !");
-            assert_eq!(format!("Hello {:-<8}!", v.as_hex()), "Hello beef----!");
-            assert_eq!(format!("Hello {:^8}!", v.as_hex()), "Hello   beef  !");
-            assert_eq!(format!("Hello {:>8}!", v.as_hex()), "Hello     beef!");
+            test_display_hex!("Hello {:<8}!", [0xbe, 0xef], "Hello beef    !");
+            test_display_hex!("Hello {:-<8}!", [0xbe, 0xef], "Hello beef----!");
+            test_display_hex!("Hello {:^8}!", [0xbe, 0xef], "Hello   beef  !");
+            test_display_hex!("Hello {:>8}!", [0xbe, 0xef], "Hello     beef!");
         }
 
         #[test]
         fn display_long() {
             // Note this string is shorter than the one above.
-            let v = vec![0xab; 512];
+            let a = [0xab; 512];
             let mut want = "0".repeat(2000 - 1024);
             want.extend(core::iter::repeat("ab").take(512));
-            let got = format!("{:0>2000}", v.as_hex());
-            assert_eq!(got, want)
+            test_display_hex!("{:0>2000}", a, want);
         }
 
         // Precision and padding act the same as for strings in the stdlib (because we use `Formatter::pad`).
@@ -619,61 +626,52 @@ mod tests {
         #[test]
         fn precision_truncates() {
             // Precision gets the most significant bytes.
-            let v = vec![0x12, 0x34, 0x56, 0x78];
             // Remember the integer is number of hex chars not number of bytes.
-            assert_eq!(format!("{0:.4}", v.as_hex()), "1234");
-            assert_eq!(format!("{0:.5}", v.as_hex()), "12345");
+            test_display_hex!("{0:.4}", [0x12, 0x34, 0x56, 0x78], "1234");
+            test_display_hex!("{0:.5}", [0x12, 0x34, 0x56, 0x78], "12345");
         }
 
         #[test]
         fn precision_with_padding_truncates() {
             // Precision gets the most significant bytes.
-            let v = vec![0x12, 0x34, 0x56, 0x78];
-            assert_eq!(format!("{0:10.4}", v.as_hex()), "1234      ");
-            assert_eq!(format!("{0:10.5}", v.as_hex()), "12345     ");
+            test_display_hex!("{0:10.4}", [0x12, 0x34, 0x56, 0x78], "1234      ");
+            test_display_hex!("{0:10.5}", [0x12, 0x34, 0x56, 0x78], "12345     ");
         }
 
         #[test]
         fn precision_with_padding_pads_right() {
-            let v = vec![0x12, 0x34, 0x56, 0x78];
-            assert_eq!(format!("{0:10.20}", v.as_hex()), "12345678  ");
-            assert_eq!(format!("{0:10.14}", v.as_hex()), "12345678  ");
+            test_display_hex!("{0:10.20}", [0x12, 0x34, 0x56, 0x78], "12345678  ");
+            test_display_hex!("{0:10.14}", [0x12, 0x34, 0x56, 0x78], "12345678  ");
         }
 
         #[test]
         fn precision_with_padding_pads_left() {
-            let v = vec![0x12, 0x34, 0x56, 0x78];
-            assert_eq!(format!("{0:>10.20}", v.as_hex()), "  12345678");
+            test_display_hex!("{0:>10.20}", [0x12, 0x34, 0x56, 0x78], "  12345678");
         }
 
         #[test]
         fn precision_with_padding_pads_center() {
-            let v = vec![0x12, 0x34, 0x56, 0x78];
-            assert_eq!(format!("{0:^10.20}", v.as_hex()), " 12345678 ");
+            test_display_hex!("{0:^10.20}", [0x12, 0x34, 0x56, 0x78], " 12345678 ");
         }
 
         #[test]
         fn precision_with_padding_pads_center_odd() {
-            let v = vec![0x12, 0x34, 0x56, 0x78];
-            assert_eq!(format!("{0:^11.20}", v.as_hex()), " 12345678  ");
+            test_display_hex!("{0:^11.20}", [0x12, 0x34, 0x56, 0x78], " 12345678  ");
         }
 
         #[test]
         fn precision_does_not_extend() {
-            let v = vec![0x12, 0x34, 0x56, 0x78];
-            assert_eq!(format!("{0:.16}", v.as_hex()), "12345678");
+            test_display_hex!("{0:.16}", [0x12, 0x34, 0x56, 0x78], "12345678");
         }
 
         #[test]
         fn padding_extends() {
-            let v = vec![0xab; 2];
-            assert_eq!(format!("{:0>8}", v.as_hex()), "0000abab");
+            test_display_hex!("{:0>8}", [0xab; 2], "0000abab");
         }
 
         #[test]
         fn padding_does_not_truncate() {
-            let v = vec![0x12, 0x34, 0x56, 0x78];
-            assert_eq!(format!("{:0>4}", v.as_hex()), "12345678");
+            test_display_hex!("{:0>4}", [0x12, 0x34, 0x56, 0x78], "12345678");
         }
 
         #[test]
