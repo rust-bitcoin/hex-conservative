@@ -2,6 +2,7 @@
 
 //! Iterator that converts hex to bytes.
 
+use core::borrow::Borrow;
 use core::convert::TryInto;
 use core::iter::FusedIterator;
 use core::str;
@@ -193,7 +194,11 @@ fn hex_chars_to_byte(hi: u8, lo: u8) -> Result<u8, (u8, bool)> {
 }
 
 /// Iterator over bytes which encodes the bytes and yields hex characters.
-pub struct BytesToHexIter<I: Iterator<Item = u8>> {
+pub struct BytesToHexIter<I>
+where
+    I: Iterator,
+    I::Item: Borrow<u8>,
+{
     /// The iterator whose next byte will be encoded to yield hex characters.
     iter: I,
     /// The low character of the pair (high, low) of hex characters encoded per byte.
@@ -204,7 +209,8 @@ pub struct BytesToHexIter<I: Iterator<Item = u8>> {
 
 impl<I> BytesToHexIter<I>
 where
-    I: Iterator<Item = u8>,
+    I: Iterator,
+    I::Item: Borrow<u8>,
 {
     /// Constructs a new `BytesToHexIter` from a byte iterator.
     pub fn new(iter: I) -> BytesToHexIter<I> { Self { iter, low: None, table: &Table::LOWER } }
@@ -212,7 +218,8 @@ where
 
 impl<I> Iterator for BytesToHexIter<I>
 where
-    I: Iterator<Item = u8>,
+    I: Iterator,
+    I::Item: Borrow<u8>,
 {
     type Item = char;
 
@@ -224,7 +231,7 @@ where
                 Some(c)
             }
             None => self.iter.next().map(|b| {
-                let [high, low] = self.table.byte_to_hex(b);
+                let [high, low] = self.table.byte_to_hex(*b.borrow());
                 self.low = Some(low as char);
                 high as char
             }),
@@ -243,7 +250,8 @@ where
 
 impl<I> DoubleEndedIterator for BytesToHexIter<I>
 where
-    I: DoubleEndedIterator + Iterator<Item = u8>,
+    I: DoubleEndedIterator,
+    I::Item: Borrow<u8>,
 {
     #[inline]
     fn next_back(&mut self) -> Option<char> {
@@ -253,7 +261,7 @@ where
                 Some(c)
             }
             None => self.iter.next_back().map(|b| {
-                let [high, low] = self.table.byte_to_hex(b);
+                let [high, low] = self.table.byte_to_hex(*b.borrow());
                 self.low = Some(low as char);
                 high as char
             }),
@@ -263,13 +271,19 @@ where
 
 impl<I> ExactSizeIterator for BytesToHexIter<I>
 where
-    I: ExactSizeIterator + Iterator<Item = u8>,
+    I: ExactSizeIterator,
+    I::Item: Borrow<u8>,
 {
     #[inline]
     fn len(&self) -> usize { self.iter.len() * 2 }
 }
 
-impl<I> FusedIterator for BytesToHexIter<I> where I: FusedIterator + Iterator<Item = u8> {}
+impl<I> FusedIterator for BytesToHexIter<I>
+where
+    I: FusedIterator,
+    I::Item: Borrow<u8>,
+{
+}
 
 #[cfg(test)]
 mod tests {
@@ -313,7 +327,7 @@ mod tests {
         let bytes = [0xde, 0xad, 0xbe, 0xef];
         let hex = "deadbeef";
 
-        for (i, c) in BytesToHexIter::new(bytes.iter().cloned()).enumerate() {
+        for (i, c) in BytesToHexIter::new(bytes.iter()).enumerate() {
             assert_eq!(c, hex.chars().nth(i).unwrap());
         }
     }
@@ -323,7 +337,7 @@ mod tests {
         let bytes = [0xde, 0xad, 0xbe, 0xef];
         let hex = "efbeadde";
 
-        for (i, c) in BytesToHexIter::new(bytes.iter().cloned()).rev().enumerate() {
+        for (i, c) in BytesToHexIter::new(bytes.iter()).rev().enumerate() {
             assert_eq!(c, hex.chars().nth(i).unwrap());
         }
     }
