@@ -9,6 +9,7 @@ use core::str;
 use std::io;
 
 use crate::error::{InvalidCharError, OddLengthStringError};
+use crate::Table;
 
 /// Convenience alias for `HexToBytesIter<HexDigitsIter<'a>>`.
 pub type HexSliceToBytesIter<'a> = HexToBytesIter<HexDigitsIter<'a>>;
@@ -197,6 +198,8 @@ pub struct BytesToHexIter<I: Iterator<Item = u8>> {
     iter: I,
     /// The low character of the pair (high, low) of hex characters encoded per byte.
     low: Option<char>,
+    /// The byte-to-hex conversion table.
+    table: &'static Table,
 }
 
 impl<I> BytesToHexIter<I>
@@ -204,7 +207,7 @@ where
     I: Iterator<Item = u8>,
 {
     /// Constructs a new `BytesToHexIter` from a byte iterator.
-    pub fn new(iter: I) -> BytesToHexIter<I> { Self { iter, low: None } }
+    pub fn new(iter: I) -> BytesToHexIter<I> { Self { iter, low: None, table: &Table::LOWER } }
 }
 
 impl<I> Iterator for BytesToHexIter<I>
@@ -221,9 +224,9 @@ where
                 Some(c)
             }
             None => self.iter.next().map(|b| {
-                let (high, low) = byte_to_hex_chars(b);
-                self.low = Some(low);
-                high
+                let [high, low] = self.table.byte_to_hex(b);
+                self.low = Some(low as char);
+                high as char
             }),
         }
     }
@@ -250,9 +253,9 @@ where
                 Some(c)
             }
             None => self.iter.next_back().map(|b| {
-                let (high, low) = byte_to_hex_chars(b);
-                self.low = Some(low);
-                high
+                let [high, low] = self.table.byte_to_hex(b);
+                self.low = Some(low as char);
+                high as char
             }),
         }
     }
@@ -268,31 +271,21 @@ where
 
 impl<I> FusedIterator for BytesToHexIter<I> where I: FusedIterator + Iterator<Item = u8> {}
 
-/// Returns the (high, low) hex characters encoding `b`.
-fn byte_to_hex_chars(b: u8) -> (char, char) {
-    const HEX_TABLE: [u8; 16] = *b"0123456789abcdef";
-
-    let high = HEX_TABLE[usize::from(b >> 4)];
-    let low = HEX_TABLE[usize::from(b & 0b00001111)];
-
-    (char::from(high), char::from(low))
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn encode_byte() {
-        let tcs =
-            vec![(0x00, ('0', '0')), (0x0a, ('0', 'a')), (0xad, ('a', 'd')), (0xff, ('f', 'f'))];
-        for (b, (high, low)) in tcs {
-            assert_eq!(byte_to_hex_chars(b), (high, low));
-        }
-        assert_eq!(byte_to_hex_chars(0x00), ('0', '0'));
-        assert_eq!(byte_to_hex_chars(0x0a), ('0', 'a'));
-        assert_eq!(byte_to_hex_chars(0xad), ('a', 'd'));
-        assert_eq!(byte_to_hex_chars(0xff), ('f', 'f'));
+        assert_eq!(Table::LOWER.byte_to_hex(0x00), [b'0', b'0']);
+        assert_eq!(Table::LOWER.byte_to_hex(0x0a), [b'0', b'a']);
+        assert_eq!(Table::LOWER.byte_to_hex(0xad), [b'a', b'd']);
+        assert_eq!(Table::LOWER.byte_to_hex(0xff), [b'f', b'f']);
+
+        assert_eq!(Table::UPPER.byte_to_hex(0x00), [b'0', b'0']);
+        assert_eq!(Table::UPPER.byte_to_hex(0x0a), [b'0', b'A']);
+        assert_eq!(Table::UPPER.byte_to_hex(0xad), [b'A', b'D']);
+        assert_eq!(Table::UPPER.byte_to_hex(0xff), [b'F', b'F']);
     }
 
     #[test]
