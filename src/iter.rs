@@ -10,7 +10,7 @@ use core::str;
 use std::io;
 
 use crate::error::{InvalidCharError, OddLengthStringError};
-use crate::Table;
+use crate::{Case, Table};
 
 /// Convenience alias for `HexToBytesIter<HexDigitsIter<'a>>`.
 pub type HexSliceToBytesIter<'a> = HexToBytesIter<HexDigitsIter<'a>>;
@@ -212,8 +212,11 @@ where
     I: Iterator,
     I::Item: Borrow<u8>,
 {
-    /// Constructs a new `BytesToHexIter` from a byte iterator.
-    pub fn new(iter: I) -> BytesToHexIter<I> { Self { iter, low: None, table: &Table::LOWER } }
+    /// Constructs a `BytesToHexIter` that will yield hex characters in the given case from a byte
+    /// iterator.
+    pub fn new(iter: I, case: Case) -> BytesToHexIter<I> {
+        Self { iter, low: None, table: case.table() }
+    }
 }
 
 impl<I> Iterator for BytesToHexIter<I>
@@ -325,36 +328,56 @@ mod tests {
     #[test]
     fn encode_iter() {
         let bytes = [0xde, 0xad, 0xbe, 0xef];
-        let hex = "deadbeef";
+        let lower_want = "deadbeef";
+        let upper_want = "DEADBEEF";
 
-        for (i, c) in BytesToHexIter::new(bytes.iter()).enumerate() {
-            assert_eq!(c, hex.chars().nth(i).unwrap());
+        for (i, c) in BytesToHexIter::new(bytes.iter(), Case::Lower).enumerate() {
+            assert_eq!(c, lower_want.chars().nth(i).unwrap());
+        }
+        for (i, c) in BytesToHexIter::new(bytes.iter(), Case::Upper).enumerate() {
+            assert_eq!(c, upper_want.chars().nth(i).unwrap());
         }
     }
 
     #[test]
     fn encode_iter_backwards() {
         let bytes = [0xde, 0xad, 0xbe, 0xef];
-        let hex = "efbeadde";
+        let lower_want = "efbeadde";
+        let upper_want = "EFBEADDE";
 
-        for (i, c) in BytesToHexIter::new(bytes.iter()).rev().enumerate() {
-            assert_eq!(c, hex.chars().nth(i).unwrap());
+        for (i, c) in BytesToHexIter::new(bytes.iter(), Case::Lower).rev().enumerate() {
+            assert_eq!(c, lower_want.chars().nth(i).unwrap());
+        }
+        for (i, c) in BytesToHexIter::new(bytes.iter(), Case::Upper).rev().enumerate() {
+            assert_eq!(c, upper_want.chars().nth(i).unwrap());
         }
     }
 
     #[test]
     fn roundtrip_forward() {
-        let hex = "deadbeefcafebabe";
-        let bytes_iter = HexToBytesIter::new(hex).unwrap().map(|res| res.unwrap());
-        let got = BytesToHexIter::new(bytes_iter).collect::<String>();
-        assert_eq!(got, hex);
+        let lower_want = "deadbeefcafebabe";
+        let upper_want = "DEADBEEFCAFEBABE";
+        let lower_bytes_iter = HexToBytesIter::new(lower_want).unwrap().map(|res| res.unwrap());
+        let lower_got = BytesToHexIter::new(lower_bytes_iter, Case::Lower).collect::<String>();
+        assert_eq!(lower_got, lower_want);
+        let upper_bytes_iter = HexToBytesIter::new(upper_want).unwrap().map(|res| res.unwrap());
+        let upper_got = BytesToHexIter::new(upper_bytes_iter, Case::Upper).collect::<String>();
+        assert_eq!(upper_got, upper_want);
     }
 
     #[test]
     fn roundtrip_backward() {
-        let hex = "deadbeefcafebabe";
-        let bytes_iter = HexToBytesIter::new(hex).unwrap().rev().map(|res| res.unwrap());
-        let got = BytesToHexIter::new(bytes_iter).rev().collect::<String>();
-        assert_eq!(got, hex);
+        let lower_want = "deadbeefcafebabe";
+        let upper_want = "DEADBEEFCAFEBABE";
+        let lower_bytes_iter =
+            HexToBytesIter::new(lower_want).unwrap().rev().map(|res| res.unwrap());
+        let lower_got =
+            BytesToHexIter::new(lower_bytes_iter, Case::Lower).rev().collect::<String>();
+        assert_eq!(lower_got, lower_want);
+        let upper_bytes_iter =
+            HexToBytesIter::new(upper_want).unwrap().rev().map(|res| res.unwrap());
+        let upper_got =
+            BytesToHexIter::new(upper_bytes_iter, Case::Upper).rev().collect::<String>();
+        assert_eq!(upper_got, upper_want);
     }
 }
