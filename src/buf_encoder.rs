@@ -38,7 +38,10 @@ impl<const CAP: usize> BufEncoder<CAP> {
     #[inline]
     #[track_caller]
     pub fn put_byte(&mut self, byte: u8, case: Case) {
-        self.buf.push_str(&case.table().byte_to_hex(byte));
+        let byte = case.table().byte_to_hex(byte);
+        // SAFETY: Table::byte_to_hex returns only valid ASCII
+        let byte = unsafe { core::str::from_utf8_unchecked(&byte) };
+        self.buf.push_str(byte);
     }
 
     /// Encodes `bytes` as hex in given `case` and appends them to the buffer.

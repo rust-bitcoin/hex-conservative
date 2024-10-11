@@ -152,7 +152,7 @@ fn internal_display(bytes: &[u8], f: &mut fmt::Formatter, case: Case) -> fmt::Re
         Some(max) if bytes.len() > max / 2 => {
             write!(f, "{}", bytes[..(max / 2)].as_hex())?;
             if max % 2 == 1 {
-                f.write_char(case.table().byte_to_hex(bytes[max / 2]).as_bytes()[0].into())?;
+                f.write_char(case.table().byte_to_hex(bytes[max / 2])[0] as char)?;
             }
         }
         Some(_) | None => {
