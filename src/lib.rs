@@ -133,8 +133,8 @@ mod table {
         /// value as a `&str` via `str::from_utf8` or a collection of `char`'s.
         #[inline]
         pub(crate) fn byte_to_hex(&self, byte: u8) -> [u8; 2] {
-            let left = self.0[usize::from(byte.wrapping_shr(4))];
-            let right = self.0[usize::from(byte & 0x0F)];
+            let left = self.0[(byte >> 4) as usize];
+            let right = self.0[(byte & 0x0F) as usize];
             [left, right]
         }
     }
