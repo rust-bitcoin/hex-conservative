@@ -12,7 +12,7 @@ use core::borrow::Borrow;
 
 use arrayvec::ArrayString;
 
-use super::Case;
+use super::{Case, Table};
 
 /// Hex-encodes bytes into the provided buffer.
 ///
@@ -21,47 +21,48 @@ use super::Case;
 /// buffering the hex and then formatting it is significantly faster.
 pub struct BufEncoder<const CAP: usize> {
     buf: ArrayString<CAP>,
+    table: &'static Table,
 }
 
 impl<const CAP: usize> BufEncoder<CAP> {
     const _CHECK_EVEN_CAPACITY: () = [(); 1][CAP % 2];
 
-    /// Creates an empty `BufEncoder`.
+    /// Creates an empty `BufEncoder` that will encode bytes to hex characters in the given case.
     #[inline]
-    pub fn new() -> Self { BufEncoder { buf: ArrayString::new() } }
+    pub fn new(case: Case) -> Self { BufEncoder { buf: ArrayString::new(), table: case.table() } }
 
-    /// Encodes `byte` as hex in given `case` and appends it to the buffer.
+    /// Encodes `byte` as hex and appends it to the buffer.
     ///
     /// ## Panics
     ///
     /// The method panics if the buffer is full.
     #[inline]
     #[track_caller]
-    pub fn put_byte(&mut self, byte: u8, case: Case) {
-        let byte = case.table().byte_to_hex(byte);
+    pub fn put_byte(&mut self, byte: u8) {
+        let byte = self.table.byte_to_hex(byte);
         // SAFETY: Table::byte_to_hex returns only valid ASCII
         let byte = unsafe { core::str::from_utf8_unchecked(&byte) };
         self.buf.push_str(byte);
     }
 
-    /// Encodes `bytes` as hex in given `case` and appends them to the buffer.
+    /// Encodes `bytes` as hex and appends them to the buffer.
     ///
     /// ## Panics
     ///
     /// The method panics if the bytes wouldn't fit the buffer.
     #[inline]
     #[track_caller]
-    pub fn put_bytes<I>(&mut self, bytes: I, case: Case)
+    pub fn put_bytes<I>(&mut self, bytes: I)
     where
         I: IntoIterator,
         I::Item: Borrow<u8>,
     {
-        self.put_bytes_inner(bytes.into_iter(), case)
+        self.put_bytes_inner(bytes.into_iter())
     }
 
     #[inline]
     #[track_caller]
-    fn put_bytes_inner<I>(&mut self, bytes: I, case: Case)
+    fn put_bytes_inner<I>(&mut self, bytes: I)
     where
         I: Iterator,
         I::Item: Borrow<u8>,
@@ -71,7 +72,7 @@ impl<const CAP: usize> BufEncoder<CAP> {
             assert!(max <= self.space_remaining());
         }
         for byte in bytes {
-            self.put_byte(*byte.borrow(), case);
+            self.put_byte(*byte.borrow());
         }
     }
 
@@ -82,9 +83,9 @@ impl<const CAP: usize> BufEncoder<CAP> {
     #[must_use = "this may write only part of the input buffer"]
     #[inline]
     #[track_caller]
-    pub fn put_bytes_min<'a>(&mut self, bytes: &'a [u8], case: Case) -> &'a [u8] {
+    pub fn put_bytes_min<'a>(&mut self, bytes: &'a [u8]) -> &'a [u8] {
         let to_write = self.space_remaining().min(bytes.len());
-        self.put_bytes(&bytes[..to_write], case);
+        self.put_bytes(&bytes[..to_write]);
         &bytes[to_write..]
     }
 
@@ -121,7 +122,7 @@ impl<const CAP: usize> BufEncoder<CAP> {
 }
 
 impl<const CAP: usize> Default for BufEncoder<CAP> {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self { Self::new(Case::Lower) }
 }
 
 #[cfg(test)]
@@ -130,72 +131,99 @@ mod tests {
 
     #[test]
     fn empty() {
-        let encoder = BufEncoder::<2>::new();
+        let encoder = BufEncoder::<2>::new(Case::Lower);
+        assert_eq!(encoder.as_str(), "");
+        assert!(!encoder.is_full());
+
+        let encoder = BufEncoder::<2>::new(Case::Upper);
         assert_eq!(encoder.as_str(), "");
         assert!(!encoder.is_full());
     }
 
     #[test]
     fn single_byte_exact_buf() {
-        let mut encoder = BufEncoder::<2>::new();
+        let mut encoder = BufEncoder::<2>::new(Case::Lower);
         assert_eq!(encoder.space_remaining(), 1);
-        encoder.put_byte(42, Case::Lower);
+        encoder.put_byte(42);
         assert_eq!(encoder.as_str(), "2a");
         assert_eq!(encoder.space_remaining(), 0);
         assert!(encoder.is_full());
         encoder.clear();
         assert_eq!(encoder.space_remaining(), 1);
         assert!(!encoder.is_full());
-        encoder.put_byte(42, Case::Upper);
+
+        let mut encoder = BufEncoder::<2>::new(Case::Upper);
+        assert_eq!(encoder.space_remaining(), 1);
+        encoder.put_byte(42);
         assert_eq!(encoder.as_str(), "2A");
         assert_eq!(encoder.space_remaining(), 0);
         assert!(encoder.is_full());
+        encoder.clear();
+        assert_eq!(encoder.space_remaining(), 1);
+        assert!(!encoder.is_full());
     }
 
     #[test]
     fn single_byte_oversized_buf() {
-        let mut encoder = BufEncoder::<4>::new();
+        let mut encoder = BufEncoder::<4>::new(Case::Lower);
         assert_eq!(encoder.space_remaining(), 2);
-        encoder.put_byte(42, Case::Lower);
+        encoder.put_byte(42);
         assert_eq!(encoder.space_remaining(), 1);
         assert_eq!(encoder.as_str(), "2a");
         assert!(!encoder.is_full());
         encoder.clear();
         assert_eq!(encoder.space_remaining(), 2);
-        encoder.put_byte(42, Case::Upper);
-        assert_eq!(encoder.as_str(), "2A");
+        assert!(!encoder.is_full());
+
+        let mut encoder = BufEncoder::<4>::new(Case::Upper);
+        assert_eq!(encoder.space_remaining(), 2);
+        encoder.put_byte(42);
         assert_eq!(encoder.space_remaining(), 1);
+        assert_eq!(encoder.as_str(), "2A");
+        assert!(!encoder.is_full());
+        encoder.clear();
+        assert_eq!(encoder.space_remaining(), 2);
         assert!(!encoder.is_full());
     }
 
     #[test]
     fn two_bytes() {
-        let mut encoder = BufEncoder::<4>::new();
-        encoder.put_byte(42, Case::Lower);
+        let mut encoder = BufEncoder::<4>::new(Case::Lower);
+        assert_eq!(encoder.space_remaining(), 2);
+        encoder.put_byte(42);
         assert_eq!(encoder.space_remaining(), 1);
-        encoder.put_byte(255, Case::Lower);
+        encoder.put_byte(255);
         assert_eq!(encoder.space_remaining(), 0);
         assert_eq!(encoder.as_str(), "2aff");
         assert!(encoder.is_full());
         encoder.clear();
+        assert_eq!(encoder.space_remaining(), 2);
         assert!(!encoder.is_full());
-        encoder.put_byte(42, Case::Upper);
-        encoder.put_byte(255, Case::Upper);
+
+        let mut encoder = BufEncoder::<4>::new(Case::Upper);
+        assert_eq!(encoder.space_remaining(), 2);
+        encoder.put_byte(42);
+        assert_eq!(encoder.space_remaining(), 1);
+        encoder.put_byte(255);
+        assert_eq!(encoder.space_remaining(), 0);
         assert_eq!(encoder.as_str(), "2AFF");
         assert!(encoder.is_full());
+        encoder.clear();
+        assert_eq!(encoder.space_remaining(), 2);
+        assert!(!encoder.is_full());
     }
 
     #[test]
     fn put_bytes_min() {
-        let mut encoder = BufEncoder::<2>::new();
-        let remainder = encoder.put_bytes_min(b"", Case::Lower);
+        let mut encoder = BufEncoder::<2>::new(Case::Lower);
+        let remainder = encoder.put_bytes_min(b"");
         assert_eq!(remainder, b"");
         assert_eq!(encoder.as_str(), "");
-        let remainder = encoder.put_bytes_min(b"*", Case::Lower);
+        let remainder = encoder.put_bytes_min(b"*");
         assert_eq!(remainder, b"");
         assert_eq!(encoder.as_str(), "2a");
         encoder.clear();
-        let remainder = encoder.put_bytes_min(&[42, 255], Case::Lower);
+        let remainder = encoder.put_bytes_min(&[42, 255]);
         assert_eq!(remainder, &[255]);
         assert_eq!(encoder.as_str(), "2a");
     }
@@ -227,18 +255,20 @@ mod tests {
         }
 
         let mut writer = Writer { buf: [0u8; 2], pos: 0 };
-        let mut encoder = BufEncoder::<2>::new();
 
+        let mut encoder = BufEncoder::<2>::new(Case::Lower);
         for i in 0..=255 {
             write!(writer, "{:02x}", i).unwrap();
-            encoder.put_byte(i, Case::Lower);
+            encoder.put_byte(i);
             assert_eq!(encoder.as_str(), writer.as_str());
             writer.pos = 0;
             encoder.clear();
         }
+
+        let mut encoder = BufEncoder::<2>::new(Case::Upper);
         for i in 0..=255 {
             write!(writer, "{:02X}", i).unwrap();
-            encoder.put_byte(i, Case::Upper);
+            encoder.put_byte(i);
             assert_eq!(encoder.as_str(), writer.as_str());
             writer.pos = 0;
             encoder.clear();
