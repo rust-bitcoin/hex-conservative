@@ -110,8 +110,6 @@ impl Case {
 
 /// Correctness boundary for `Table`.
 mod table {
-    use arrayvec::ArrayString;
-
     /// Table of hex chars.
     //
     // Correctness invariant: each byte in the table must be ASCII.
@@ -130,12 +128,14 @@ mod table {
         /// Encodes single byte as two ASCII chars using the given table.
         ///
         /// The function guarantees only returning values from the provided table.
+        ///
+        /// The function returns a `[u8; 2]` to give callers the freedom to interpret the return
+        /// value as a `&str` via `str::from_utf8` or a collection of `char`'s.
         #[inline]
-        pub(crate) fn byte_to_hex(&self, byte: u8) -> ArrayString<2> {
-            let left = self.0[usize::from(byte.wrapping_shr(4))];
+        pub(crate) fn byte_to_hex(&self, byte: u8) -> [u8; 2] {
+            let left = self.0[usize::from(byte >> 4)];
             let right = self.0[usize::from(byte & 0x0F)];
-
-            ArrayString::from_byte_string(&[left, right]).expect("Table only contains valid ASCII")
+            [left, right]
         }
     }
 }
