@@ -234,9 +234,9 @@ where
                 Some(c)
             }
             None => self.iter.next().map(|b| {
-                let [high, low] = self.table.byte_to_hex(*b.borrow());
-                self.low = Some(char::from(low));
-                char::from(high)
+                let [high, low] = self.table.byte_to_chars(*b.borrow());
+                self.low = Some(low);
+                high
             }),
         }
     }
@@ -264,9 +264,9 @@ where
                 Some(c)
             }
             None => self.iter.next_back().map(|b| {
-                let [high, low] = self.table.byte_to_hex(*b.borrow());
-                self.low = Some(char::from(low));
-                char::from(high)
+                let [high, low] = self.table.byte_to_chars(*b.borrow());
+                self.low = Some(low);
+                high
             }),
         }
     }
@@ -294,15 +294,26 @@ mod tests {
 
     #[test]
     fn encode_byte() {
-        assert_eq!(Table::LOWER.byte_to_hex(0x00), [b'0', b'0']);
-        assert_eq!(Table::LOWER.byte_to_hex(0x0a), [b'0', b'a']);
-        assert_eq!(Table::LOWER.byte_to_hex(0xad), [b'a', b'd']);
-        assert_eq!(Table::LOWER.byte_to_hex(0xff), [b'f', b'f']);
+        assert_eq!(Table::LOWER.byte_to_chars(0x00), ['0', '0']);
+        assert_eq!(Table::LOWER.byte_to_chars(0x0a), ['0', 'a']);
+        assert_eq!(Table::LOWER.byte_to_chars(0xad), ['a', 'd']);
+        assert_eq!(Table::LOWER.byte_to_chars(0xff), ['f', 'f']);
 
-        assert_eq!(Table::UPPER.byte_to_hex(0x00), [b'0', b'0']);
-        assert_eq!(Table::UPPER.byte_to_hex(0x0a), [b'0', b'A']);
-        assert_eq!(Table::UPPER.byte_to_hex(0xad), [b'A', b'D']);
-        assert_eq!(Table::UPPER.byte_to_hex(0xff), [b'F', b'F']);
+        assert_eq!(Table::UPPER.byte_to_chars(0x00), ['0', '0']);
+        assert_eq!(Table::UPPER.byte_to_chars(0x0a), ['0', 'A']);
+        assert_eq!(Table::UPPER.byte_to_chars(0xad), ['A', 'D']);
+        assert_eq!(Table::UPPER.byte_to_chars(0xff), ['F', 'F']);
+
+        let mut buf = [0u8; 2];
+        assert_eq!(Table::LOWER.byte_to_str(&mut buf, 0x00), "00");
+        assert_eq!(Table::LOWER.byte_to_str(&mut buf, 0x0a), "0a");
+        assert_eq!(Table::LOWER.byte_to_str(&mut buf, 0xad), "ad");
+        assert_eq!(Table::LOWER.byte_to_str(&mut buf, 0xff), "ff");
+
+        assert_eq!(Table::UPPER.byte_to_str(&mut buf, 0x00), "00");
+        assert_eq!(Table::UPPER.byte_to_str(&mut buf, 0x0a), "0A");
+        assert_eq!(Table::UPPER.byte_to_str(&mut buf, 0xad), "AD");
+        assert_eq!(Table::UPPER.byte_to_str(&mut buf, 0xff), "FF");
     }
 
     #[test]

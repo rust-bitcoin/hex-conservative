@@ -128,14 +128,24 @@ mod table {
         /// Encodes single byte as two ASCII chars using the given table.
         ///
         /// The function guarantees only returning values from the provided table.
-        ///
-        /// The function returns a `[u8; 2]` to give callers the freedom to interpret the return
-        /// value as a `&str` via `str::from_utf8` or a collection of `char`'s.
         #[inline]
-        pub(crate) fn byte_to_hex(&self, byte: u8) -> [u8; 2] {
+        pub(crate) fn byte_to_chars(&self, byte: u8) -> [char; 2] {
             let left = self.0[usize::from(byte >> 4)];
             let right = self.0[usize::from(byte & 0x0F)];
-            [left, right]
+            [char::from(left), char::from(right)]
+        }
+
+        /// Writes the single byte as two ASCII chars in the provided buffer, and returns a `&str`
+        /// to that buffer.
+        ///
+        /// The function guarantees only returning values from the provided table.
+        #[inline]
+        pub(crate) fn byte_to_str<'a>(&self, dest: &'a mut [u8; 2], byte: u8) -> &'a str {
+            dest[0] = self.0[usize::from(byte >> 4)];
+            dest[1] = self.0[usize::from(byte & 0x0F)];
+            // SAFETY: Table inner array contains only valid ascii
+            let hex_str = unsafe { core::str::from_utf8_unchecked(dest) };
+            hex_str
         }
     }
 }

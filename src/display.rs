@@ -152,7 +152,7 @@ fn internal_display(bytes: &[u8], f: &mut fmt::Formatter, case: Case) -> fmt::Re
         Some(max) if bytes.len() > max / 2 => {
             write!(f, "{}", bytes[..(max / 2)].as_hex())?;
             if max % 2 == 1 {
-                f.write_char(char::from(case.table().byte_to_hex(bytes[max / 2])[0]))?;
+                f.write_char(case.table().byte_to_chars(bytes[max / 2])[0])?;
             }
         }
         Some(_) | None => {
@@ -569,9 +569,8 @@ where
     fn write(&mut self, buf: &[u8]) -> Result<usize, std::io::Error> {
         let mut n = 0;
         for byte in buf {
-            let hex_chars: [u8; 2] = self.table.byte_to_hex(*byte);
-            // SAFETY: Table::byte_to_hex returns only valid ASCII
-            let hex_str = unsafe { core::str::from_utf8_unchecked(&hex_chars) };
+            let mut hex_chars = [0u8; 2];
+            let hex_str = self.table.byte_to_str(&mut hex_chars, *byte);
             if self.writer.write_str(hex_str).is_err() {
                 break;
             }
