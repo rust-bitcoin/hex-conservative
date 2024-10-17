@@ -9,6 +9,8 @@ use core::str;
 #[cfg(feature = "std")]
 use std::io;
 
+#[cfg(all(feature = "alloc", not(feature = "std")))]
+use crate::alloc::vec::Vec;
 use crate::error::{InvalidCharError, OddLengthStringError};
 use crate::{Case, Table};
 
@@ -38,6 +40,51 @@ impl<'a> HexToBytesIter<HexDigitsIter<'a>> {
 
     pub(crate) fn new_unchecked(s: &'a str) -> Self {
         Self::from_pairs(HexDigitsIter::new_unchecked(s.as_bytes()))
+    }
+
+    /// Writes all the bytes yielded by this `HexToBytesIter` to the provided slice.
+    ///
+    /// Stops writing if this `HexToBytesIter` yields an `InvalidCharError`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the length of this `HexToBytesIter` is not equal to the length of the provided
+    /// slice.
+    pub(crate) fn drain_to_slice(self, buf: &mut [u8]) -> Result<(), InvalidCharError> {
+        assert_eq!(self.len(), buf.len());
+        let mut ptr = buf.as_mut_ptr();
+        for byte in self {
+            // SAFETY: for loop iterates `len` times, and `buf` has length `len`
+            unsafe {
+                core::ptr::write(ptr, byte?);
+                ptr = ptr.add(1);
+            }
+        }
+        Ok(())
+    }
+
+    /// Writes all the bytes yielded by this `HexToBytesIter` to a `Vec<u8>`.
+    ///
+    /// This is equivalent to the combinator chain `iter().map().collect()` but was found by
+    /// benchmarking to be faster.
+    #[cfg(any(test, feature = "std", feature = "alloc"))]
+    pub(crate) fn drain_to_vec(self) -> Result<Vec<u8>, InvalidCharError> {
+        let len = self.len();
+        let mut ret = Vec::with_capacity(len);
+        let mut ptr = ret.as_mut_ptr();
+        for byte in self {
+            // SAFETY: for loop iterates `len` times, and `ret` has a capacity of at least `len`
+            unsafe {
+                // docs: "`core::ptr::write` is appropriate for initializing uninitialized memory"
+                core::ptr::write(ptr, byte?);
+                ptr = ptr.add(1);
+            }
+        }
+        // SAFETY: `len` elements have been initialized, and `ret` has a capacity of at least `len`
+        unsafe {
+            ret.set_len(len);
+        }
+        Ok(ret)
     }
 }
 
@@ -358,6 +405,109 @@ mod tests {
         let hex = "deadbeef";
         let iter = HexToBytesIter::new_unchecked(hex);
         assert_eq!(iter.size_hint(), (4, Some(4)));
+    }
+
+    #[test]
+    fn hex_to_bytes_slice_drain() {
+        let hex = "deadbeef";
+        let want = [0xde, 0xad, 0xbe, 0xef];
+        let iter = HexToBytesIter::new_unchecked(hex);
+        let mut got = [0u8; 4];
+        iter.drain_to_slice(&mut got).unwrap();
+        assert_eq!(got, want);
+
+        let hex = "";
+        let want = [];
+        let iter = HexToBytesIter::new_unchecked(hex);
+        let mut got = [];
+        iter.drain_to_slice(&mut got).unwrap();
+        assert_eq!(got, want);
+    }
+
+    #[test]
+    #[should_panic]
+    fn hex_to_bytes_slice_drain_panic_empty() {
+        let hex = "deadbeef";
+        let iter = HexToBytesIter::new_unchecked(hex);
+        let mut got = [];
+        iter.drain_to_slice(&mut got).unwrap();
+    }
+
+    #[test]
+    #[should_panic]
+    fn hex_to_bytes_slice_drain_panic_too_small() {
+        let hex = "deadbeef";
+        let iter = HexToBytesIter::new_unchecked(hex);
+        let mut got = [0u8; 3];
+        iter.drain_to_slice(&mut got).unwrap();
+    }
+
+    #[test]
+    #[should_panic]
+    fn hex_to_bytes_slice_drain_panic_too_big() {
+        let hex = "deadbeef";
+        let iter = HexToBytesIter::new_unchecked(hex);
+        let mut got = [0u8; 5];
+        iter.drain_to_slice(&mut got).unwrap();
+    }
+
+    #[test]
+    fn hex_to_bytes_slice_drain_first_char_error() {
+        let hex = "geadbeef";
+        let iter = HexToBytesIter::new_unchecked(hex);
+        let mut got = [0u8; 4];
+        assert_eq!(iter.drain_to_slice(&mut got), Err(InvalidCharError { invalid: b'g', pos: 0 }));
+    }
+
+    #[test]
+    fn hex_to_bytes_slice_drain_middle_char_error() {
+        let hex = "deadgeef";
+        let iter = HexToBytesIter::new_unchecked(hex);
+        let mut got = [0u8; 4];
+        assert_eq!(iter.drain_to_slice(&mut got), Err(InvalidCharError { invalid: b'g', pos: 4 }));
+    }
+
+    #[test]
+    fn hex_to_bytes_slice_drain_end_char_error() {
+        let hex = "deadbeeg";
+        let iter = HexToBytesIter::new_unchecked(hex);
+        let mut got = [0u8; 4];
+        assert_eq!(iter.drain_to_slice(&mut got), Err(InvalidCharError { invalid: b'g', pos: 7 }));
+    }
+
+    #[test]
+    fn hex_to_bytes_vec_drain() {
+        let hex = "deadbeef";
+        let want = [0xde, 0xad, 0xbe, 0xef];
+        let iter = HexToBytesIter::new_unchecked(hex);
+        let got = iter.drain_to_vec().unwrap();
+        assert_eq!(got, want);
+
+        let hex = "";
+        let iter = HexToBytesIter::new_unchecked(hex);
+        let got = iter.drain_to_vec().unwrap();
+        assert!(got.is_empty());
+    }
+
+    #[test]
+    fn hex_to_bytes_vec_drain_first_char_error() {
+        let hex = "geadbeef";
+        let iter = HexToBytesIter::new_unchecked(hex);
+        assert_eq!(iter.drain_to_vec(), Err(InvalidCharError { invalid: b'g', pos: 0 }));
+    }
+
+    #[test]
+    fn hex_to_bytes_vec_drain_middle_char_error() {
+        let hex = "deadgeef";
+        let iter = HexToBytesIter::new_unchecked(hex);
+        assert_eq!(iter.drain_to_vec(), Err(InvalidCharError { invalid: b'g', pos: 4 }));
+    }
+
+    #[test]
+    fn hex_to_bytes_vec_drain_end_char_error() {
+        let hex = "deadbeeg";
+        let iter = HexToBytesIter::new_unchecked(hex);
+        assert_eq!(iter.drain_to_vec(), Err(InvalidCharError { invalid: b'g', pos: 7 }));
     }
 
     #[test]
