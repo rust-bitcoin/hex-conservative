@@ -64,10 +64,7 @@ impl<T: Iterator<Item = [u8; 2]> + ExactSizeIterator> Iterator for HexToBytesIte
     }
 
     #[inline]
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        let (min, max) = self.iter.size_hint();
-        (min / 2, max.map(|x| x / 2))
-    }
+    fn size_hint(&self) -> (usize, Option<usize>) { self.iter.size_hint() }
 
     #[inline]
     fn nth(&mut self, n: usize) -> Option<Self::Item> {
@@ -324,6 +321,12 @@ mod tests {
         for (i, b) in HexToBytesIter::new(hex).unwrap().enumerate() {
             assert_eq!(b.unwrap(), bytes[i]);
         }
+
+        let mut iter = HexToBytesIter::new(hex).unwrap();
+        for i in (0..=bytes.len()).rev() {
+            assert_eq!(iter.len(), i);
+            let _ = iter.next();
+        }
     }
 
     #[test]
@@ -334,6 +337,27 @@ mod tests {
         for (i, b) in HexToBytesIter::new(hex).unwrap().rev().enumerate() {
             assert_eq!(b.unwrap(), bytes[i]);
         }
+
+        let mut iter = HexToBytesIter::new(hex).unwrap().rev();
+        for i in (0..=bytes.len()).rev() {
+            assert_eq!(iter.len(), i);
+            let _ = iter.next();
+        }
+    }
+
+    #[test]
+    fn hex_to_digits_size_hint() {
+        let hex = "deadbeef";
+        let iter = HexDigitsIter::new_unchecked(hex.as_bytes());
+        // HexDigitsIter yields two digits at a time `[u8; 2]`.
+        assert_eq!(iter.size_hint(), (4, Some(4)));
+    }
+
+    #[test]
+    fn hex_to_bytes_size_hint() {
+        let hex = "deadbeef";
+        let iter = HexToBytesIter::new_unchecked(hex);
+        assert_eq!(iter.size_hint(), (4, Some(4)));
     }
 
     #[test]
