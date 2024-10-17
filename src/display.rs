@@ -115,7 +115,7 @@ fn internal_display(bytes: &[u8], f: &mut fmt::Formatter, case: Case) -> fmt::Re
     //
     // This would complicate the code so I was too lazy to do them but feel free to send a PR!
 
-    let mut encoder = BufEncoder::<1024>::new();
+    let mut encoder = BufEncoder::<1024>::new(case);
 
     let pad_right = if let Some(width) = f.width() {
         let string_len = match f.precision() {
@@ -158,11 +158,11 @@ fn internal_display(bytes: &[u8], f: &mut fmt::Formatter, case: Case) -> fmt::Re
         Some(_) | None => {
             let mut chunks = bytes.chunks_exact(512);
             for chunk in &mut chunks {
-                encoder.put_bytes(chunk, case);
+                encoder.put_bytes(chunk);
                 f.write_str(encoder.as_str())?;
                 encoder.clear();
             }
-            encoder.put_bytes(chunks.remainder(), case);
+            encoder.put_bytes(chunks.remainder());
             f.write_str(encoder.as_str())?;
         }
     }
@@ -522,15 +522,15 @@ where
     I: IntoIterator,
     I::Item: Borrow<u8>,
 {
-    let mut encoder = BufEncoder::<N>::new();
+    let mut encoder = BufEncoder::<N>::new(case);
     let encoded = match f.precision() {
         Some(p) if p < N => {
             let n = (p + 1) / 2;
-            encoder.put_bytes(bytes.into_iter().take(n), case);
+            encoder.put_bytes(bytes.into_iter().take(n));
             &encoder.as_str()[..p]
         }
         _ => {
-            encoder.put_bytes(bytes, case);
+            encoder.put_bytes(bytes);
             encoder.as_str()
         }
     };
