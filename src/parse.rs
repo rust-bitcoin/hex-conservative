@@ -4,8 +4,6 @@
 
 use core::{fmt, str};
 
-use arrayvec::ArrayVec;
-
 #[cfg(all(feature = "alloc", not(feature = "std")))]
 use crate::alloc::vec::Vec;
 use crate::error::InvalidLengthError;
@@ -28,7 +26,7 @@ impl FromHex for Vec<u8> {
     type Error = HexToBytesError;
 
     fn from_hex(s: &str) -> Result<Self, Self::Error> {
-        HexToBytesIter::new(s)?.map(|result| result.map_err(Into::into)).collect()
+        Ok(HexToBytesIter::new(s)?.drain_to_vec()?)
     }
 }
 
@@ -37,12 +35,10 @@ impl<const LEN: usize> FromHex for [u8; LEN] {
 
     fn from_hex(s: &str) -> Result<Self, Self::Error> {
         if s.len() == LEN * 2 {
-            let mut ret = ArrayVec::<u8, LEN>::new();
+            let mut ret = [0u8; LEN];
             // checked above
-            for byte in HexToBytesIter::new_unchecked(s) {
-                ret.push(byte?);
-            }
-            Ok(ret.into_inner().expect("inner is full"))
+            HexToBytesIter::new_unchecked(s).drain_to_slice(&mut ret)?;
+            Ok(ret)
         } else {
             Err(InvalidLengthError { invalid: s.len(), expected: 2 * LEN }.into())
         }
