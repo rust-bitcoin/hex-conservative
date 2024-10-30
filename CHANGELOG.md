@@ -1,3 +1,21 @@
+# 0.3.0 - 2024-09-18
+
+- Re-implement `HexWriter` [#113](https://github.com/rust-bitcoin/hex-conservative/pull/113)
+- Fix `Display` width and precision of `DisplayByteSlice` [#114](https://github.com/rust-bitcoin/hex-conservative/pull/114)
+- Encoding performance improvements [#117](https://github.com/rust-bitcoin/hex-conservative/pull/117)
+- Relax bounds of `BytesToHexIter` [#118](https://github.com/rust-bitcoin/hex-conservative/pull/118)
+- Add case to `BytesToHexIter` [#120](https://github.com/rust-bitcoin/hex-conservative/pull/120)
+- Encapsulate unsafe code inside the table module [#121](https://github.com/rust-bitcoin/hex-conservative/pull/121)
+- Fix `HexToBytesIter::size_hint` [#122](https://github.com/rust-bitcoin/hex-conservative/pull/122)
+- Restrict `BufEncoder` to uniform case encoding [#119](https://github.com/rust-bitcoin/hex-conservative/pull/119)
+- Remove the `core2` dependency [#105](https://github.com/rust-bitcoin/hex-conservative/pull/105)
+- Introduce more serde utilities [#92](https://github.com/rust-bitcoin/hex-conservative/pull/92)
+- Add `impl_fmt_traits` macro [#90](https://github.com/rust-bitcoin/hex-conservative/pull/90)
+- Enable serialization of byte slices [#96](https://github.com/rust-bitcoin/hex-conservative/pull/96)
+- Bump MSRV to Rust `1.63.0` [#102](https://github.com/rust-bitcoin/hex-conservative/pull/102)
+- Store position of invalid char in `InvalidCharError` [#107](https://github.com/rust-bitcoin/hex-conservative/pull/107)
+- Only encode the bytes formatted in the hex string [#108](https://github.com/rust-bitcoin/hex-conservative/pull/108)
+
 # 0.2.1 - 2024-05-17
 
 - Add a new `impl_fmt_traits` macro that can be used to implement `fmt::{LowerHex, UpperHex,
