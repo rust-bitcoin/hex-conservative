@@ -53,56 +53,84 @@ mod tests {
     #[test]
     #[cfg(feature = "alloc")]
     fn hex_error() {
-        use crate::error::{InvalidCharError, OddLengthStringError};
-
         let oddlen = "0123456789abcdef0";
         let badchar1 = "Z123456789abcdef";
         let badchar2 = "012Y456789abcdeb";
         let badchar3 = "«23456789abcdef";
 
-        assert_eq!(Vec::<u8>::from_hex(oddlen), Err(OddLengthStringError { len: 17 }.into()));
+        match Vec::<u8>::from_hex(oddlen) {
+            Err(HexToBytesError::OddLengthString(e)) => assert_eq!(e.length(), 17),
+            v => panic!("Wrong return value: {:?}", v),
+        }
+
         assert_eq!(
             <[u8; 4]>::from_hex(oddlen),
             Err(InvalidLengthError { invalid: 17, expected: 8 }.into())
         );
-        assert_eq!(
-            Vec::<u8>::from_hex(badchar1),
-            Err(InvalidCharError { pos: 0, invalid: b'Z' }.into())
-        );
-        assert_eq!(
-            Vec::<u8>::from_hex(badchar2),
-            Err(InvalidCharError { pos: 3, invalid: b'Y' }.into())
-        );
-        assert_eq!(
-            Vec::<u8>::from_hex(badchar3),
-            Err(InvalidCharError { pos: 0, invalid: 194 }.into())
-        );
+
+        match Vec::<u8>::from_hex(badchar1) {
+            Err(HexToBytesError::InvalidChar(e)) => {
+                assert_eq!(e.pos(), 0);
+                assert_eq!(e.char(), Ok('Z'));
+            }
+            v => panic!("Wrong return value: {:?}", v),
+        }
+
+        match Vec::<u8>::from_hex(badchar2) {
+            Err(HexToBytesError::InvalidChar(e)) => {
+                assert_eq!(e.pos(), 3);
+                assert_eq!(e.char(), Ok('Y'));
+            }
+            v => panic!("Wrong return value: {:?}", v),
+        }
+
+        match Vec::<u8>::from_hex(badchar3) {
+            Err(HexToBytesError::InvalidChar(e)) => {
+                assert_eq!(e.pos(), 0);
+                assert_eq!(e.char(), Err(194));
+            }
+            v => panic!("Wrong return value: {:?}", v),
+        }
     }
 
     #[test]
     fn hex_error_position() {
-        use crate::error::InvalidCharError;
         let badpos1 = "Z123456789abcdef";
         let badpos2 = "012Y456789abcdeb";
         let badpos3 = "0123456789abcdeZ";
         let badpos4 = "0123456789abYdef";
 
-        assert_eq!(
-            HexToBytesIter::new(badpos1).unwrap().next().unwrap(),
-            Err(InvalidCharError { pos: 0, invalid: b'Z' })
-        );
-        assert_eq!(
-            HexToBytesIter::new(badpos2).unwrap().nth(1).unwrap(),
-            Err(InvalidCharError { pos: 3, invalid: b'Y' })
-        );
-        assert_eq!(
-            HexToBytesIter::new(badpos3).unwrap().next_back().unwrap(),
-            Err(InvalidCharError { pos: 15, invalid: b'Z' })
-        );
-        assert_eq!(
-            HexToBytesIter::new(badpos4).unwrap().nth_back(1).unwrap(),
-            Err(InvalidCharError { pos: 12, invalid: b'Y' })
-        );
+        match Vec::<u8>::from_hex(badpos1) {
+            Err(HexToBytesError::InvalidChar(e)) => {
+                assert_eq!(e.pos(), 0);
+                assert_eq!(e.char(), Ok('Z'));
+            }
+            v => panic!("Wrong return value: {:?}", v),
+        };
+
+        match Vec::<u8>::from_hex(badpos2) {
+            Err(HexToBytesError::InvalidChar(e)) => {
+                assert_eq!(e.pos(), 3);
+                assert_eq!(e.char(), Ok('Y'));
+            }
+            v => panic!("Wrong return value: {:?}", v),
+        };
+
+        match Vec::<u8>::from_hex(badpos3) {
+            Err(HexToBytesError::InvalidChar(e)) => {
+                assert_eq!(e.pos(), 15);
+                assert_eq!(e.char(), Ok('Z'));
+            }
+            v => panic!("Wrong return value: {:?}", v),
+        };
+
+        match Vec::<u8>::from_hex(badpos4) {
+            Err(HexToBytesError::InvalidChar(e)) => {
+                assert_eq!(e.pos(), 12);
+                assert_eq!(e.char(), Ok('Y'));
+            }
+            v => panic!("Wrong return value: {:?}", v),
+        };
     }
 
     #[test]

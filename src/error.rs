@@ -80,14 +80,29 @@ pub struct InvalidCharError {
 
 impl InvalidCharError {
     /// Returns the invalid character byte.
+    #[deprecated(note = "Use `InvalidCharError::char` instead.")]
     pub fn invalid_char(&self) -> u8 { self.invalid }
     /// Returns the position of the invalid character byte.
     pub fn pos(&self) -> usize { self.pos }
+    /// Returns the invalid character.
+    ///
+    /// # Errors
+    ///
+    /// Returns the raw byte if it is not valid ascii.
+    pub fn char(&self) -> Result<char, u8> {
+        match self.invalid.is_ascii() {
+            true => Ok(char::from(self.invalid)),
+            false => Err(self.invalid),
+        }
+    }
 }
 
 impl fmt::Display for InvalidCharError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "invalid hex char {} at pos {}", self.invalid, self.pos)
+        match self.char() {
+            Ok(c) => write!(f, "invalid hex char {} at pos {}", c, self.pos),
+            Err(u) => write!(f, "invalid hex char {} at pos {}", u, self.pos),
+        }
     }
 }
 
