@@ -90,7 +90,7 @@ impl<const CAP: usize> BufEncoder<CAP> {
 
     /// Returns true if no more bytes can be written into the buffer.
     #[inline]
-    pub fn is_full(&self) -> bool { self.space_remaining() == 0 }
+    pub fn is_full(&self) -> bool { self.buf.is_full() }
 
     /// Returns the written bytes as a hex `str`.
     #[inline]
