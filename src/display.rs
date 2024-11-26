@@ -674,6 +674,12 @@ mod tests {
         }
 
         #[test]
+        fn alternate_flag() {
+            test_display_hex!("{:#?}", [0xc0, 0xde, 0xca, 0xfe], "0xc0decafe");
+            test_display_hex!("{:#}", [0xc0, 0xde, 0xca, 0xfe], "0xc0decafe");
+        }
+
+        #[test]
         fn display_short_with_padding() {
             test_display_hex!("Hello {:<8}!", [0xbe, 0xef], "Hello beef    !");
             test_display_hex!("Hello {:-<8}!", [0xbe, 0xef], "Hello beef----!");
