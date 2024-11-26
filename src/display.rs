@@ -543,6 +543,12 @@ where
     I: IntoIterator,
     I::Item: Borrow<u8>,
 {
+    let mut padding_encoder = BufEncoder::<1024>::new(case);
+    let pad_right = write_pad_left(f, N / 2, &mut padding_encoder)?;
+
+    if f.alternate() {
+        f.write_str("0x")?;
+    }
     let mut encoder = BufEncoder::<N>::new(case);
     let encoded = match f.precision() {
         Some(p) if p < N => {
@@ -555,7 +561,9 @@ where
             encoder.as_str()
         }
     };
-    f.pad_integral(true, "0x", encoded)
+    f.write_str(encoded)?;
+
+    write_pad_right(f, pad_right, &mut padding_encoder)
 }
 
 /// Given a `T:` [`fmt::Write`], `HexWriter` implements [`std::io::Write`]
