@@ -116,11 +116,44 @@ fn internal_display(bytes: &[u8], f: &mut fmt::Formatter, case: Case) -> fmt::Re
     // This would complicate the code so I was too lazy to do them but feel free to send a PR!
 
     let mut encoder = BufEncoder::<1024>::new(case);
+    let pad_right = write_pad_left(f, bytes.len(), &mut encoder)?;
 
+    if f.alternate() {
+        f.write_str("0x")?;
+    }
+    match f.precision() {
+        Some(max) if bytes.len() > max / 2 => {
+            write!(f, "{}", bytes[..(max / 2)].as_hex())?;
+            if max % 2 == 1 {
+                f.write_char(case.table().byte_to_chars(bytes[max / 2])[0])?;
+            }
+        }
+        Some(_) | None => {
+            let mut chunks = bytes.chunks_exact(512);
+            for chunk in &mut chunks {
+                encoder.put_bytes(chunk);
+                f.write_str(encoder.as_str())?;
+                encoder.clear();
+            }
+            encoder.put_bytes(chunks.remainder());
+            f.write_str(encoder.as_str())?;
+        }
+    }
+
+    write_pad_right(f, pad_right, &mut encoder)
+}
+
+fn write_pad_left(
+    f: &mut fmt::Formatter,
+    bytes_len: usize,
+    encoder: &mut BufEncoder<1024>,
+) -> Result<usize, fmt::Error> {
     let pad_right = if let Some(width) = f.width() {
+        // Add space for 2 characters if the '#' flag is set
+        let full_string_len = if f.alternate() { bytes_len * 2 + 2 } else { bytes_len * 2 };
         let string_len = match f.precision() {
-            Some(max) => core::cmp::min(max, bytes.len() * 2),
-            None => bytes.len() * 2,
+            Some(max) => core::cmp::min(max, full_string_len),
+            None => full_string_len,
         };
 
         if string_len < width {
@@ -147,26 +180,14 @@ fn internal_display(bytes: &[u8], f: &mut fmt::Formatter, case: Case) -> fmt::Re
     } else {
         0
     };
+    Ok(pad_right)
+}
 
-    match f.precision() {
-        Some(max) if bytes.len() > max / 2 => {
-            write!(f, "{}", bytes[..(max / 2)].as_hex())?;
-            if max % 2 == 1 {
-                f.write_char(case.table().byte_to_chars(bytes[max / 2])[0])?;
-            }
-        }
-        Some(_) | None => {
-            let mut chunks = bytes.chunks_exact(512);
-            for chunk in &mut chunks {
-                encoder.put_bytes(chunk);
-                f.write_str(encoder.as_str())?;
-                encoder.clear();
-            }
-            encoder.put_bytes(chunks.remainder());
-            f.write_str(encoder.as_str())?;
-        }
-    }
-
+fn write_pad_right(
+    f: &mut fmt::Formatter,
+    pad_right: usize,
+    encoder: &mut BufEncoder<1024>,
+) -> fmt::Result {
     // Avoid division by zero and optimize for common case.
     if pad_right > 0 {
         encoder.clear();
@@ -522,6 +543,12 @@ where
     I: IntoIterator,
     I::Item: Borrow<u8>,
 {
+    let mut padding_encoder = BufEncoder::<1024>::new(case);
+    let pad_right = write_pad_left(f, N / 2, &mut padding_encoder)?;
+
+    if f.alternate() {
+        f.write_str("0x")?;
+    }
     let mut encoder = BufEncoder::<N>::new(case);
     let encoded = match f.precision() {
         Some(p) if p < N => {
@@ -534,7 +561,9 @@ where
             encoder.as_str()
         }
     };
-    f.pad_integral(true, "0x", encoded)
+    f.write_str(encoded)?;
+
+    write_pad_right(f, pad_right, &mut padding_encoder)
 }
 
 /// Given a `T:` [`fmt::Write`], `HexWriter` implements [`std::io::Write`]
@@ -643,30 +672,72 @@ mod tests {
             assert_eq!(format!("{:.65}", dummy), "2a".repeat(32));
         }
 
+        macro_rules! define_dummy {
+            ($len:literal) => {
+                struct Dummy([u8; $len]);
+                impl fmt::Debug for Dummy {
+                    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                        fmt_hex_exact!(f, $len, &self.0, Case::Lower)
+                    }
+                }
+                impl fmt::Display for Dummy {
+                    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                        fmt_hex_exact!(f, $len, &self.0, Case::Lower)
+                    }
+                }
+            };
+        }
+
         macro_rules! test_display_hex {
             ($fs: expr, $a: expr, $check: expr) => {
-                let to_display_array = $a;
-                let to_display_byte_slice = Vec::from($a);
-                assert_eq!(format!($fs, to_display_array.as_hex()), $check);
-                assert_eq!(format!($fs, to_display_byte_slice.as_hex()), $check);
+                let array = $a;
+                let slice = &$a;
+                let vec = Vec::from($a);
+                let dummy = Dummy($a);
+                assert_eq!(format!($fs, array.as_hex()), $check);
+                assert_eq!(format!($fs, slice.as_hex()), $check);
+                assert_eq!(format!($fs, vec.as_hex()), $check);
+                assert_eq!(format!($fs, dummy), $check);
             };
         }
 
         #[test]
+        fn alternate_flag() {
+            define_dummy!(4);
+
+            test_display_hex!("{:#?}", [0xc0, 0xde, 0xca, 0xfe], "0xc0decafe");
+            test_display_hex!("{:#}", [0xc0, 0xde, 0xca, 0xfe], "0xc0decafe");
+        }
+
+        #[test]
         fn display_short_with_padding() {
+            define_dummy!(2);
+
             test_display_hex!("Hello {:<8}!", [0xbe, 0xef], "Hello beef    !");
             test_display_hex!("Hello {:-<8}!", [0xbe, 0xef], "Hello beef----!");
             test_display_hex!("Hello {:^8}!", [0xbe, 0xef], "Hello   beef  !");
             test_display_hex!("Hello {:>8}!", [0xbe, 0xef], "Hello     beef!");
+
+            test_display_hex!("Hello {:<#8}!", [0xbe, 0xef], "Hello 0xbeef  !");
+            test_display_hex!("Hello {:-<#8}!", [0xbe, 0xef], "Hello 0xbeef--!");
+            test_display_hex!("Hello {:^#8}!", [0xbe, 0xef], "Hello  0xbeef !");
+            test_display_hex!("Hello {:>#8}!", [0xbe, 0xef], "Hello   0xbeef!");
         }
 
         #[test]
         fn display_long() {
+            define_dummy!(512);
             // Note this string is shorter than the one above.
             let a = [0xab; 512];
+
             let mut want = "0".repeat(2000 - 1024);
             want.extend(core::iter::repeat("ab").take(512));
             test_display_hex!("{:0>2000}", a, want);
+
+            let mut want = "0".repeat(2000 - 1026);
+            want.push_str("0x");
+            want.extend(core::iter::repeat("ab").take(512));
+            test_display_hex!("{:0>#2000}", a, want);
         }
 
         // Precision and padding act the same as for strings in the stdlib (because we use `Formatter::pad`).
@@ -675,51 +746,92 @@ mod tests {
         fn precision_truncates() {
             // Precision gets the most significant bytes.
             // Remember the integer is number of hex chars not number of bytes.
+            define_dummy!(4);
+
             test_display_hex!("{0:.4}", [0x12, 0x34, 0x56, 0x78], "1234");
             test_display_hex!("{0:.5}", [0x12, 0x34, 0x56, 0x78], "12345");
+
+            test_display_hex!("{0:#.4}", [0x12, 0x34, 0x56, 0x78], "0x1234");
+            test_display_hex!("{0:#.5}", [0x12, 0x34, 0x56, 0x78], "0x12345");
         }
 
         #[test]
         fn precision_with_padding_truncates() {
             // Precision gets the most significant bytes.
+            define_dummy!(4);
+
             test_display_hex!("{0:10.4}", [0x12, 0x34, 0x56, 0x78], "1234      ");
             test_display_hex!("{0:10.5}", [0x12, 0x34, 0x56, 0x78], "12345     ");
+
+            test_display_hex!("{0:#10.4}", [0x12, 0x34, 0x56, 0x78], "0x1234      ");
+            test_display_hex!("{0:#10.5}", [0x12, 0x34, 0x56, 0x78], "0x12345     ");
         }
 
         #[test]
         fn precision_with_padding_pads_right() {
+            define_dummy!(4);
+
             test_display_hex!("{0:10.20}", [0x12, 0x34, 0x56, 0x78], "12345678  ");
             test_display_hex!("{0:10.14}", [0x12, 0x34, 0x56, 0x78], "12345678  ");
+
+            test_display_hex!("{0:#12.20}", [0x12, 0x34, 0x56, 0x78], "0x12345678  ");
+            test_display_hex!("{0:#12.14}", [0x12, 0x34, 0x56, 0x78], "0x12345678  ");
         }
 
         #[test]
         fn precision_with_padding_pads_left() {
+            define_dummy!(4);
+
             test_display_hex!("{0:>10.20}", [0x12, 0x34, 0x56, 0x78], "  12345678");
+
+            test_display_hex!("{0:>#12.20}", [0x12, 0x34, 0x56, 0x78], "  0x12345678");
         }
 
         #[test]
         fn precision_with_padding_pads_center() {
+            define_dummy!(4);
+
             test_display_hex!("{0:^10.20}", [0x12, 0x34, 0x56, 0x78], " 12345678 ");
+
+            test_display_hex!("{0:^#12.20}", [0x12, 0x34, 0x56, 0x78], " 0x12345678 ");
         }
 
         #[test]
         fn precision_with_padding_pads_center_odd() {
+            define_dummy!(4);
+
             test_display_hex!("{0:^11.20}", [0x12, 0x34, 0x56, 0x78], " 12345678  ");
+
+            test_display_hex!("{0:^#13.20}", [0x12, 0x34, 0x56, 0x78], " 0x12345678  ");
         }
 
         #[test]
         fn precision_does_not_extend() {
+            define_dummy!(4);
+
             test_display_hex!("{0:.16}", [0x12, 0x34, 0x56, 0x78], "12345678");
+
+            test_display_hex!("{0:#.16}", [0x12, 0x34, 0x56, 0x78], "0x12345678");
         }
 
         #[test]
         fn padding_extends() {
+            define_dummy!(2);
+
             test_display_hex!("{:0>8}", [0xab; 2], "0000abab");
+
+            test_display_hex!("{:0>#8}", [0xab; 2], "000xabab");
         }
 
         #[test]
         fn padding_does_not_truncate() {
+            define_dummy!(4);
+
             test_display_hex!("{:0>4}", [0x12, 0x34, 0x56, 0x78], "12345678");
+            test_display_hex!("{:0>4}", [0x12, 0x34, 0x56, 0x78], "12345678");
+
+            test_display_hex!("{:0>#4}", [0x12, 0x34, 0x56, 0x78], "0x12345678");
+            test_display_hex!("{:0>#4}", [0x12, 0x34, 0x56, 0x78], "0x12345678");
         }
 
         #[test]
