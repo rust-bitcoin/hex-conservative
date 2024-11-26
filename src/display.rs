@@ -118,6 +118,9 @@ fn internal_display(bytes: &[u8], f: &mut fmt::Formatter, case: Case) -> fmt::Re
     let mut encoder = BufEncoder::<1024>::new(case);
     let pad_right = write_pad_left(f, bytes.len(), &mut encoder)?;
 
+    if f.alternate() {
+        f.write_str("0x")?;
+    }
     match f.precision() {
         Some(max) if bytes.len() > max / 2 => {
             write!(f, "{}", bytes[..(max / 2)].as_hex())?;
@@ -146,9 +149,11 @@ fn write_pad_left(
     encoder: &mut BufEncoder<1024>,
 ) -> Result<usize, fmt::Error> {
     let pad_right = if let Some(width) = f.width() {
+        // Add space for 2 characters if the '#' flag is set
+        let full_string_len = if f.alternate() { bytes_len * 2 + 2 } else { bytes_len * 2 };
         let string_len = match f.precision() {
-            Some(max) => core::cmp::min(max, bytes_len * 2),
-            None => bytes_len * 2,
+            Some(max) => core::cmp::min(max, full_string_len),
+            None => full_string_len,
         };
 
         if string_len < width {
