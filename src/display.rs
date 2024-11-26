@@ -704,6 +704,7 @@ mod tests {
         #[test]
         fn alternate_flag() {
             define_dummy!(4);
+
             test_display_hex!("{:#?}", [0xc0, 0xde, 0xca, 0xfe], "0xc0decafe");
             test_display_hex!("{:#}", [0xc0, 0xde, 0xca, 0xfe], "0xc0decafe");
         }
@@ -711,20 +712,32 @@ mod tests {
         #[test]
         fn display_short_with_padding() {
             define_dummy!(2);
+
             test_display_hex!("Hello {:<8}!", [0xbe, 0xef], "Hello beef    !");
             test_display_hex!("Hello {:-<8}!", [0xbe, 0xef], "Hello beef----!");
             test_display_hex!("Hello {:^8}!", [0xbe, 0xef], "Hello   beef  !");
             test_display_hex!("Hello {:>8}!", [0xbe, 0xef], "Hello     beef!");
+
+            test_display_hex!("Hello {:<#8}!", [0xbe, 0xef], "Hello 0xbeef  !");
+            test_display_hex!("Hello {:-<#8}!", [0xbe, 0xef], "Hello 0xbeef--!");
+            test_display_hex!("Hello {:^#8}!", [0xbe, 0xef], "Hello  0xbeef !");
+            test_display_hex!("Hello {:>#8}!", [0xbe, 0xef], "Hello   0xbeef!");
         }
 
         #[test]
         fn display_long() {
+            define_dummy!(512);
             // Note this string is shorter than the one above.
             let a = [0xab; 512];
+
             let mut want = "0".repeat(2000 - 1024);
             want.extend(core::iter::repeat("ab").take(512));
-            define_dummy!(512);
             test_display_hex!("{:0>2000}", a, want);
+
+            let mut want = "0".repeat(2000 - 1026);
+            want.push_str("0x");
+            want.extend(core::iter::repeat("ab").take(512));
+            test_display_hex!("{:0>#2000}", a, want);
         }
 
         // Precision and padding act the same as for strings in the stdlib (because we use `Formatter::pad`).
@@ -734,59 +747,91 @@ mod tests {
             // Precision gets the most significant bytes.
             // Remember the integer is number of hex chars not number of bytes.
             define_dummy!(4);
+
             test_display_hex!("{0:.4}", [0x12, 0x34, 0x56, 0x78], "1234");
             test_display_hex!("{0:.5}", [0x12, 0x34, 0x56, 0x78], "12345");
+
+            test_display_hex!("{0:#.4}", [0x12, 0x34, 0x56, 0x78], "0x1234");
+            test_display_hex!("{0:#.5}", [0x12, 0x34, 0x56, 0x78], "0x12345");
         }
 
         #[test]
         fn precision_with_padding_truncates() {
             // Precision gets the most significant bytes.
             define_dummy!(4);
+
             test_display_hex!("{0:10.4}", [0x12, 0x34, 0x56, 0x78], "1234      ");
             test_display_hex!("{0:10.5}", [0x12, 0x34, 0x56, 0x78], "12345     ");
+
+            test_display_hex!("{0:#10.4}", [0x12, 0x34, 0x56, 0x78], "0x1234      ");
+            test_display_hex!("{0:#10.5}", [0x12, 0x34, 0x56, 0x78], "0x12345     ");
         }
 
         #[test]
         fn precision_with_padding_pads_right() {
             define_dummy!(4);
+
             test_display_hex!("{0:10.20}", [0x12, 0x34, 0x56, 0x78], "12345678  ");
             test_display_hex!("{0:10.14}", [0x12, 0x34, 0x56, 0x78], "12345678  ");
+
+            test_display_hex!("{0:#12.20}", [0x12, 0x34, 0x56, 0x78], "0x12345678  ");
+            test_display_hex!("{0:#12.14}", [0x12, 0x34, 0x56, 0x78], "0x12345678  ");
         }
 
         #[test]
         fn precision_with_padding_pads_left() {
             define_dummy!(4);
+
             test_display_hex!("{0:>10.20}", [0x12, 0x34, 0x56, 0x78], "  12345678");
+
+            test_display_hex!("{0:>#12.20}", [0x12, 0x34, 0x56, 0x78], "  0x12345678");
         }
 
         #[test]
         fn precision_with_padding_pads_center() {
             define_dummy!(4);
+
             test_display_hex!("{0:^10.20}", [0x12, 0x34, 0x56, 0x78], " 12345678 ");
+
+            test_display_hex!("{0:^#12.20}", [0x12, 0x34, 0x56, 0x78], " 0x12345678 ");
         }
 
         #[test]
         fn precision_with_padding_pads_center_odd() {
             define_dummy!(4);
+
             test_display_hex!("{0:^11.20}", [0x12, 0x34, 0x56, 0x78], " 12345678  ");
+
+            test_display_hex!("{0:^#13.20}", [0x12, 0x34, 0x56, 0x78], " 0x12345678  ");
         }
 
         #[test]
         fn precision_does_not_extend() {
             define_dummy!(4);
+
             test_display_hex!("{0:.16}", [0x12, 0x34, 0x56, 0x78], "12345678");
+
+            test_display_hex!("{0:#.16}", [0x12, 0x34, 0x56, 0x78], "0x12345678");
         }
 
         #[test]
         fn padding_extends() {
             define_dummy!(2);
+
             test_display_hex!("{:0>8}", [0xab; 2], "0000abab");
+
+            test_display_hex!("{:0>#8}", [0xab; 2], "000xabab");
         }
 
         #[test]
         fn padding_does_not_truncate() {
             define_dummy!(4);
+
             test_display_hex!("{:0>4}", [0x12, 0x34, 0x56, 0x78], "12345678");
+            test_display_hex!("{:0>4}", [0x12, 0x34, 0x56, 0x78], "12345678");
+
+            test_display_hex!("{:0>#4}", [0x12, 0x34, 0x56, 0x78], "0x12345678");
+            test_display_hex!("{:0>#4}", [0x12, 0x34, 0x56, 0x78], "0x12345678");
         }
 
         #[test]
