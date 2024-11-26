@@ -137,18 +137,7 @@ fn internal_display(bytes: &[u8], f: &mut fmt::Formatter, case: Case) -> fmt::Re
         }
     }
 
-    // Avoid division by zero and optimize for common case.
-    if pad_right > 0 {
-        encoder.clear();
-        let c = f.fill();
-        let chunk_len = encoder.put_filler(c, pad_right);
-        let padding = encoder.as_str();
-        for _ in 0..(pad_right / chunk_len) {
-            f.write_str(padding)?;
-        }
-        f.write_str(&padding[..((pad_right % chunk_len) * c.len_utf8())])?;
-    }
-    Ok(())
+    write_pad_right(f, pad_right, &mut encoder)
 }
 
 fn write_pad_left(
@@ -187,6 +176,25 @@ fn write_pad_left(
         0
     };
     Ok(pad_right)
+}
+
+fn write_pad_right(
+    f: &mut fmt::Formatter,
+    pad_right: usize,
+    encoder: &mut BufEncoder<1024>,
+) -> fmt::Result {
+    // Avoid division by zero and optimize for common case.
+    if pad_right > 0 {
+        encoder.clear();
+        let c = f.fill();
+        let chunk_len = encoder.put_filler(c, pad_right);
+        let padding = encoder.as_str();
+        for _ in 0..(pad_right / chunk_len) {
+            f.write_str(padding)?;
+        }
+        f.write_str(&padding[..((pad_right % chunk_len) * c.len_utf8())])?;
+    }
+    Ok(())
 }
 
 mod sealed {
