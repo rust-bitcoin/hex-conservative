@@ -116,37 +116,7 @@ fn internal_display(bytes: &[u8], f: &mut fmt::Formatter, case: Case) -> fmt::Re
     // This would complicate the code so I was too lazy to do them but feel free to send a PR!
 
     let mut encoder = BufEncoder::<1024>::new(case);
-
-    let pad_right = if let Some(width) = f.width() {
-        let string_len = match f.precision() {
-            Some(max) => core::cmp::min(max, bytes.len() * 2),
-            None => bytes.len() * 2,
-        };
-
-        if string_len < width {
-            let (left, right) = match f.align().unwrap_or(fmt::Alignment::Left) {
-                fmt::Alignment::Left => (0, width - string_len),
-                fmt::Alignment::Right => (width - string_len, 0),
-                fmt::Alignment::Center => ((width - string_len) / 2, (width - string_len + 1) / 2),
-            };
-            // Avoid division by zero and optimize for common case.
-            if left > 0 {
-                let c = f.fill();
-                let chunk_len = encoder.put_filler(c, left);
-                let padding = encoder.as_str();
-                for _ in 0..(left / chunk_len) {
-                    f.write_str(padding)?;
-                }
-                f.write_str(&padding[..((left % chunk_len) * c.len_utf8())])?;
-                encoder.clear();
-            }
-            right
-        } else {
-            0
-        }
-    } else {
-        0
-    };
+    let pad_right = write_pad_left(f, bytes.len(), &mut encoder)?;
 
     match f.precision() {
         Some(max) if bytes.len() > max / 2 => {
@@ -179,6 +149,44 @@ fn internal_display(bytes: &[u8], f: &mut fmt::Formatter, case: Case) -> fmt::Re
         f.write_str(&padding[..((pad_right % chunk_len) * c.len_utf8())])?;
     }
     Ok(())
+}
+
+fn write_pad_left(
+    f: &mut fmt::Formatter,
+    bytes_len: usize,
+    encoder: &mut BufEncoder<1024>,
+) -> Result<usize, fmt::Error> {
+    let pad_right = if let Some(width) = f.width() {
+        let string_len = match f.precision() {
+            Some(max) => core::cmp::min(max, bytes_len * 2),
+            None => bytes_len * 2,
+        };
+
+        if string_len < width {
+            let (left, right) = match f.align().unwrap_or(fmt::Alignment::Left) {
+                fmt::Alignment::Left => (0, width - string_len),
+                fmt::Alignment::Right => (width - string_len, 0),
+                fmt::Alignment::Center => ((width - string_len) / 2, (width - string_len + 1) / 2),
+            };
+            // Avoid division by zero and optimize for common case.
+            if left > 0 {
+                let c = f.fill();
+                let chunk_len = encoder.put_filler(c, left);
+                let padding = encoder.as_str();
+                for _ in 0..(left / chunk_len) {
+                    f.write_str(padding)?;
+                }
+                f.write_str(&padding[..((left % chunk_len) * c.len_utf8())])?;
+                encoder.clear();
+            }
+            right
+        } else {
+            0
+        }
+    } else {
+        0
+    };
+    Ok(pad_right)
 }
 
 mod sealed {
