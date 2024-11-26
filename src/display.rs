@@ -672,23 +672,45 @@ mod tests {
             assert_eq!(format!("{:.65}", dummy), "2a".repeat(32));
         }
 
+        macro_rules! define_dummy {
+            ($len:literal) => {
+                struct Dummy([u8; $len]);
+                impl fmt::Debug for Dummy {
+                    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                        fmt_hex_exact!(f, $len, &self.0, Case::Lower)
+                    }
+                }
+                impl fmt::Display for Dummy {
+                    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                        fmt_hex_exact!(f, $len, &self.0, Case::Lower)
+                    }
+                }
+            };
+        }
+
         macro_rules! test_display_hex {
             ($fs: expr, $a: expr, $check: expr) => {
-                let to_display_array = $a;
-                let to_display_byte_slice = Vec::from($a);
-                assert_eq!(format!($fs, to_display_array.as_hex()), $check);
-                assert_eq!(format!($fs, to_display_byte_slice.as_hex()), $check);
+                let array = $a;
+                let slice = &$a;
+                let vec = Vec::from($a);
+                let dummy = Dummy($a);
+                assert_eq!(format!($fs, array.as_hex()), $check);
+                assert_eq!(format!($fs, slice.as_hex()), $check);
+                assert_eq!(format!($fs, vec.as_hex()), $check);
+                assert_eq!(format!($fs, dummy), $check);
             };
         }
 
         #[test]
         fn alternate_flag() {
+            define_dummy!(4);
             test_display_hex!("{:#?}", [0xc0, 0xde, 0xca, 0xfe], "0xc0decafe");
             test_display_hex!("{:#}", [0xc0, 0xde, 0xca, 0xfe], "0xc0decafe");
         }
 
         #[test]
         fn display_short_with_padding() {
+            define_dummy!(2);
             test_display_hex!("Hello {:<8}!", [0xbe, 0xef], "Hello beef    !");
             test_display_hex!("Hello {:-<8}!", [0xbe, 0xef], "Hello beef----!");
             test_display_hex!("Hello {:^8}!", [0xbe, 0xef], "Hello   beef  !");
@@ -701,6 +723,7 @@ mod tests {
             let a = [0xab; 512];
             let mut want = "0".repeat(2000 - 1024);
             want.extend(core::iter::repeat("ab").take(512));
+            define_dummy!(512);
             test_display_hex!("{:0>2000}", a, want);
         }
 
@@ -710,6 +733,7 @@ mod tests {
         fn precision_truncates() {
             // Precision gets the most significant bytes.
             // Remember the integer is number of hex chars not number of bytes.
+            define_dummy!(4);
             test_display_hex!("{0:.4}", [0x12, 0x34, 0x56, 0x78], "1234");
             test_display_hex!("{0:.5}", [0x12, 0x34, 0x56, 0x78], "12345");
         }
@@ -717,43 +741,51 @@ mod tests {
         #[test]
         fn precision_with_padding_truncates() {
             // Precision gets the most significant bytes.
+            define_dummy!(4);
             test_display_hex!("{0:10.4}", [0x12, 0x34, 0x56, 0x78], "1234      ");
             test_display_hex!("{0:10.5}", [0x12, 0x34, 0x56, 0x78], "12345     ");
         }
 
         #[test]
         fn precision_with_padding_pads_right() {
+            define_dummy!(4);
             test_display_hex!("{0:10.20}", [0x12, 0x34, 0x56, 0x78], "12345678  ");
             test_display_hex!("{0:10.14}", [0x12, 0x34, 0x56, 0x78], "12345678  ");
         }
 
         #[test]
         fn precision_with_padding_pads_left() {
+            define_dummy!(4);
             test_display_hex!("{0:>10.20}", [0x12, 0x34, 0x56, 0x78], "  12345678");
         }
 
         #[test]
         fn precision_with_padding_pads_center() {
+            define_dummy!(4);
             test_display_hex!("{0:^10.20}", [0x12, 0x34, 0x56, 0x78], " 12345678 ");
         }
 
         #[test]
         fn precision_with_padding_pads_center_odd() {
+            define_dummy!(4);
             test_display_hex!("{0:^11.20}", [0x12, 0x34, 0x56, 0x78], " 12345678  ");
         }
 
         #[test]
         fn precision_does_not_extend() {
+            define_dummy!(4);
             test_display_hex!("{0:.16}", [0x12, 0x34, 0x56, 0x78], "12345678");
         }
 
         #[test]
         fn padding_extends() {
+            define_dummy!(2);
             test_display_hex!("{:0>8}", [0xab; 2], "0000abab");
         }
 
         #[test]
         fn padding_does_not_truncate() {
+            define_dummy!(4);
             test_display_hex!("{:0>4}", [0x12, 0x34, 0x56, 0x78], "12345678");
         }
 
