@@ -9,18 +9,18 @@ pub struct Hexy<'s> {
     data: &'s [u8],
 }
 
-impl<'s> Hexy<'s> {
+impl Hexy<'_> {
     /// Demonstrates getting internal opaque data as a byte slice.
     pub fn as_bytes(&self) -> &[u8] { self.data }
 }
 
-impl<'s> fmt::LowerHex for Hexy<'s> {
+impl fmt::LowerHex for Hexy<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         fmt::LowerHex::fmt(&self.data.as_hex(), f)
     }
 }
 
-impl<'s> fmt::UpperHex for Hexy<'s> {
+impl fmt::UpperHex for Hexy<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         fmt::UpperHex::fmt(&self.data.as_hex(), f)
     }

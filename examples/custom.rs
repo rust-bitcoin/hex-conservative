@@ -93,21 +93,21 @@ pub struct DisplayALittleBitHexy<'a> {
     data: &'a [u8],
 }
 
-impl<'a> fmt::Display for DisplayALittleBitHexy<'a> {
+impl fmt::Display for DisplayALittleBitHexy<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
 }
 
-impl<'a> fmt::Debug for DisplayALittleBitHexy<'a> {
+impl fmt::Debug for DisplayALittleBitHexy<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
 }
 
-impl<'a> fmt::LowerHex for DisplayALittleBitHexy<'a> {
+impl fmt::LowerHex for DisplayALittleBitHexy<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         fmt::LowerHex::fmt(&self.data.as_hex(), f)
     }
 }
 
-impl<'a> fmt::UpperHex for DisplayALittleBitHexy<'a> {
+impl fmt::UpperHex for DisplayALittleBitHexy<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         fmt::UpperHex::fmt(&self.data.as_hex(), f)
     }
