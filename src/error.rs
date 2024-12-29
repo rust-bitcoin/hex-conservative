@@ -92,9 +92,7 @@ impl fmt::Display for InvalidCharError {
 }
 
 #[cfg(feature = "std")]
-impl std::error::Error for InvalidCharError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { None }
-}
+impl std::error::Error for InvalidCharError {}
 
 /// Purported hex string had odd length.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -114,9 +112,7 @@ impl fmt::Display for OddLengthStringError {
 }
 
 #[cfg(feature = "std")]
-impl std::error::Error for OddLengthStringError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { None }
-}
+impl std::error::Error for OddLengthStringError {}
 
 /// Hex decoding error.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -189,6 +185,4 @@ impl fmt::Display for InvalidLengthError {
 }
 
 #[cfg(feature = "std")]
-impl std::error::Error for InvalidLengthError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { None }
-}
+impl std::error::Error for InvalidLengthError {}
