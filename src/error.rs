@@ -165,14 +165,26 @@ impl From<InvalidLengthError> for HexToArrayError {
 #[non_exhaustive]
 pub struct InvalidLengthError {
     /// The expected length.
-    pub expected: usize,
+    pub(crate) expected: usize,
     /// The invalid length.
-    pub invalid: usize,
+    pub(crate) invalid: usize,
+}
+
+impl InvalidLengthError {
+    /// Returns the expected length.
+    pub fn expected_length(&self) -> usize { self.expected }
+    /// Returns the position of the invalid character byte.
+    pub fn invalid_length(&self) -> usize { self.invalid }
 }
 
 impl fmt::Display for InvalidLengthError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "invilad hex string length {} (expected {})", self.invalid, self.expected)
+        write!(
+            f,
+            "invilad hex string length {} (expected {})",
+            self.invalid_length(),
+            self.expected_length()
+        )
     }
 }
 
