@@ -87,7 +87,7 @@ impl InvalidCharError {
 
 impl fmt::Display for InvalidCharError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "invalid hex char {} at pos {}", self.invalid, self.pos)
+        write!(f, "invalid hex char {} at pos {}", self.invalid_char(), self.pos())
     }
 }
 
@@ -109,7 +109,7 @@ impl OddLengthStringError {
 
 impl fmt::Display for OddLengthStringError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "odd hex string length {}", self.len)
+        write!(f, "odd hex string length {}", self.length())
     }
 }
 
