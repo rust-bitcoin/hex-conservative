@@ -74,7 +74,7 @@ where
 /// Byte slice wrapper to serialize as a hex string in lowercase characters.
 pub struct SerializeBytesAsHex<'a>(pub &'a [u8]);
 
-impl<'a> serde::Serialize for SerializeBytesAsHex<'a> {
+impl serde::Serialize for SerializeBytesAsHex<'_> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
@@ -86,7 +86,7 @@ impl<'a> serde::Serialize for SerializeBytesAsHex<'a> {
 /// Byte slice wrapper to serialize as a hex string in lowercase characters.
 pub struct SerializeBytesAsHexLower<'a>(pub &'a [u8]);
 
-impl<'a> serde::Serialize for SerializeBytesAsHexLower<'a> {
+impl serde::Serialize for SerializeBytesAsHexLower<'_> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
@@ -98,7 +98,7 @@ impl<'a> serde::Serialize for SerializeBytesAsHexLower<'a> {
 /// Byte slice wrapper to serialize as a hex string in uppercase characters.
 pub struct SerializeBytesAsHexUpper<'a>(pub &'a [u8]);
 
-impl<'a> serde::Serialize for SerializeBytesAsHexUpper<'a> {
+impl serde::Serialize for SerializeBytesAsHexUpper<'_> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
@@ -120,7 +120,7 @@ where
 {
     struct HexVisitor<T>(PhantomData<T>);
 
-    impl<'de, T> Visitor<'de> for HexVisitor<T>
+    impl<T> Visitor<'_> for HexVisitor<T>
     where
         T: FromHex,
     {

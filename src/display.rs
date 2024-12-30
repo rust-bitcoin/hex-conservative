@@ -250,25 +250,25 @@ pub struct DisplayByteSlice<'a> {
     pub(crate) bytes: &'a [u8],
 }
 
-impl<'a> DisplayByteSlice<'a> {
+impl DisplayByteSlice<'_> {
     fn display(&self, f: &mut fmt::Formatter, case: Case) -> fmt::Result {
         internal_display(self.bytes, f, case)
     }
 }
 
-impl<'a> fmt::Display for DisplayByteSlice<'a> {
+impl fmt::Display for DisplayByteSlice<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
 }
 
-impl<'a> fmt::Debug for DisplayByteSlice<'a> {
+impl fmt::Debug for DisplayByteSlice<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
 }
 
-impl<'a> fmt::LowerHex for DisplayByteSlice<'a> {
+impl fmt::LowerHex for DisplayByteSlice<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { self.display(f, Case::Lower) }
 }
 
-impl<'a> fmt::UpperHex for DisplayByteSlice<'a> {
+impl fmt::UpperHex for DisplayByteSlice<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { self.display(f, Case::Upper) }
 }
 
@@ -296,19 +296,19 @@ impl<'a, const CAP: usize> DisplayArray<'a, CAP> {
     }
 }
 
-impl<'a, const LEN: usize> fmt::Display for DisplayArray<'a, LEN> {
+impl<const LEN: usize> fmt::Display for DisplayArray<'_, LEN> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
 }
 
-impl<'a, const LEN: usize> fmt::Debug for DisplayArray<'a, LEN> {
+impl<const LEN: usize> fmt::Debug for DisplayArray<'_, LEN> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
 }
 
-impl<'a, const LEN: usize> fmt::LowerHex for DisplayArray<'a, LEN> {
+impl<const LEN: usize> fmt::LowerHex for DisplayArray<'_, LEN> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { self.display(f, Case::Lower) }
 }
 
-impl<'a, const LEN: usize> fmt::UpperHex for DisplayArray<'a, LEN> {
+impl<const LEN: usize> fmt::UpperHex for DisplayArray<'_, LEN> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { self.display(f, Case::Upper) }
 }
 

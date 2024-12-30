@@ -193,7 +193,7 @@ impl<'a> HexDigitsIter<'a> {
     fn new_unchecked(digits: &'a [u8]) -> Self { Self { iter: digits.chunks_exact(2) } }
 }
 
-impl<'a> Iterator for HexDigitsIter<'a> {
+impl Iterator for HexDigitsIter<'_> {
     type Item = [u8; 2];
 
     #[inline]
@@ -210,7 +210,7 @@ impl<'a> Iterator for HexDigitsIter<'a> {
     }
 }
 
-impl<'a> DoubleEndedIterator for HexDigitsIter<'a> {
+impl DoubleEndedIterator for HexDigitsIter<'_> {
     #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
         self.iter.next_back().map(|digits| digits.try_into().expect("HexDigitsIter invariant"))
@@ -222,9 +222,9 @@ impl<'a> DoubleEndedIterator for HexDigitsIter<'a> {
     }
 }
 
-impl<'a> ExactSizeIterator for HexDigitsIter<'a> {}
+impl ExactSizeIterator for HexDigitsIter<'_> {}
 
-impl<'a> core::iter::FusedIterator for HexDigitsIter<'a> {}
+impl core::iter::FusedIterator for HexDigitsIter<'_> {}
 
 /// `hi` and `lo` are bytes representing hex characters.
 ///
