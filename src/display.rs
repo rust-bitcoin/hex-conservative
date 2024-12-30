@@ -30,7 +30,9 @@ use alloc::string::String;
 use core::borrow::Borrow;
 use core::fmt;
 
-use super::{Case, Table};
+use super::Case;
+#[cfg(any(test, feature = "std"))]
+use super::Table;
 use crate::buf_encoder::BufEncoder;
 
 /// Extension trait for types that can be displayed as hex.
