@@ -4,14 +4,11 @@
 
 use core::fmt;
 
-use crate::write_err;
-
 /// Formats error.
 ///
 /// If `std` feature is OFF appends error source (delimited by `: `). We do this because
 /// `e.source()` is only available in std builds, without this macro the error source is lost for
 /// no-std builds.
-#[macro_export]
 macro_rules! write_err {
     ($writer:expr, $string:literal $(, $args:expr)*; $source:expr) => {
         {
@@ -132,7 +129,7 @@ impl fmt::Display for HexToArrayError {
         use HexToArrayError::*;
 
         match *self {
-            InvalidChar(ref e) => crate::write_err!(f, "failed to parse hex digit"; e),
+            InvalidChar(ref e) => write_err!(f, "failed to parse hex digit"; e),
             InvalidLength(ref e) => write_err!(f, "failed to parse hex"; e),
         }
     }
