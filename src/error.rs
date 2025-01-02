@@ -158,7 +158,6 @@ impl From<InvalidLengthError> for HexToArrayError {
 
 /// Tried to parse fixed-length hash from a string with the wrong length.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct InvalidLengthError {
     /// The expected length.
     pub(crate) expected: usize,
