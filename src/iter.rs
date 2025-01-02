@@ -456,7 +456,10 @@ mod tests {
         let hex = "geadbeef";
         let iter = HexToBytesIter::new_unchecked(hex);
         let mut got = [0u8; 4];
-        assert_eq!(iter.drain_to_slice(&mut got), Err(InvalidCharError { invalid: b'g', pos: 0 }));
+        assert_eq!(
+            iter.drain_to_slice(&mut got).unwrap_err(),
+            InvalidCharError { invalid: b'g', pos: 0 }
+        );
     }
 
     #[test]
@@ -464,7 +467,10 @@ mod tests {
         let hex = "deadgeef";
         let iter = HexToBytesIter::new_unchecked(hex);
         let mut got = [0u8; 4];
-        assert_eq!(iter.drain_to_slice(&mut got), Err(InvalidCharError { invalid: b'g', pos: 4 }));
+        assert_eq!(
+            iter.drain_to_slice(&mut got).unwrap_err(),
+            InvalidCharError { invalid: b'g', pos: 4 }
+        );
     }
 
     #[test]
@@ -472,7 +478,10 @@ mod tests {
         let hex = "deadbeeg";
         let iter = HexToBytesIter::new_unchecked(hex);
         let mut got = [0u8; 4];
-        assert_eq!(iter.drain_to_slice(&mut got), Err(InvalidCharError { invalid: b'g', pos: 7 }));
+        assert_eq!(
+            iter.drain_to_slice(&mut got).unwrap_err(),
+            InvalidCharError { invalid: b'g', pos: 7 }
+        );
     }
 
     #[test]
@@ -493,21 +502,21 @@ mod tests {
     fn hex_to_bytes_vec_drain_first_char_error() {
         let hex = "geadbeef";
         let iter = HexToBytesIter::new_unchecked(hex);
-        assert_eq!(iter.drain_to_vec(), Err(InvalidCharError { invalid: b'g', pos: 0 }));
+        assert_eq!(iter.drain_to_vec().unwrap_err(), InvalidCharError { invalid: b'g', pos: 0 });
     }
 
     #[test]
     fn hex_to_bytes_vec_drain_middle_char_error() {
         let hex = "deadgeef";
         let iter = HexToBytesIter::new_unchecked(hex);
-        assert_eq!(iter.drain_to_vec(), Err(InvalidCharError { invalid: b'g', pos: 4 }));
+        assert_eq!(iter.drain_to_vec().unwrap_err(), InvalidCharError { invalid: b'g', pos: 4 });
     }
 
     #[test]
     fn hex_to_bytes_vec_drain_end_char_error() {
         let hex = "deadbeeg";
         let iter = HexToBytesIter::new_unchecked(hex);
-        assert_eq!(iter.drain_to_vec(), Err(InvalidCharError { invalid: b'g', pos: 7 }));
+        assert_eq!(iter.drain_to_vec().unwrap_err(), InvalidCharError { invalid: b'g', pos: 7 });
     }
 
     #[test]
