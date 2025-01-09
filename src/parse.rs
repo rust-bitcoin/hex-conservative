@@ -52,13 +52,12 @@ mod tests {
 
     #[test]
     #[cfg(feature = "alloc")]
-    fn hex_error() {
+    fn hex_error_ascii() {
         use crate::error::{InvalidCharError, OddLengthStringError};
 
         let oddlen = "0123456789abcdef0";
         let badchar1 = "Z123456789abcdef";
         let badchar2 = "012Y456789abcdeb";
-        let badchar3 = "«23456789abcdef";
 
         assert_eq!(
             Vec::<u8>::from_hex(oddlen).unwrap_err(),
@@ -70,21 +69,133 @@ mod tests {
         );
         assert_eq!(
             Vec::<u8>::from_hex(badchar1).unwrap_err(),
-            InvalidCharError { pos: 0, invalid: b'Z' }.into()
+            InvalidCharError { pos: 0, invalid: 'Z' }.into()
         );
         assert_eq!(
             Vec::<u8>::from_hex(badchar2).unwrap_err(),
-            InvalidCharError { pos: 3, invalid: b'Y' }.into()
-        );
-        assert_eq!(
-            Vec::<u8>::from_hex(badchar3).unwrap_err(),
-            InvalidCharError { pos: 0, invalid: 194 }.into()
+            InvalidCharError { pos: 3, invalid: 'Y' }.into()
         );
     }
 
     #[test]
+    #[cfg(feature = "alloc")]
+    fn hex_error_non_ascii() {
+        use crate::error::{InvalidCharError, OddLengthStringError};
+
+        // These are for sanity and documentation purposes.
+        assert_eq!("«".len(), 2); // 0xC2 0xAB
+        assert_eq!("✓".len(), 3); // 0xE2 0x9C 0x93
+        assert_eq!("𓃾".len(), 4); // 0xF0 0x93 0x83 0xbe
+        assert_eq!("0123456789abcdef".len(), 16);
+
+        let badchar = "0123456789abcde«";
+        assert_eq!(badchar.len(), 17);
+        assert_eq!(
+            Vec::<u8>::from_hex(badchar).unwrap_err(),
+            OddLengthStringError { len: 17 }.into(),
+        );
+
+        // I would have thought this was length 1.
+        let badchar = "«";
+        assert_eq!(badchar.len(), 2); // Sanity check.
+        assert_eq!(
+            Vec::<u8>::from_hex(badchar).unwrap_err(),
+            InvalidCharError { pos: 0, invalid: '«' }.into()
+        );
+
+        let badchar = "«✓a";
+        assert_eq!(badchar.len(), 6); // Sanity check.
+        assert_eq!(
+            Vec::<u8>::from_hex(badchar).unwrap_err(),
+            InvalidCharError { pos: 0, invalid: '«' }.into()
+        );
+
+        let badchar = "0123456789abcd«";
+        assert_eq!(badchar.len(), 16); // Sanity check.
+        assert_eq!(
+            Vec::<u8>::from_hex(badchar).unwrap_err(),
+            InvalidCharError { pos: 14, invalid: '«' }.into()
+        );
+
+        let badchar = "0123456789a«✓";
+        assert_eq!(badchar.len(), 16); // Sanity check.
+        assert_eq!(
+            Vec::<u8>::from_hex(badchar).unwrap_err(),
+            InvalidCharError { pos: 11, invalid: '«' }.into()
+        );
+
+        let badchar = "«0123456789abcd";
+        assert_eq!(badchar.len(), 16); // Sanity check.
+        assert_eq!(
+            Vec::<u8>::from_hex(badchar).unwrap_err(),
+            InvalidCharError { pos: 0, invalid: '«' }.into()
+        );
+
+        let badchar = "«✓56789abcdef";
+        assert_eq!(badchar.len(), 16); // Sanity check.
+        assert_eq!(
+            Vec::<u8>::from_hex(badchar).unwrap_err(),
+            InvalidCharError { pos: 0, invalid: '«' }.into()
+        );
+
+        let badchar = "0123456789abc✓";
+        assert_eq!(badchar.len(), 16); // Sanity check.
+        assert_eq!(
+            Vec::<u8>::from_hex(badchar).unwrap_err(),
+            InvalidCharError { pos: 13, invalid: '✓' }.into()
+        );
+
+        let badchar = "✓3456789abcdef";
+        assert_eq!(badchar.len(), 16); // Sanity check.
+        assert_eq!(
+            Vec::<u8>::from_hex(badchar).unwrap_err(),
+            InvalidCharError { pos: 0, invalid: '✓' }.into()
+        );
+
+        let badchar = "✓«56789abcdef";
+        assert_eq!(badchar.len(), 16); // Sanity check.
+        assert_eq!(
+            Vec::<u8>::from_hex(badchar).unwrap_err(),
+            InvalidCharError { pos: 0, invalid: '✓' }.into()
+        );
+
+        let badchar = "0123456789ab𓃾";
+        assert_eq!(badchar.len(), 16); // Sanity check.
+        assert_eq!(
+            Vec::<u8>::from_hex(badchar).unwrap_err(),
+            InvalidCharError { pos: 12, invalid: '𓃾' }.into()
+        );
+        let badchar = "𓃾456789abcdef";
+        assert_eq!(badchar.len(), 16); // Sanity check.
+        assert_eq!(
+            Vec::<u8>::from_hex(badchar).unwrap_err(),
+            InvalidCharError { pos: 0, invalid: '𓃾' }.into()
+        );
+        let badchar = "01𓃾6789abcdef";
+        assert_eq!(badchar.len(), 16); // Sanity check.
+        assert_eq!(
+            Vec::<u8>::from_hex(badchar).unwrap_err(),
+            InvalidCharError { pos: 2, invalid: '𓃾' }.into()
+        );
+
+        // Can't handle 4 byte encoded character that is in an odd position.
+        // let badchar = "0123456789a𓃾f";
+        // assert_eq!(badchar.len(), 16); // Sanity check.
+        // assert_eq!(
+        //     Vec::<u8>::from_hex(badchar).unwrap_err(),
+        //     InvalidCharError { pos: 11, invalid: '𓃾' }.into()
+        // );
+        // let badchar = "0𓃾456789abcde";
+        // assert_eq!(badchar.len(), 16); // Sanity check.
+        // assert_eq!(
+        //     Vec::<u8>::from_hex(badchar).unwrap_err(),
+        //     InvalidCharError { pos: 1, invalid: '𓃾' }.into()
+        // );
+    }
+
+    #[test]
     fn hex_error_position() {
-        use crate::error::InvalidCharError;
+        use crate::error::InvalidDigitError;
         let badpos1 = "Z123456789abcdef";
         let badpos2 = "012Y456789abcdeb";
         let badpos3 = "0123456789abcdeZ";
@@ -92,19 +203,19 @@ mod tests {
 
         assert_eq!(
             HexToBytesIter::new(badpos1).unwrap().next().unwrap().unwrap_err(),
-            InvalidCharError { pos: 0, invalid: b'Z' }
+            InvalidDigitError { hi: b'Z', lo: b'1', is_hi: true, pos: 0 }
         );
         assert_eq!(
             HexToBytesIter::new(badpos2).unwrap().nth(1).unwrap().unwrap_err(),
-            InvalidCharError { pos: 3, invalid: b'Y' }
+            InvalidDigitError { hi: b'2', lo: b'Y', is_hi: false, pos: 2 }
         );
         assert_eq!(
             HexToBytesIter::new(badpos3).unwrap().next_back().unwrap().unwrap_err(),
-            InvalidCharError { pos: 15, invalid: b'Z' }
+            InvalidDigitError { hi: b'e', lo: b'Z', is_hi: false, pos: 14 }
         );
         assert_eq!(
             HexToBytesIter::new(badpos4).unwrap().nth_back(1).unwrap().unwrap_err(),
-            InvalidCharError { pos: 12, invalid: b'Y' }
+            InvalidDigitError { hi: b'Y', lo: b'd', is_hi: true, pos: 12 }
         );
     }
 

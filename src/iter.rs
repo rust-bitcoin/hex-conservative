@@ -11,7 +11,7 @@ use std::io;
 
 #[cfg(all(feature = "alloc", not(feature = "std")))]
 use crate::alloc::vec::Vec;
-use crate::error::{InvalidCharError, OddLengthStringError};
+use crate::error::{InvalidCharError, InvalidDigitError, OddLengthStringError};
 use crate::{Case, Table};
 
 /// Convenience alias for `HexToBytesIter<HexDigitsIter<'a>>`.
@@ -53,11 +53,18 @@ impl<'a> HexToBytesIter<HexDigitsIter<'a>> {
     pub(crate) fn drain_to_slice(self, buf: &mut [u8]) -> Result<(), InvalidCharError> {
         assert_eq!(self.len(), buf.len());
         let mut ptr = buf.as_mut_ptr();
-        for byte in self {
-            // SAFETY: for loop iterates `len` times, and `buf` has length `len`
-            unsafe {
-                core::ptr::write(ptr, byte?);
-                ptr = ptr.add(1);
+
+        let mut iter = self;
+        while let Some(byte) = iter.next() {
+            match byte {
+                Ok(byte) => {
+                    // SAFETY: for loop iterates `len` times, and `buf` has length `len`
+                    unsafe {
+                        core::ptr::write(ptr, byte);
+                        ptr = ptr.add(1);
+                    }
+                }
+                Err(e) => return Err(e.into_invalid_char_error(iter.next())),
             }
         }
         Ok(())
@@ -72,12 +79,18 @@ impl<'a> HexToBytesIter<HexDigitsIter<'a>> {
         let len = self.len();
         let mut ret = Vec::with_capacity(len);
         let mut ptr = ret.as_mut_ptr();
-        for byte in self {
-            // SAFETY: for loop iterates `len` times, and `ret` has a capacity of at least `len`
-            unsafe {
-                // docs: "`core::ptr::write` is appropriate for initializing uninitialized memory"
-                core::ptr::write(ptr, byte?);
-                ptr = ptr.add(1);
+
+        let mut iter = self;
+        while let Some(byte) = iter.next() {
+            match byte {
+                Ok(byte) => {
+                    // SAFETY: for loop iterates `len` times, and `buf` has length `len`
+                    unsafe {
+                        core::ptr::write(ptr, byte);
+                        ptr = ptr.add(1);
+                    }
+                }
+                Err(e) => return Err(e.into_invalid_char_error(iter.next())),
             }
         }
         // SAFETY: `len` elements have been initialized, and `ret` has a capacity of at least `len`
@@ -95,18 +108,16 @@ impl<T: Iterator<Item = [u8; 2]> + ExactSizeIterator> HexToBytesIter<T> {
 }
 
 impl<T: Iterator<Item = [u8; 2]> + ExactSizeIterator> Iterator for HexToBytesIter<T> {
-    type Item = Result<u8, InvalidCharError>;
+    type Item = Result<u8, InvalidDigitError>;
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         let [hi, lo] = self.iter.next()?;
-        Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| InvalidCharError {
-            invalid: c,
-            pos: if is_high {
-                (self.original_len - self.iter.len() - 1) * 2
-            } else {
-                (self.original_len - self.iter.len() - 1) * 2 + 1
-            },
+        Some(hex_digits_to_byte(hi, lo).map_err(|is_hi| InvalidDigitError {
+            hi,
+            lo,
+            is_hi,
+            pos: (self.original_len - self.iter.len() - 1) * 2,
         }))
     }
 
@@ -116,13 +127,11 @@ impl<T: Iterator<Item = [u8; 2]> + ExactSizeIterator> Iterator for HexToBytesIte
     #[inline]
     fn nth(&mut self, n: usize) -> Option<Self::Item> {
         let [hi, lo] = self.iter.nth(n)?;
-        Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| InvalidCharError {
-            invalid: c,
-            pos: if is_high {
-                (self.original_len - self.iter.len() - 1) * 2
-            } else {
-                (self.original_len - self.iter.len() - 1) * 2 + 1
-            },
+        Some(hex_digits_to_byte(hi, lo).map_err(|is_hi| InvalidDigitError {
+            hi,
+            lo,
+            is_hi,
+            pos: (self.original_len - self.iter.len() - 1) * 2,
         }))
     }
 }
@@ -133,18 +142,22 @@ impl<T: Iterator<Item = [u8; 2]> + DoubleEndedIterator + ExactSizeIterator> Doub
     #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
         let [hi, lo] = self.iter.next_back()?;
-        Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| InvalidCharError {
-            invalid: c,
-            pos: if is_high { self.iter.len() * 2 } else { self.iter.len() * 2 + 1 },
+        Some(hex_digits_to_byte(hi, lo).map_err(|is_hi| InvalidDigitError {
+            hi,
+            lo,
+            is_hi,
+            pos: self.iter.len() * 2,
         }))
     }
 
     #[inline]
     fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
         let [hi, lo] = self.iter.nth_back(n)?;
-        Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| InvalidCharError {
-            invalid: c,
-            pos: if is_high { self.iter.len() * 2 } else { self.iter.len() * 2 + 1 },
+        Some(hex_digits_to_byte(hi, lo).map_err(|is_hi| InvalidDigitError {
+            hi,
+            lo,
+            is_hi,
+            pos: self.iter.len() * 2,
         }))
     }
 }
@@ -226,15 +239,27 @@ impl ExactSizeIterator for HexDigitsIter<'_> {}
 
 impl core::iter::FusedIterator for HexDigitsIter<'_> {}
 
-/// `hi` and `lo` are bytes representing hex characters.
+/// `hi` and `lo` are bytes that encode hex digits as ASCII.
 ///
-/// Returns the valid byte or the invalid input byte and a bool indicating error for `hi` or `lo`.
-fn hex_chars_to_byte(hi: u8, lo: u8) -> Result<u8, (u8, bool)> {
-    let hih = (hi as char).to_digit(16).ok_or((hi, true))?;
-    let loh = (lo as char).to_digit(16).ok_or((lo, false))?;
+/// Returns the valid byte or a bool indicating error for `hi` or `lo`.
+fn hex_digits_to_byte(hi: u8, lo: u8) -> Result<u8, bool> {
+    let hih = (hi as char).to_digit(16).ok_or(true)?;
+    let loh = (lo as char).to_digit(16).ok_or(false)?;
 
     let ret = (hih << 4) + loh;
+
     Ok(ret as u8)
+}
+
+/// The inverse of `hex_digits_to_byte`.
+pub(crate) fn byte_to_hex_digits(byte: u8) -> (u8, u8) {
+    let hi = byte >> 4;
+    let lo = byte & 0x0f;
+
+    let hi = char::from_digit(hi.into(), 16).unwrap();
+    let lo = char::from_digit(lo.into(), 16).unwrap();
+
+    (hi as u8, lo as u8)
 }
 
 /// Iterator over bytes which encodes the bytes and yields hex characters.
@@ -458,7 +483,7 @@ mod tests {
         let mut got = [0u8; 4];
         assert_eq!(
             iter.drain_to_slice(&mut got).unwrap_err(),
-            InvalidCharError { invalid: b'g', pos: 0 }
+            InvalidCharError { invalid: 'g', pos: 0 }
         );
     }
 
@@ -469,7 +494,7 @@ mod tests {
         let mut got = [0u8; 4];
         assert_eq!(
             iter.drain_to_slice(&mut got).unwrap_err(),
-            InvalidCharError { invalid: b'g', pos: 4 }
+            InvalidCharError { invalid: 'g', pos: 4 }
         );
     }
 
@@ -480,7 +505,7 @@ mod tests {
         let mut got = [0u8; 4];
         assert_eq!(
             iter.drain_to_slice(&mut got).unwrap_err(),
-            InvalidCharError { invalid: b'g', pos: 7 }
+            InvalidCharError { invalid: 'g', pos: 7 }
         );
     }
 
@@ -502,21 +527,21 @@ mod tests {
     fn hex_to_bytes_vec_drain_first_char_error() {
         let hex = "geadbeef";
         let iter = HexToBytesIter::new_unchecked(hex);
-        assert_eq!(iter.drain_to_vec().unwrap_err(), InvalidCharError { invalid: b'g', pos: 0 });
+        assert_eq!(iter.drain_to_vec().unwrap_err(), InvalidCharError { invalid: 'g', pos: 0 });
     }
 
     #[test]
     fn hex_to_bytes_vec_drain_middle_char_error() {
         let hex = "deadgeef";
         let iter = HexToBytesIter::new_unchecked(hex);
-        assert_eq!(iter.drain_to_vec().unwrap_err(), InvalidCharError { invalid: b'g', pos: 4 });
+        assert_eq!(iter.drain_to_vec().unwrap_err(), InvalidCharError { invalid: 'g', pos: 4 });
     }
 
     #[test]
     fn hex_to_bytes_vec_drain_end_char_error() {
         let hex = "deadbeeg";
         let iter = HexToBytesIter::new_unchecked(hex);
-        assert_eq!(iter.drain_to_vec().unwrap_err(), InvalidCharError { invalid: b'g', pos: 7 });
+        assert_eq!(iter.drain_to_vec().unwrap_err(), InvalidCharError { invalid: 'g', pos: 7 });
     }
 
     #[test]
@@ -573,5 +598,13 @@ mod tests {
         let upper_got =
             BytesToHexIter::new(upper_bytes_iter, Case::Upper).rev().collect::<String>();
         assert_eq!(upper_got, upper_want);
+    }
+
+    #[test]
+    fn hex_digits_to_byte_roundtrips() {
+        let b = hex_digits_to_byte(b'a', b'b').unwrap();
+        let want = (b'a', b'b');
+        let got = byte_to_hex_digits(b);
+        assert_eq!(got, want)
     }
 }
