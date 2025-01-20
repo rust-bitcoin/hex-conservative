@@ -72,7 +72,10 @@ pub(crate) use table::Table;
 #[doc(inline)]
 pub use self::{
     display::DisplayHex,
-    error::{OddLengthStringError, HexToBytesError, HexToArrayError, InvalidCharError},
+    error::{
+        HexToArrayError, HexToBytesError, InvalidCharError, InvalidLengthError,
+        OddLengthStringError, ToArrayError, ToBytesError,
+    },
     iter::{BytesToHexIter, HexToBytesIter, HexSliceToBytesIter},
     parse::FromHex,
 };
