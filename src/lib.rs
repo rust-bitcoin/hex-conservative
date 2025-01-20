@@ -78,7 +78,7 @@ pub use self::{
 };
 
 /// Possible case of hex.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum Case {
     /// Produce lower-case chars (`[0-9a-f]`).
     ///
