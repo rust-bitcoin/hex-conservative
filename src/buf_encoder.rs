@@ -19,6 +19,7 @@ use super::{Case, Table};
 /// This is an important building block for fast hex-encoding. Because string writing tools
 /// provided by `core::fmt` involve dynamic dispatch and don't allow reserving capacity in strings
 /// buffering the hex and then formatting it is significantly faster.
+#[derive(Debug)]
 pub struct BufEncoder<const CAP: usize> {
     buf: ArrayString<CAP>,
     table: &'static Table,

@@ -572,6 +572,7 @@ where
 /// and writes the source bytes to its inner `T` as hex characters.
 #[cfg(any(test, feature = "std"))]
 #[cfg_attr(docsrs, doc(cfg(any(test, feature = "std"))))]
+#[derive(Debug)]
 pub struct HexWriter<T> {
     writer: T,
     table: &'static Table,
