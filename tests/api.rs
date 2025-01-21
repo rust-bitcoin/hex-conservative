@@ -11,7 +11,7 @@
 
 use core::borrow::Borrow;
 use core::marker::PhantomData;
-use core::slice;
+use core::{fmt, slice};
 
 #[cfg(feature = "serde")]
 use hex_conservative::serde;
@@ -44,6 +44,7 @@ struct Structs<'a, I, T>
 where
     I: Iterator,
     I::Item: Borrow<u8>,
+    T: fmt::Write,
 {
     a: BytesToHexIter<I>,
     b: buf_encoder::BufEncoder<CAP>,

@@ -573,14 +573,14 @@ where
 #[cfg(any(test, feature = "std"))]
 #[cfg_attr(docsrs, doc(cfg(any(test, feature = "std"))))]
 #[derive(Debug)]
-pub struct HexWriter<T> {
+pub struct HexWriter<T: fmt::Write> {
     writer: T,
     table: &'static Table,
 }
 
 #[cfg(any(test, feature = "std"))]
 #[cfg_attr(docsrs, doc(cfg(any(test, feature = "std"))))]
-impl<T> HexWriter<T> {
+impl<T: fmt::Write> HexWriter<T> {
     /// Creates a `HexWriter` that writes the source bytes to `dest` as hex characters
     /// in the given `case`.
     pub fn new(dest: T, case: Case) -> Self { Self { writer: dest, table: case.table() } }
