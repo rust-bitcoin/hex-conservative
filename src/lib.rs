@@ -154,6 +154,7 @@ mod table {
 ///
 /// For improved ergonomics import with: `use hex_conservative::test_hex_unwrap as hex;`
 #[macro_export]
+#[deprecated(since = "TBD", note = "use the one-liner `Vec::from_hex(hex).unwrap()` instead")]
 macro_rules! test_hex_unwrap (($hex:expr) => (<Vec<u8> as $crate::FromHex>::from_hex($hex).unwrap()));
 
 #[cfg(test)]
