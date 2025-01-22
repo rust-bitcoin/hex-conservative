@@ -25,6 +25,10 @@ format:
 docsrs *flags:
   RUSTDOCFLAGS="--cfg docsrs -D warnings -D rustdoc::broken-intra-doc-links" cargo +$(cat ./nightly-version) doc --all-features {{flags}}
 
+# Check for API changes.
+check-api:
+ contrib/check-for-api-changes.sh
+
 # Update the recent and minimal lock files.
 update-lock-files:
   contrib/update-lock-files.sh
