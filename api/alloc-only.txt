@@ -156,6 +156,7 @@ impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 8]
 impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 9]
 impl<'a> hex_conservative::display::DisplayHex for &'a [u8]
 impl<'a> hex_conservative::display::DisplayHex for &'a alloc::vec::Vec<u8>
+impl<I> core::fmt::Debug for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::iterator::Iterator + core::fmt::Debug, <I as core::iter::traits::iterator::Iterator>::Item: core::borrow::Borrow<u8>
 impl<I> core::iter::traits::double_ended::DoubleEndedIterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::double_ended::DoubleEndedIterator, <I as core::iter::traits::iterator::Iterator>::Item: core::borrow::Borrow<u8>
 impl<I> core::iter::traits::exact_size::ExactSizeIterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::exact_size::ExactSizeIterator, <I as core::iter::traits::iterator::Iterator>::Item: core::borrow::Borrow<u8>
 impl<I> core::iter::traits::iterator::Iterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::iterator::Iterator, <I as core::iter::traits::iterator::Iterator>::Item: core::borrow::Borrow<u8>
@@ -167,6 +168,7 @@ impl<I> core::marker::Unpin for hex_conservative::BytesToHexIter<I> where I: cor
 impl<I> core::panic::unwind_safe::RefUnwindSafe for hex_conservative::BytesToHexIter<I> where I: core::panic::unwind_safe::RefUnwindSafe
 impl<I> core::panic::unwind_safe::UnwindSafe for hex_conservative::BytesToHexIter<I> where I: core::panic::unwind_safe::UnwindSafe
 impl<I> hex_conservative::BytesToHexIter<I> where I: core::iter::traits::iterator::Iterator, <I as core::iter::traits::iterator::Iterator>::Item: core::borrow::Borrow<u8>
+impl<T: core::fmt::Debug + core::iter::traits::iterator::Iterator<Item = [u8; 2]>> core::fmt::Debug for hex_conservative::HexToBytesIter<T>
 impl<T: core::iter::traits::iterator::Iterator<Item = [u8; 2]> + core::iter::traits::double_ended::DoubleEndedIterator + core::iter::traits::exact_size::ExactSizeIterator> core::iter::traits::double_ended::DoubleEndedIterator for hex_conservative::HexToBytesIter<T>
 impl<T: core::iter::traits::iterator::Iterator<Item = [u8; 2]> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::marker::FusedIterator> core::iter::traits::marker::FusedIterator for hex_conservative::HexToBytesIter<T>
 impl<T: core::iter::traits::iterator::Iterator<Item = [u8; 2]> + core::iter::traits::exact_size::ExactSizeIterator> core::iter::traits::exact_size::ExactSizeIterator for hex_conservative::HexToBytesIter<T>
@@ -179,6 +181,7 @@ impl<T> core::marker::Unpin for hex_conservative::HexToBytesIter<T> where T: cor
 impl<T> core::panic::unwind_safe::RefUnwindSafe for hex_conservative::HexToBytesIter<T> where T: core::panic::unwind_safe::RefUnwindSafe
 impl<T> core::panic::unwind_safe::UnwindSafe for hex_conservative::HexToBytesIter<T> where T: core::panic::unwind_safe::UnwindSafe
 impl<const CAP: usize> core::default::Default for hex_conservative::buf_encoder::BufEncoder<CAP>
+impl<const CAP: usize> core::fmt::Debug for hex_conservative::buf_encoder::BufEncoder<CAP>
 impl<const CAP: usize> core::marker::Freeze for hex_conservative::buf_encoder::BufEncoder<CAP>
 impl<const CAP: usize> core::marker::Send for hex_conservative::buf_encoder::BufEncoder<CAP>
 impl<const CAP: usize> core::marker::Sync for hex_conservative::buf_encoder::BufEncoder<CAP>
@@ -229,6 +232,7 @@ pub fn &'a alloc::vec::Vec<u8>::as_hex(self) -> Self::Display
 pub fn &'a alloc::vec::Vec<u8>::hex_reserve_suggestion(self) -> usize
 pub fn [u8; LEN]::from_hex(s: &str) -> core::result::Result<Self, Self::Error>
 pub fn alloc::vec::Vec<u8>::from_hex(s: &str) -> core::result::Result<Self, Self::Error>
+pub fn hex_conservative::BytesToHexIter<I>::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 pub fn hex_conservative::BytesToHexIter<I>::len(&self) -> usize
 pub fn hex_conservative::BytesToHexIter<I>::new(iter: I, case: hex_conservative::Case) -> hex_conservative::BytesToHexIter<I>
 pub fn hex_conservative::BytesToHexIter<I>::next(&mut self) -> core::option::Option<char>
@@ -247,6 +251,7 @@ pub fn hex_conservative::DisplayHex::to_lower_hex_string(self) -> alloc::string:
 pub fn hex_conservative::DisplayHex::to_upper_hex_string(self) -> alloc::string::String
 pub fn hex_conservative::FromHex::from_hex(s: &str) -> core::result::Result<Self, Self::Error>
 pub fn hex_conservative::HexToBytesIter<HexDigitsIter<'a>>::new(s: &'a str) -> core::result::Result<Self, hex_conservative::error::OddLengthStringError>
+pub fn hex_conservative::HexToBytesIter<T>::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 pub fn hex_conservative::HexToBytesIter<T>::from_pairs(iter: T) -> Self
 pub fn hex_conservative::HexToBytesIter<T>::next(&mut self) -> core::option::Option<Self::Item>
 pub fn hex_conservative::HexToBytesIter<T>::next_back(&mut self) -> core::option::Option<Self::Item>
@@ -256,6 +261,7 @@ pub fn hex_conservative::HexToBytesIter<T>::size_hint(&self) -> (usize, core::op
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::as_str(&self) -> &str
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::clear(&mut self)
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::default() -> Self
+pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::is_full(&self) -> bool
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::new(case: hex_conservative::Case) -> Self
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::put_byte(&mut self, byte: u8)
