@@ -582,6 +582,8 @@ pub struct HexWriter<T> {
 impl<T> HexWriter<T> {
     /// Creates a `HexWriter` that writes the source bytes to `dest` as hex characters
     /// in the given `case`.
+    ///
+    /// Note even though we take ownership of the writer one can also call this with `&mut dest`.
     pub fn new(dest: T, case: Case) -> Self { Self { writer: dest, table: case.table() } }
     /// Consumes this `HexWriter` returning the inner `T`.
     pub fn into_inner(self) -> T { self.writer }
@@ -929,15 +931,17 @@ mod tests {
 
     #[cfg(feature = "std")]
     mod std {
+        use std::io::Write as _;
+
+        use arrayvec::ArrayString;
+
+        use super::{Case, DisplayHex, HexWriter};
 
         #[test]
         fn hex_writer() {
             use std::io::{ErrorKind, Result, Write};
 
-            use arrayvec::ArrayString;
-
             use super::Case::{Lower, Upper};
-            use super::{DisplayHex, HexWriter};
 
             macro_rules! test_hex_writer {
                 ($cap:expr, $case: expr, $src: expr, $want: expr, $hex_result: expr) => {
@@ -965,6 +969,13 @@ mod tests {
             let mut writer = HexWriter::new(String::new(), Lower);
             writer.write_all(&vec[..]).unwrap();
             assert_eq!(writer.into_inner(), vec.to_lower_hex_string());
+        }
+
+        #[test]
+        fn hex_writer_accepts_and_mut() {
+            let mut dest_buf = ArrayString::<64>::new();
+            let mut dest = HexWriter::new(&mut dest_buf, Case::Lower);
+            let _got = dest.write(b"some data").unwrap();
         }
     }
 }
