@@ -838,6 +838,22 @@ mod tests {
             test_display_hex!("{:0>#4}", [0x12, 0x34, 0x56, 0x78], "0x12345678");
         }
 
+        // Tests `impl_fmt_traits` in module scope.
+        // ref: https://rust-lang.github.io/api-guidelines/macros.html#c-anywhere
+        #[allow(dead_code)]
+        struct Wrapper([u8; 4]);
+
+        impl Borrow<[u8]> for Wrapper {
+            fn borrow(&self) -> &[u8] { &self.0[..] }
+        }
+
+        impl_fmt_traits! {
+            #[display_backward(false)]
+            impl fmt_traits for Wrapper {
+                const LENGTH: usize = 4;
+            }
+        }
+
         #[test]
         fn hex_fmt_impl_macro_forward() {
             struct Wrapper([u8; 4]);
