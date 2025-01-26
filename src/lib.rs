@@ -116,6 +116,7 @@ mod table {
     /// Table of hex chars.
     //
     // Correctness invariant: each byte in the table must be ASCII.
+    #[derive(Debug)]
     pub(crate) struct Table([u8; 16]);
 
     impl Table {

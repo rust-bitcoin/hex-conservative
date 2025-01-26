@@ -72,6 +72,7 @@ where
 }
 
 /// Byte slice wrapper to serialize as a hex string in lowercase characters.
+#[derive(Debug)]
 pub struct SerializeBytesAsHex<'a>(pub &'a [u8]);
 
 impl serde::Serialize for SerializeBytesAsHex<'_> {
@@ -84,6 +85,7 @@ impl serde::Serialize for SerializeBytesAsHex<'_> {
 }
 
 /// Byte slice wrapper to serialize as a hex string in lowercase characters.
+#[derive(Debug)]
 pub struct SerializeBytesAsHexLower<'a>(pub &'a [u8]);
 
 impl serde::Serialize for SerializeBytesAsHexLower<'_> {
@@ -96,6 +98,7 @@ impl serde::Serialize for SerializeBytesAsHexLower<'_> {
 }
 
 /// Byte slice wrapper to serialize as a hex string in uppercase characters.
+#[derive(Debug)]
 pub struct SerializeBytesAsHexUpper<'a>(pub &'a [u8]);
 
 impl serde::Serialize for SerializeBytesAsHexUpper<'_> {
