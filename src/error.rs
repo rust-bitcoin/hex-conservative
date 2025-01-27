@@ -97,28 +97,165 @@ impl From<OddLengthStringError> for ToBytesError {
     fn from(e: OddLengthStringError) -> Self { Self::OddLengthString(e) }
 }
 
-/// Invalid hex character.
+/// UTF-8 character is not an ASCII hex character.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct InvalidCharError {
-    pub(crate) invalid: u8,
+    pub(crate) invalid: char,
     pub(crate) pos: usize,
 }
 
 impl InvalidCharError {
-    /// Returns the invalid character byte.
-    pub fn invalid_char(&self) -> u8 { self.invalid }
-    /// Returns the position of the invalid character byte.
+    /// Returns the invalid character.
+    pub fn invalid_char(&self) -> char { self.invalid }
+
+    /// Returns the position in the input string of the invalid character.
     pub fn pos(&self) -> usize { self.pos }
 }
 
 impl fmt::Display for InvalidCharError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "invalid hex char {} at pos {}", self.invalid_char(), self.pos())
+        write!(
+            f,
+            "char {} at pos {} is not a valid ASCII hex character",
+            self.invalid_char(),
+            self.pos()
+        )
     }
 }
 
 #[cfg(feature = "std")]
 impl std::error::Error for InvalidCharError {}
+
+/// Invalid ASCII encoding of a hex digit.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct InvalidDigitError {
+    /// The high digit in the pair e.g., for 'ab' this is 'a'.
+    pub(crate) hi: u8,
+
+    /// The high digit in the pair e.g., for 'ab' this is 'b'.
+    pub(crate) lo: u8,
+
+    /// `true` if the invalid byte is the `hi` one, `false` if its the `lo` one.
+    pub(crate) is_hi: bool,
+
+    /// Position of the stat of the byte pair in the input string.
+    pub(crate) pos: usize,
+}
+
+impl InvalidDigitError {
+    /// Returns the invalid byte.
+    pub fn invalid_byte(&self) -> u8 {
+        if self.is_hi {
+            self.hi
+        } else {
+            self.lo
+        }
+    }
+
+    /// Returns the character position in input string of the invalid byte.
+    pub fn pos(&self) -> usize {
+        if self.is_hi {
+            self.pos
+        } else {
+            self.pos + 1
+        }
+    }
+
+    pub(crate) fn into_invalid_char_error(
+        self,
+        // The next item from the iterator.
+        next: Option<Result<u8, InvalidDigitError>>,
+    ) -> InvalidCharError {
+        // Try to map the UTF-8 values in `v` to an invalid character.
+        fn error(v: &[u8], pos: usize) -> Option<InvalidCharError> {
+            core::str::from_utf8(v)
+                .map(|s| InvalidCharError { invalid: s.chars().next().unwrap(), pos })
+                .ok()
+        }
+
+        let rich_error = match next {
+            Some(res) => match res {
+                // The next two bytes happen to be valid ASCII.
+                Ok(byte) => {
+                    let (hi, lo) = crate::iter::byte_to_hex_digits(byte);
+                    if !self.is_hi {
+                        let vals = [self.lo];
+                        error(&vals, self.pos + 1).or_else(|| {
+                            let vals = [self.lo, hi];
+                            error(&vals, self.pos + 1).or_else(|| {
+                                let vals = [self.lo, hi, lo];
+                                error(&vals, self.pos + 1)
+                            })
+                        })
+                    } else {
+                        let vals = [self.hi];
+                        error(&vals, self.pos).or_else(|| {
+                            let vals = [self.hi, self.lo];
+                            error(&vals, self.pos).or_else(|| {
+                                let vals = [self.hi, self.lo, hi];
+                                error(&vals, self.pos).or_else(|| {
+                                    let vals = [self.hi, self.lo, hi, lo];
+                                    error(&vals, self.pos)
+                                })
+                            })
+                        })
+                    }
+                }
+                // The next two bytes happen to be invalid ASCII.
+                Err(e) =>
+                    if !self.is_hi {
+                        let vals = [self.lo, e.hi];
+                        error(&vals, self.pos + 1).or_else(|| {
+                            let vals = [self.lo, e.hi, e.lo];
+                            error(&vals, self.pos + 1)
+                        })
+                    } else {
+                        let vals = [self.hi, self.lo, e.hi];
+                        error(&vals, self.pos).or_else(|| {
+                            let vals = [self.hi, self.lo];
+                            error(&vals, self.pos).or_else(|| {
+                                let vals = [self.hi, self.lo, e.hi];
+                                error(&vals, self.pos).or_else(|| {
+                                    let vals = [self.hi, self.lo, e.hi, e.lo];
+                                    error(&vals, self.pos)
+                                })
+                            })
+                        })
+                    },
+            },
+            // Invalid character was for the last character in the input string.
+            None =>
+                if !self.is_hi {
+                    let vals = [self.lo];
+                    error(&vals, self.pos + 1)
+                } else {
+                    let vals = [self.hi];
+                    error(&vals, self.pos).or_else(|| {
+                        let vals = [self.hi, self.lo];
+                        error(&vals, self.pos)
+                    })
+                },
+        };
+        rich_error.unwrap_or(InvalidCharError {
+            invalid: if self.is_hi { self.hi.into() } else { self.lo.into() },
+            pos: self.pos,
+        })
+    }
+}
+
+impl fmt::Display for InvalidDigitError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "byte value {:x} is not a valid ASCII encoding of a hex digit (pos {})",
+            self.invalid_byte(),
+            self.pos()
+        )
+    }
+}
+
+#[cfg(feature = "std")]
+impl std::error::Error for InvalidDigitError {}
 
 /// Purported hex string had odd length.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -240,3 +377,31 @@ impl fmt::Display for InvalidLengthError {
 
 #[cfg(feature = "std")]
 impl std::error::Error for InvalidLengthError {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn invalid_digit_to_invalid_char_za() {
+        // Input string: 'za'
+        let e = InvalidDigitError { hi: b'z', lo: b'a', is_hi: true, pos: 0 };
+        let want = InvalidCharError { invalid: 'z', pos: 0 };
+        let got = e.into_invalid_char_error(None);
+        assert_eq!(got, want);
+    }
+
+    #[test]
+    fn invalid_digit_to_invalid_char_az() {
+        // Input string: 'az'
+        let e = InvalidDigitError {
+            hi: b'a',
+            lo: b'z',
+            is_hi: false,
+            pos: 0, // This is the position of 'hi'.
+        };
+        let want = InvalidCharError { invalid: 'z', pos: 1 }; // This is the position of 'z'.
+        let got = e.into_invalid_char_error(None);
+        assert_eq!(got, want);
+    }
+}
