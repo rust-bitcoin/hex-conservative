@@ -140,3 +140,11 @@ fn all_types_implement_send_sync() {
     assert_send::<Errors>();
     assert_sync::<Errors>();
 }
+
+#[test]
+fn dyn_compatible() {
+    // If this builds then traits are dyn compatible.
+    struct Traits {
+        // a: Box<dyn hex_conservative::FromHex>, // `from_hex()` returns `Self`.gs
+    }
+}
