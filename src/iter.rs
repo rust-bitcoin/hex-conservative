@@ -19,8 +19,11 @@ pub type HexSliceToBytesIter<'a> = HexToBytesIter<HexDigitsIter<'a>>;
 
 /// Iterator yielding bytes decoded from an iterator of pairs of hex digits.
 #[derive(Debug)]
-pub struct HexToBytesIter<T: Iterator<Item = [u8; 2]>> {
-    iter: T,
+pub struct HexToBytesIter<I>
+where
+    I: Iterator<Item = [u8; 2]>,
+{
+    iter: I,
     original_len: usize,
 }
 
@@ -89,13 +92,19 @@ impl<'a> HexToBytesIter<HexDigitsIter<'a>> {
     }
 }
 
-impl<T: Iterator<Item = [u8; 2]> + ExactSizeIterator> HexToBytesIter<T> {
+impl<I> HexToBytesIter<I>
+where
+    I: Iterator<Item = [u8; 2]> + ExactSizeIterator,
+{
     /// Constructs a custom hex decoding iterator from another iterator.
     #[inline]
-    pub fn from_pairs(iter: T) -> Self { Self { original_len: iter.len(), iter } }
+    pub fn from_pairs(iter: I) -> Self { Self { original_len: iter.len(), iter } }
 }
 
-impl<T: Iterator<Item = [u8; 2]> + ExactSizeIterator> Iterator for HexToBytesIter<T> {
+impl<I> Iterator for HexToBytesIter<I>
+where
+    I: Iterator<Item = [u8; 2]> + ExactSizeIterator,
+{
     type Item = Result<u8, InvalidCharError>;
 
     #[inline]
@@ -128,8 +137,9 @@ impl<T: Iterator<Item = [u8; 2]> + ExactSizeIterator> Iterator for HexToBytesIte
     }
 }
 
-impl<T: Iterator<Item = [u8; 2]> + DoubleEndedIterator + ExactSizeIterator> DoubleEndedIterator
-    for HexToBytesIter<T>
+impl<I> DoubleEndedIterator for HexToBytesIter<I>
+where
+    I: Iterator<Item = [u8; 2]> + DoubleEndedIterator + ExactSizeIterator,
 {
     #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
@@ -150,16 +160,18 @@ impl<T: Iterator<Item = [u8; 2]> + DoubleEndedIterator + ExactSizeIterator> Doub
     }
 }
 
-impl<T: Iterator<Item = [u8; 2]> + ExactSizeIterator> ExactSizeIterator for HexToBytesIter<T> {}
+impl<I> ExactSizeIterator for HexToBytesIter<I> where I: Iterator<Item = [u8; 2]> + ExactSizeIterator
+{}
 
-impl<T: Iterator<Item = [u8; 2]> + ExactSizeIterator + FusedIterator> FusedIterator
-    for HexToBytesIter<T>
+impl<I> FusedIterator for HexToBytesIter<I> where
+    I: Iterator<Item = [u8; 2]> + ExactSizeIterator + FusedIterator
 {
 }
 
 #[cfg(feature = "std")]
-impl<T: Iterator<Item = [u8; 2]> + ExactSizeIterator + FusedIterator> io::Read
-    for HexToBytesIter<T>
+impl<I> io::Read for HexToBytesIter<I>
+where
+    I: Iterator<Item = [u8; 2]> + ExactSizeIterator + FusedIterator,
 {
     #[inline]
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
