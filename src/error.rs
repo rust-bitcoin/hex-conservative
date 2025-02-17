@@ -2,6 +2,7 @@
 
 //! Error code for the `hex-conservative` crate.
 
+use core::convert::Infallible;
 use core::fmt;
 
 /// Formats error.
@@ -28,6 +29,10 @@ macro_rules! write_err {
 /// Hex decoding error.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct HexToBytesError(pub(crate) ToBytesError);
+
+impl From<Infallible> for HexToBytesError {
+    fn from(never: Infallible) -> Self { match never {} }
+}
 
 impl HexToBytesError {
     /// Returns a [`ToBytesError`] from this [`HexToBytesError`].
@@ -61,6 +66,10 @@ pub enum ToBytesError {
     InvalidChar(InvalidCharError),
     /// Purported hex string had odd length.
     OddLengthString(OddLengthStringError),
+}
+
+impl From<Infallible> for ToBytesError {
+    fn from(never: Infallible) -> Self { match never {} }
 }
 
 impl fmt::Display for ToBytesError {
@@ -104,6 +113,10 @@ pub struct InvalidCharError {
     pub(crate) pos: usize,
 }
 
+impl From<Infallible> for InvalidCharError {
+    fn from(never: Infallible) -> Self { match never {} }
+}
+
 impl InvalidCharError {
     /// Returns the invalid character byte.
     pub fn invalid_char(&self) -> u8 { self.invalid }
@@ -126,6 +139,10 @@ pub struct OddLengthStringError {
     pub(crate) len: usize,
 }
 
+impl From<Infallible> for OddLengthStringError {
+    fn from(never: Infallible) -> Self { match never {} }
+}
+
 impl OddLengthStringError {
     /// Returns the odd length of the input string.
     pub fn length(&self) -> usize { self.len }
@@ -143,6 +160,10 @@ impl std::error::Error for OddLengthStringError {}
 /// Hex decoding error.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct HexToArrayError(pub(crate) ToArrayError);
+
+impl From<Infallible> for HexToArrayError {
+    fn from(never: Infallible) -> Self { match never {} }
+}
 
 impl HexToArrayError {
     /// Returns a [`ToArrayError`] from this [`HexToArrayError`].
@@ -176,6 +197,10 @@ pub enum ToArrayError {
     InvalidChar(InvalidCharError),
     /// Tried to parse fixed-length hash from a string with the wrong length.
     InvalidLength(InvalidLengthError),
+}
+
+impl From<Infallible> for ToArrayError {
+    fn from(never: Infallible) -> Self { match never {} }
 }
 
 impl fmt::Display for ToArrayError {
@@ -218,6 +243,10 @@ pub struct InvalidLengthError {
     pub(crate) expected: usize,
     /// The invalid length.
     pub(crate) invalid: usize,
+}
+
+impl From<Infallible> for InvalidLengthError {
+    fn from(never: Infallible) -> Self { match never {} }
 }
 
 impl InvalidLengthError {
