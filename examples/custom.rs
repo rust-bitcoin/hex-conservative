@@ -3,6 +3,7 @@
 //! For a type where hex is the natural representation see `./hexy.rs`.
 //! To wrap an array see the `./wrap_array_*` examples.
 
+use core::convert::Infallible;
 use core::fmt;
 use core::str::FromStr;
 
@@ -122,6 +123,10 @@ pub enum Error {
     Array(HexToArrayError),
     /// Attempt to parse invalid string.
     InvalidStringFormat,
+}
+
+impl From<Infallible> for Error {
+    fn from(never: Infallible) -> Self { match never {} }
 }
 
 impl fmt::Display for Error {
