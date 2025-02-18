@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: CC0-1.0
 
-//! Hex encode/decode a type that wraps an array - using implementations of the standard library
+//! Hex encode/decode a type that wraps an array.
 //!
-//! `fmt` traits. For an example using the `DisplayHex` trait see `./wrap_array_display_hex.rs`.
+//! Creates a simple array wrapper types using implementations of the standard library `fmt` traits.
 
 use core::fmt;
 use core::str::FromStr;

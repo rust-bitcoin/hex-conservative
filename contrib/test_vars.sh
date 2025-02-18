@@ -11,4 +11,4 @@ FEATURES_WITH_STD="serde"
 FEATURES_WITHOUT_STD="alloc serde"
 
 # Run these examples.
-EXAMPLES="hexy:std wrap_array_fmt_traits:std serde:std,serde"
+EXAMPLES="hexy:std wrap_array:std serde:std,serde"
