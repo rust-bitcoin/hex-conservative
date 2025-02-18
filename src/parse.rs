@@ -13,7 +13,7 @@ use crate::iter::HexToBytesIter;
 pub use crate::error::{HexToBytesError, HexToArrayError};
 
 /// Trait for objects that can be deserialized from hex strings.
-pub trait FromHex: Sized {
+pub trait FromHex: Sized + sealed::Sealed {
     /// Error type returned while parsing hex string.
     type Error: Sized + fmt::Debug + fmt::Display;
 
@@ -43,6 +43,16 @@ impl<const LEN: usize> FromHex for [u8; LEN] {
             Err(InvalidLengthError { invalid: s.len(), expected: 2 * LEN }.into())
         }
     }
+}
+
+mod sealed {
+    /// Used to seal the `FromHex` trait.
+    pub trait Sealed {}
+
+    #[cfg(feature = "alloc")]
+    impl Sealed for alloc::vec::Vec<u8> {}
+
+    impl<const LEN: usize> Sealed for [u8; LEN] {}
 }
 
 #[cfg(test)]
