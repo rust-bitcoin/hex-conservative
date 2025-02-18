@@ -7,13 +7,13 @@
 use core::fmt;
 use core::str::FromStr;
 
-use hex_conservative::{DisplayHex, FromHex, HexToArrayError};
+use hex_conservative::{DisplayHex as _, FromHex as _, HexToArrayError};
 
 fn main() {
     let hex = "deadbeefcafebabedeadbeefcafebabedeadbeefcafebabedeadbeefcafebabe";
     println!("\nParse from hex: {}\n", hex);
 
-    let array = <[u8; 32] as FromHex>::from_hex(hex).expect("failed to parse array");
+    let array = <[u8; 32]>::from_hex(hex).expect("failed to parse array");
     let wrap = Wrap::from_str(hex).expect("failed to parse wrapped array from hex string");
 
     println!("Print an array using traits from the standard libraries `fmt` module along with the provided implementation of `DisplayHex`:\n");
@@ -69,5 +69,5 @@ impl fmt::UpperHex for Wrap {
 
 impl FromStr for Wrap {
     type Err = HexToArrayError;
-    fn from_str(s: &str) -> Result<Self, Self::Err> { Ok(Self(FromHex::from_hex(s)?)) }
+    fn from_str(s: &str) -> Result<Self, Self::Err> { Ok(Self(<[u8; 32]>::from_hex(s)?)) }
 }
