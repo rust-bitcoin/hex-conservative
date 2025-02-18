@@ -43,7 +43,7 @@ use crate::buf_encoder::BufEncoder;
 /// This trait should be generally implemented for references only. We would prefer to use GAT but
 /// that is beyond our MSRV. As a lint we require the `IsRef` trait which is implemented for all
 /// references.
-pub trait DisplayHex: Copy + sealed::IsRef {
+pub trait DisplayHex: Copy + sealed::IsRef + sealed::Sealed {
     /// The type providing [`fmt::Display`] implementation.
     ///
     /// This is usually a wrapper type holding a reference to `Self`.
@@ -209,6 +209,29 @@ mod sealed {
     pub trait IsRef: Copy {}
 
     impl<T: ?Sized> IsRef for &'_ T {}
+
+    /// Used to seal the `DisplayHex` trait.
+    pub trait Sealed {}
+
+    impl Sealed for &'_ [u8] {}
+
+    #[cfg(feature = "alloc")]
+    impl Sealed for &'_ alloc::vec::Vec<u8> {}
+
+    macro_rules! impl_array_sealed {
+        ($($len:expr),*) => {
+            $(
+                impl<'a> Sealed for &'a [u8; $len] {}
+            )*
+        }
+    }
+
+    // Same as call to `impl_array_as_hex` below.
+    #[rustfmt::skip]
+    impl_array_sealed!(
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 32, 33, 64, 65,
+        128, 256, 512, 1024, 2048, 4096
+    );
 }
 
 impl<'a> DisplayHex for &'a [u8] {
@@ -326,9 +349,11 @@ macro_rules! impl_array_as_hex {
     }
 }
 
+// Same as call to `impl_array_sealed` above.
+#[rustfmt::skip]
 impl_array_as_hex!(
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 32, 33, 64, 65, 128, 256, 512, 1024,
-    2048, 4096
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 32, 33, 64, 65,
+    128, 256, 512, 1024, 2048, 4096
 );
 
 /// Format known-length array as hex.
