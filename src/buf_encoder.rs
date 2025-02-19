@@ -30,7 +30,11 @@ impl<const CAP: usize> BufEncoder<CAP> {
 
     /// Creates an empty `BufEncoder` that will encode bytes to hex characters in the given case.
     #[inline]
-    pub fn new(case: Case) -> Self { BufEncoder { buf: ArrayString::new(), table: case.table() } }
+    #[allow(clippy::let_unit_value)] // Allow the unit value of the const check
+    pub fn new(case: Case) -> Self {
+        let _ = Self::_CHECK_EVEN_CAPACITY;
+        BufEncoder { buf: ArrayString::new(), table: case.table() }
+    }
 
     /// Encodes `byte` as hex and appends it to the buffer.
     ///
