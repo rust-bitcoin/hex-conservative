@@ -21,7 +21,7 @@ pub trait FromHex: Sized {
     fn from_hex(s: &str) -> Result<Self, Self::Error>;
 }
 
-#[cfg(any(test, feature = "std", feature = "alloc"))]
+#[cfg(feature = "alloc")]
 impl FromHex for Vec<u8> {
     type Error = HexToBytesError;
 
@@ -48,7 +48,6 @@ impl<const LEN: usize> FromHex for [u8; LEN] {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::display::DisplayHex;
 
     #[test]
     #[cfg(feature = "alloc")]
@@ -124,7 +123,10 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "alloc")]
     fn mixed_case() {
+        use crate::display::DisplayHex as _;
+
         let s = "DEADbeef0123";
         let want_lower = "deadbeef0123";
         let want_upper = "DEADBEEF0123";
