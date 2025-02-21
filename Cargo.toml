@@ -43,3 +43,7 @@ name = "wrap_array"
 [[example]]
 name = "serde"
 required-features = ["std", "serde"]
+
+
+[lints.clippy]
+missing_errors_doc = "warn"

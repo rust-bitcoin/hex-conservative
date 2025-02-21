@@ -18,6 +18,10 @@ pub trait FromHex: Sized + sealed::Sealed {
     type Error: Sized + fmt::Debug + fmt::Display;
 
     /// Produces an object from a hex string.
+    ///
+    /// # Errors
+    ///
+    /// Errors if parsing of hex string fails for any reason.
     fn from_hex(s: &str) -> Result<Self, Self::Error>;
 }
 

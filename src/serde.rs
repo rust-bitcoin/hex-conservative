@@ -29,6 +29,10 @@ use crate::prelude::*;
 ///
 /// We only serialize as hex if the serializer is human readable, if not we call through to the
 /// `Serialize` implementation for `data`.
+///
+/// # Errors
+///
+/// Returns the serializer error if one occurs.
 pub fn serialize<S, T>(data: T, s: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
@@ -41,6 +45,10 @@ where
 ///
 /// We only serialize as hex if the serializer is human readable, if not we call through to the
 /// `Serialize` implementation for `data`.
+///
+/// # Errors
+///
+/// Returns the serializer error if one occurs.
 pub fn serialize_lower<S, T>(data: T, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
@@ -58,6 +66,10 @@ where
 ///
 /// We only serialize as hex if the serializer is human readable, if not we call through to the
 /// `Serialize` implementation for `data`.
+///
+/// # Errors
+///
+/// Returns the serializer error if one occurs.
 pub fn serialize_upper<S, T>(data: T, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
@@ -116,6 +128,10 @@ impl serde::Serialize for SerializeBytesAsHexUpper<'_> {
 ///
 /// We only deserialize from hex if the serializer is human readable, if not we call through to the
 /// `Deserialize` implementation for `T`.
+///
+/// # Errors
+///
+/// Returns the deserializer error if one occurs.
 pub fn deserialize<'de, D, T>(d: D) -> Result<T, D::Error>
 where
     D: Deserializer<'de>,
