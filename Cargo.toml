@@ -18,15 +18,17 @@ all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
 [workspace]
-members = ["fuzz"]
+members = ["fuzz", "errors"]
 
 [features]
 default = ["std"]
-std = ["alloc"]
-alloc = []
+std = ["alloc", "hex-conservative-errors/std"]
+alloc = ["hex-conservative-errors/alloc"]
 
 [dependencies]
 arrayvec = { version = "0.7.2", default-features = false }
+hex-conservative-errors = { version = "1.0.0-alpha.0", default-features = false }
+
 serde = { version = "1.0", default-features = false, optional = true }
 
 
@@ -43,3 +45,6 @@ name = "wrap_array"
 [[example]]
 name = "serde"
 required-features = ["std", "serde"]
+
+[patch.crates-io.hex-conservative-errors]
+path = "errors"

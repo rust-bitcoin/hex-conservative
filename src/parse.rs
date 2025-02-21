@@ -40,7 +40,7 @@ impl<const LEN: usize> FromHex for [u8; LEN] {
             HexToBytesIter::new_unchecked(s).drain_to_slice(&mut ret)?;
             Ok(ret)
         } else {
-            Err(InvalidLengthError { invalid: s.len(), expected: 2 * LEN }.into())
+            Err(InvalidLengthError::new(s.len(), 2 * LEN).into())
         }
     }
 }
@@ -69,25 +69,19 @@ mod tests {
         let badchar2 = "012Y456789abcdeb";
         let badchar3 = "«23456789abcdef";
 
-        assert_eq!(
-            Vec::<u8>::from_hex(oddlen).unwrap_err(),
-            OddLengthStringError { len: 17 }.into()
-        );
-        assert_eq!(
-            <[u8; 4]>::from_hex(oddlen).unwrap_err(),
-            InvalidLengthError { invalid: 17, expected: 8 }.into()
-        );
+        assert_eq!(Vec::<u8>::from_hex(oddlen).unwrap_err(), OddLengthStringError::new(17).into());
+        assert_eq!(<[u8; 4]>::from_hex(oddlen).unwrap_err(), InvalidLengthError::new(17, 8).into());
         assert_eq!(
             Vec::<u8>::from_hex(badchar1).unwrap_err(),
-            InvalidCharError { pos: 0, invalid: b'Z' }.into()
+            InvalidCharError::new(b'Z', 0).into()
         );
         assert_eq!(
             Vec::<u8>::from_hex(badchar2).unwrap_err(),
-            InvalidCharError { pos: 3, invalid: b'Y' }.into()
+            InvalidCharError::new(b'Y', 3).into()
         );
         assert_eq!(
             Vec::<u8>::from_hex(badchar3).unwrap_err(),
-            InvalidCharError { pos: 0, invalid: 194 }.into()
+            InvalidCharError::new(194, 0).into()
         );
     }
 
@@ -101,19 +95,19 @@ mod tests {
 
         assert_eq!(
             HexToBytesIter::new(badpos1).unwrap().next().unwrap().unwrap_err(),
-            InvalidCharError { pos: 0, invalid: b'Z' }
+            InvalidCharError::new(b'Z', 0)
         );
         assert_eq!(
             HexToBytesIter::new(badpos2).unwrap().nth(1).unwrap().unwrap_err(),
-            InvalidCharError { pos: 3, invalid: b'Y' }
+            InvalidCharError::new(b'Y', 3)
         );
         assert_eq!(
             HexToBytesIter::new(badpos3).unwrap().next_back().unwrap().unwrap_err(),
-            InvalidCharError { pos: 15, invalid: b'Z' }
+            InvalidCharError::new(b'Z', 15)
         );
         assert_eq!(
             HexToBytesIter::new(badpos4).unwrap().nth_back(1).unwrap().unwrap_err(),
-            InvalidCharError { pos: 12, invalid: b'Y' }
+            InvalidCharError::new(b'Y', 12)
         );
     }
 
@@ -128,7 +122,7 @@ mod tests {
         let len_sixteen = "0123456789abcdef";
         assert_eq!(
             <[u8; 4]>::from_hex(len_sixteen).unwrap_err(),
-            InvalidLengthError { invalid: 16, expected: 8 }.into()
+            InvalidLengthError::new(16, 8).into()
         )
     }
 
