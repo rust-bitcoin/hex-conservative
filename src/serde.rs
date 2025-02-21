@@ -55,10 +55,10 @@ where
     T: Serialize + DisplayHex,
 {
     // Don't do anything special when not human readable.
-    if !serializer.is_human_readable() {
-        serde::Serialize::serialize(&data, serializer)
-    } else {
+    if serializer.is_human_readable() {
         serializer.collect_str(&format_args!("{:x}", data.as_hex()))
+    } else {
+        serde::Serialize::serialize(&data, serializer)
     }
 }
 
@@ -76,10 +76,10 @@ where
     T: Serialize + DisplayHex,
 {
     // Don't do anything special when not human readable.
-    if !serializer.is_human_readable() {
-        serde::Serialize::serialize(&data, serializer)
-    } else {
+    if serializer.is_human_readable() {
         serializer.collect_str(&format_args!("{:X}", data.as_hex()))
+    } else {
+        serde::Serialize::serialize(&data, serializer)
     }
 }
 
@@ -155,9 +155,9 @@ where
     }
 
     // Don't do anything special when not human readable.
-    if !d.is_human_readable() {
-        serde::Deserialize::deserialize(d)
-    } else {
+    if d.is_human_readable() {
         d.deserialize_map(HexVisitor(PhantomData))
+    } else {
+        serde::Deserialize::deserialize(d)
     }
 }

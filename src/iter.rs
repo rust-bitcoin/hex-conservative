@@ -442,6 +442,8 @@ mod tests {
 
     #[test]
     #[should_panic]
+    // Don't test panic message because it is from `debug_assert`.
+    #[allow(clippy::should_panic_without_expect)]
     fn hex_to_bytes_slice_drain_panic_empty() {
         let hex = "deadbeef";
         let iter = HexToBytesIter::new_unchecked(hex);
@@ -451,6 +453,8 @@ mod tests {
 
     #[test]
     #[should_panic]
+    // Don't test panic message because it is from `debug_assert`.
+    #[allow(clippy::should_panic_without_expect)]
     fn hex_to_bytes_slice_drain_panic_too_small() {
         let hex = "deadbeef";
         let iter = HexToBytesIter::new_unchecked(hex);
@@ -460,6 +464,8 @@ mod tests {
 
     #[test]
     #[should_panic]
+    // Don't test panic message because it is from `debug_assert`.
+    #[allow(clippy::should_panic_without_expect)]
     fn hex_to_bytes_slice_drain_panic_too_big() {
         let hex = "deadbeef";
         let iter = HexToBytesIter::new_unchecked(hex);

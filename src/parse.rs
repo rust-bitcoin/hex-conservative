@@ -134,7 +134,7 @@ mod tests {
         assert_eq!(
             <[u8; 4]>::from_hex(len_sixteen).unwrap_err(),
             InvalidLengthError { invalid: 16, expected: 8 }.into()
-        )
+        );
     }
 
     #[test]
