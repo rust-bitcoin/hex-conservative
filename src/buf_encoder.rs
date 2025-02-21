@@ -19,6 +19,25 @@ use super::{Case, Table};
 /// This is an important building block for fast hex-encoding. Because string writing tools
 /// provided by `core::fmt` involve dynamic dispatch and don't allow reserving capacity in strings
 /// buffering the hex and then formatting it is significantly faster.
+///
+/// The buffer has a fixed capacity specified when created. The capacity must be an even number since
+/// each byte is encoded as two hex characters.
+///
+/// # Examples
+/// ```
+/// # use hex_conservative::buf_encoder::BufEncoder;
+/// # use hex_conservative::Case;
+/// let mut encoder = BufEncoder::<4>::new(Case::Lower);
+/// encoder.put_byte(0xab);
+/// assert_eq!(encoder.as_str(), "ab");
+/// ```
+/// The following code doesn't compile because of odd capacity:
+/// ```compile_fail
+/// # use hex_conservative::buf_encoder::BufEncoder;
+/// # use hex_conservative::Case;
+/// let mut encoder = BufEncoder::<3>::new(Case::Lower);
+/// # let _ = encoder;
+/// ```
 #[derive(Debug)]
 pub struct BufEncoder<const CAP: usize> {
     buf: ArrayString<CAP>,
