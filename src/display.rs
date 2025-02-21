@@ -621,6 +621,8 @@ impl<T> std::io::Write for HexWriter<T>
 where
     T: core::fmt::Write,
 {
+    /// Writes `buf` into [`HexWriter`].
+    ///
     /// # Errors
     ///
     /// If no bytes could be written to this `HexWriter`, and the provided buffer is not empty,
@@ -641,6 +643,12 @@ where
             Ok(n)
         }
     }
+
+    /// `flush` is a no-op for [`HexWriter`].
+    ///
+    /// # Errors
+    ///
+    /// [`HexWriter`] never errors when flushing.
     fn flush(&mut self) -> Result<(), std::io::Error> { Ok(()) }
 }
 

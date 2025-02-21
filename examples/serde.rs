@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: CC0-1.0
+
 //! Demonstrate how to use the serde module with struct fields.
 
 #![allow(clippy::disallowed_names)] // Foo is a valid name.
