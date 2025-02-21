@@ -99,13 +99,11 @@ pub trait DisplayHex: Copy + sealed::IsRef + sealed::Sealed {
         })
     }
 
-    /// Hints how much bytes to reserve when creating a `String`.
+    /// Hints how many bytes to reserve when creating a `String`.
     ///
-    /// Implementors that know the number of produced bytes upfront should override this.
-    /// Defaults to 0.
-    ///
+    /// If you don't know you can just return 0 and take the perf hit.
     // We prefix the name with `hex_` to avoid potential collision with other methods.
-    fn hex_reserve_suggestion(self) -> usize { 0 }
+    fn hex_reserve_suggestion(self) -> usize;
 }
 
 fn internal_display(bytes: &[u8], f: &mut fmt::Formatter, case: Case) -> fmt::Result {
@@ -344,6 +342,8 @@ macro_rules! impl_array_as_hex {
                 fn as_hex(self) -> Self::Display {
                     DisplayArray::new(self)
                 }
+
+                fn hex_reserve_suggestion(self) -> usize { $len * 2 }
             }
         )*
     }
