@@ -13,7 +13,7 @@ use crate::iter::HexToBytesIter;
 pub use crate::error::{HexToBytesError, HexToArrayError};
 
 /// Trait for objects that can be deserialized from hex strings.
-pub trait FromHex: Sized {
+pub trait FromHex: Sized + sealed::Sealed {
     /// Error type returned while parsing hex string.
     type Error: Sized + fmt::Debug + fmt::Display;
 
@@ -21,7 +21,7 @@ pub trait FromHex: Sized {
     fn from_hex(s: &str) -> Result<Self, Self::Error>;
 }
 
-#[cfg(any(test, feature = "std", feature = "alloc"))]
+#[cfg(feature = "alloc")]
 impl FromHex for Vec<u8> {
     type Error = HexToBytesError;
 
@@ -45,10 +45,19 @@ impl<const LEN: usize> FromHex for [u8; LEN] {
     }
 }
 
+mod sealed {
+    /// Used to seal the `FromHex` trait.
+    pub trait Sealed {}
+
+    #[cfg(feature = "alloc")]
+    impl Sealed for alloc::vec::Vec<u8> {}
+
+    impl<const LEN: usize> Sealed for [u8; LEN] {}
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::display::DisplayHex;
 
     #[test]
     #[cfg(feature = "alloc")]
@@ -124,7 +133,10 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "alloc")]
     fn mixed_case() {
+        use crate::display::DisplayHex as _;
+
         let s = "DEADbeef0123";
         let want_lower = "deadbeef0123";
         let want_upper = "DEADBEEF0123";

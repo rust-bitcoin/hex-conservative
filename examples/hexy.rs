@@ -6,13 +6,13 @@
 use std::fmt;
 use std::str::FromStr;
 
-use hex_conservative::{fmt_hex_exact, Case, DisplayHex, FromHex, HexToArrayError};
+use hex_conservative::{fmt_hex_exact, Case, DisplayHex as _, FromHex as _, HexToArrayError};
 
 fn main() {
     let s = "deadbeefcafebabedeadbeefcafebabedeadbeefcafebabedeadbeefcafebabe";
     println!("Parse hex from string:  {}", s);
 
-    let hexy = Hexy::from_hex(s).expect("the correct number of valid hex digits");
+    let hexy = s.parse::<Hexy>().expect("the correct number of valid hex digits");
     let display = format!("{}", hexy);
     println!("Display Hexy as string: {}", display);
 
@@ -46,7 +46,11 @@ impl fmt::Display for Hexy {
 impl FromStr for Hexy {
     type Err = HexToArrayError;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> { Hexy::from_hex(s) }
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        // Errors if the input is invalid
+        let a = <[u8; 32]>::from_hex(s)?;
+        Ok(Hexy { data: a })
+    }
 }
 
 // Implement conversion to hex by first converting our type to a byte slice.
@@ -64,17 +68,5 @@ impl fmt::UpperHex for Hexy {
         // This is equivalent to but more performant than:
         // fmt::UpperHex::fmt(&self.as_bytes().as_hex(), f)
         fmt_hex_exact!(f, 32, self.as_bytes(), Case::Upper)
-    }
-}
-
-// And use a fixed size array to convert from hex.
-
-impl FromHex for Hexy {
-    type Error = HexToArrayError;
-
-    fn from_hex(s: &str) -> Result<Self, Self::Error> {
-        // Errors if the input is invalid
-        let a = <[u8; 32] as FromHex>::from_hex(s)?;
-        Ok(Hexy { data: a })
     }
 }
