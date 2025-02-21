@@ -171,6 +171,6 @@ mod tests {
     fn parse_hex_into_vector() {
         let got = hex!("deadbeef");
         let want = vec![0xde, 0xad, 0xbe, 0xef];
-        assert_eq!(got, want)
+        assert_eq!(got, want);
     }
 }

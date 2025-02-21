@@ -80,7 +80,7 @@ impl<const CAP: usize> BufEncoder<CAP> {
         I: IntoIterator,
         I::Item: Borrow<u8>,
     {
-        self.put_bytes_inner(bytes.into_iter())
+        self.put_bytes_inner(bytes.into_iter());
     }
 
     #[inline]
