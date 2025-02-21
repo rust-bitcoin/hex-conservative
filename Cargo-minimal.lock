@@ -19,9 +19,14 @@ name = "hex-conservative"
 version = "0.3.0"
 dependencies = [
  "arrayvec",
+ "hex-conservative-errors",
  "serde",
  "serde_json",
 ]
+
+[[package]]
+name = "hex-conservative-errors"
+version = "1.0.0-alpha.0"
 
 [[package]]
 name = "hex-fuzz"

@@ -36,7 +36,7 @@ impl<'a> HexToBytesIter<HexDigitsIter<'a>> {
     #[inline]
     pub fn new(s: &'a str) -> Result<Self, OddLengthStringError> {
         if s.len() % 2 != 0 {
-            Err(OddLengthStringError { len: s.len() })
+            Err(OddLengthStringError::new(s.len()))
         } else {
             Ok(Self::new_unchecked(s))
         }
@@ -110,13 +110,15 @@ where
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         let [hi, lo] = self.iter.next()?;
-        Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| InvalidCharError {
-            invalid: c,
-            pos: if is_high {
-                (self.original_len - self.iter.len() - 1) * 2
-            } else {
-                (self.original_len - self.iter.len() - 1) * 2 + 1
-            },
+        Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| {
+            InvalidCharError::new(
+                c,
+                if is_high {
+                    (self.original_len - self.iter.len() - 1) * 2
+                } else {
+                    (self.original_len - self.iter.len() - 1) * 2 + 1
+                },
+            )
         }))
     }
 
@@ -126,13 +128,15 @@ where
     #[inline]
     fn nth(&mut self, n: usize) -> Option<Self::Item> {
         let [hi, lo] = self.iter.nth(n)?;
-        Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| InvalidCharError {
-            invalid: c,
-            pos: if is_high {
-                (self.original_len - self.iter.len() - 1) * 2
-            } else {
-                (self.original_len - self.iter.len() - 1) * 2 + 1
-            },
+        Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| {
+            InvalidCharError::new(
+                c,
+                if is_high {
+                    (self.original_len - self.iter.len() - 1) * 2
+                } else {
+                    (self.original_len - self.iter.len() - 1) * 2 + 1
+                },
+            )
         }))
     }
 }
@@ -144,18 +148,22 @@ where
     #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
         let [hi, lo] = self.iter.next_back()?;
-        Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| InvalidCharError {
-            invalid: c,
-            pos: if is_high { self.iter.len() * 2 } else { self.iter.len() * 2 + 1 },
+        Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| {
+            InvalidCharError::new(
+                c,
+                if is_high { self.iter.len() * 2 } else { self.iter.len() * 2 + 1 },
+            )
         }))
     }
 
     #[inline]
     fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
         let [hi, lo] = self.iter.nth_back(n)?;
-        Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| InvalidCharError {
-            invalid: c,
-            pos: if is_high { self.iter.len() * 2 } else { self.iter.len() * 2 + 1 },
+        Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| {
+            InvalidCharError::new(
+                c,
+                if is_high { self.iter.len() * 2 } else { self.iter.len() * 2 + 1 },
+            )
         }))
     }
 }
@@ -471,10 +479,7 @@ mod tests {
         let hex = "geadbeef";
         let iter = HexToBytesIter::new_unchecked(hex);
         let mut got = [0u8; 4];
-        assert_eq!(
-            iter.drain_to_slice(&mut got).unwrap_err(),
-            InvalidCharError { invalid: b'g', pos: 0 }
-        );
+        assert_eq!(iter.drain_to_slice(&mut got).unwrap_err(), InvalidCharError::new(b'g', 0));
     }
 
     #[test]
@@ -482,10 +487,7 @@ mod tests {
         let hex = "deadgeef";
         let iter = HexToBytesIter::new_unchecked(hex);
         let mut got = [0u8; 4];
-        assert_eq!(
-            iter.drain_to_slice(&mut got).unwrap_err(),
-            InvalidCharError { invalid: b'g', pos: 4 }
-        );
+        assert_eq!(iter.drain_to_slice(&mut got).unwrap_err(), InvalidCharError::new(b'g', 4));
     }
 
     #[test]
@@ -493,10 +495,7 @@ mod tests {
         let hex = "deadbeeg";
         let iter = HexToBytesIter::new_unchecked(hex);
         let mut got = [0u8; 4];
-        assert_eq!(
-            iter.drain_to_slice(&mut got).unwrap_err(),
-            InvalidCharError { invalid: b'g', pos: 7 }
-        );
+        assert_eq!(iter.drain_to_slice(&mut got).unwrap_err(), InvalidCharError::new(b'g', 7));
     }
 
     #[test]
@@ -517,21 +516,21 @@ mod tests {
     fn hex_to_bytes_vec_drain_first_char_error() {
         let hex = "geadbeef";
         let iter = HexToBytesIter::new_unchecked(hex);
-        assert_eq!(iter.drain_to_vec().unwrap_err(), InvalidCharError { invalid: b'g', pos: 0 });
+        assert_eq!(iter.drain_to_vec().unwrap_err(), InvalidCharError::new(b'g', 0))
     }
 
     #[test]
     fn hex_to_bytes_vec_drain_middle_char_error() {
         let hex = "deadgeef";
         let iter = HexToBytesIter::new_unchecked(hex);
-        assert_eq!(iter.drain_to_vec().unwrap_err(), InvalidCharError { invalid: b'g', pos: 4 });
+        assert_eq!(iter.drain_to_vec().unwrap_err(), InvalidCharError::new(b'g', 4))
     }
 
     #[test]
     fn hex_to_bytes_vec_drain_end_char_error() {
         let hex = "deadbeeg";
         let iter = HexToBytesIter::new_unchecked(hex);
-        assert_eq!(iter.drain_to_vec().unwrap_err(), InvalidCharError { invalid: b'g', pos: 7 });
+        assert_eq!(iter.drain_to_vec().unwrap_err(), InvalidCharError::new(b'g', 7))
     }
 
     #[test]
