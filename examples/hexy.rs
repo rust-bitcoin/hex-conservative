@@ -3,7 +3,7 @@
 //! Demonstrate hexadecimal encoding and decoding for a type with a natural hex representation.
 //!
 //! For a type where hex is supported but is not the natural representation see `./custom.rs`.
-//! To wrap an array see the `./wrap_array_*` examples.
+//! To wrap an array see the `./wrap_array.rs` example.
 
 use std::fmt;
 use std::str::FromStr;
