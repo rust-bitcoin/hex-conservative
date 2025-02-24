@@ -969,6 +969,15 @@ mod tests {
             let got = format!("{}", tc);
             assert_eq!(got, want);
         }
+
+        #[test]
+        fn hex_display_case() {
+            let bytes = [0xaa, 0xbb, 0xcc, 0xdd];
+            let upper = "AABBCCDD";
+            let lower = "aabbccdd";
+            assert_eq!(bytes.to_upper_hex_string(), upper);
+            assert_eq!(bytes.to_lower_hex_string(), lower);
+        }
     }
 
     #[cfg(feature = "std")]
