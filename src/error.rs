@@ -260,7 +260,7 @@ impl fmt::Display for InvalidLengthError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "invilad hex string length {} (expected {})",
+            "invalid hex string length {} (expected {})",
             self.invalid_length(),
             self.expected_length()
         )
