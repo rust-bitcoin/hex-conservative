@@ -1,3 +1,7 @@
+# 0.4.0 - 2025-02-24
+
+- TODO: Write changelog.
+
 # 0.3.0 - 2024-09-18
 
 - Re-implement `HexWriter` [#113](https://github.com/rust-bitcoin/hex-conservative/pull/113)

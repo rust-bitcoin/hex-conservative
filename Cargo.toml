@@ -1,6 +1,6 @@
 [package]
 name = "hex-conservative"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["Martin Habovštiak <martin.habovstiak@gmail.com>", "Andrew Poelstra <apoelstra@wpsoftware.net>"]
 license = "CC0-1.0"
 repository = "https://github.com/rust-bitcoin/hex-conservative"
@@ -22,11 +22,13 @@ members = ["fuzz"]
 
 [features]
 default = ["std"]
-std = ["alloc"]
-alloc = []
+std = ["alloc", "hex-stable/std"]
+alloc = ["hex-stable/alloc"]
 
 [dependencies]
 arrayvec = { version = "0.7.2", default-features = false }
+hex-stable = { package = "hex-conservative", version = "1.0.0-alpha.0", git = "https://github.com/tcharding/hex-conservative", branch = "02-24-release-1.0-alpha.0", default-features = false }
+
 serde = { version = "1.0", default-features = false, optional = true }
 
 
