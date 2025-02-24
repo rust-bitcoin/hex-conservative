@@ -589,4 +589,31 @@ mod tests {
             BytesToHexIter::new(upper_bytes_iter, Case::Upper).rev().collect::<String>();
         assert_eq!(upper_got, upper_want);
     }
+
+    #[test]
+    #[cfg(feature = "std")]
+    fn hex_to_bytes_iter_read() {
+        use std::io::Read;
+
+        let hex = "deadbeef";
+        let mut iter = HexToBytesIter::new(hex).unwrap();
+        let mut buf = [0u8; 4];
+        let bytes_read = iter.read(&mut buf).unwrap();
+        assert_eq!(bytes_read, 4);
+        assert_eq!(buf, [0xde, 0xad, 0xbe, 0xef]);
+
+        let hex = "deadbeef";
+        let mut iter = HexToBytesIter::new(hex).unwrap();
+        let mut buf = [0u8; 2];
+        let bytes_read = iter.read(&mut buf).unwrap();
+        assert_eq!(bytes_read, 2);
+        assert_eq!(buf, [0xde, 0xad]);
+
+        let hex = "deadbeef";
+        let mut iter = HexToBytesIter::new(hex).unwrap();
+        let mut buf = [0u8; 6];
+        let bytes_read = iter.read(&mut buf).unwrap();
+        assert_eq!(bytes_read, 4);
+        assert_eq!(buf[..4], [0xde, 0xad, 0xbe, 0xef]);
+    }
 }
