@@ -66,6 +66,9 @@ pub mod prelude {
     pub use crate::{display::DisplayHex, parse::FromHex};
 }
 
+#[cfg(feature = "alloc")]
+use alloc::vec::Vec;
+
 pub(crate) use table::Table;
 
 #[rustfmt::skip]                // Keep public re-exports separate.
@@ -79,6 +82,23 @@ pub use self::{
     iter::{BytesToHexIter, HexToBytesIter, HexSliceToBytesIter},
     parse::FromHex,
 };
+
+/// Decodes a hex string into a vector of bytes.
+///
+/// # Errors
+///
+/// Errors if `s` is not a valid hex string.
+#[cfg(feature = "alloc")]
+pub fn decode_vec(s: &str) -> Result<Vec<u8>, HexToBytesError> { Vec::from_hex(s) }
+
+/// Decodes a hex string into an array of bytes.
+///
+/// # Errors
+///
+/// Errors if `s` is not a valid hex string or the correct length.
+pub fn decode_array<const N: usize>(s: &str) -> Result<[u8; N], HexToArrayError> {
+    <[u8; N]>::from_hex(s)
+}
 
 /// Possible case of hex.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
