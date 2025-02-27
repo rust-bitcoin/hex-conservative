@@ -260,7 +260,7 @@ impl fmt::Display for InvalidLengthError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "invilad hex string length {} (expected {})",
+            "invalid hex string length {} (expected {})",
             self.invalid_length(),
             self.expected_length()
         )
@@ -269,3 +269,70 @@ impl fmt::Display for InvalidLengthError {
 
 #[cfg(feature = "std")]
 impl std::error::Error for InvalidLengthError {}
+
+#[cfg(test)]
+#[cfg(feature = "std")]
+mod tests {
+    use super::*;
+    use crate::FromHex;
+
+    fn check_source<T: std::error::Error>(error: &T) {
+        assert!(error.source().is_some());
+    }
+
+    #[test]
+    fn invalid_char_error() {
+        let result = <Vec<u8> as FromHex>::from_hex("12G4");
+        let error = result.unwrap_err();
+        if let HexToBytesError(ToBytesError::InvalidChar(e)) = error {
+            assert!(!format!("{}", e).is_empty());
+            assert_eq!(e.invalid_char(), b'G');
+            assert_eq!(e.pos(), 2);
+        } else {
+            panic!("Expected InvalidCharError");
+        }
+    }
+
+    #[test]
+    fn odd_length_string_error() {
+        let result = <Vec<u8> as FromHex>::from_hex("123");
+        let error = result.unwrap_err();
+        assert!(!format!("{}", error).is_empty());
+        check_source(&error);
+        if let HexToBytesError(ToBytesError::OddLengthString(e)) = error {
+            assert!(!format!("{}", e).is_empty());
+            assert_eq!(e.length(), 3);
+        } else {
+            panic!("Expected OddLengthStringError");
+        }
+    }
+
+    #[test]
+    fn invalid_length_error() {
+        let result = <[u8; 4] as FromHex>::from_hex("123");
+        let error = result.unwrap_err();
+        assert!(!format!("{}", error).is_empty());
+        check_source(&error);
+        if let HexToArrayError(ToArrayError::InvalidLength(e)) = error {
+            assert!(!format!("{}", e).is_empty());
+            assert_eq!(e.expected_length(), 8);
+            assert_eq!(e.invalid_length(), 3);
+        } else {
+            panic!("Expected InvalidLengthError");
+        }
+    }
+
+    #[test]
+    fn to_bytes_error() {
+        let error = ToBytesError::OddLengthString(OddLengthStringError { len: 7 });
+        assert!(!format!("{}", error).is_empty());
+        check_source(&error);
+    }
+
+    #[test]
+    fn to_array_error() {
+        let error = ToArrayError::InvalidLength(InvalidLengthError { expected: 8, invalid: 7 });
+        assert!(!format!("{}", error).is_empty());
+        check_source(&error);
+    }
+}

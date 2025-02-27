@@ -252,6 +252,19 @@ mod tests {
     }
 
     #[test]
+    fn put_filler() {
+        let mut encoder = BufEncoder::<8>::new(Case::Lower);
+        assert_eq!(encoder.put_filler(' ', 0), 0);
+        assert_eq!(encoder.as_str(), "");
+        assert_eq!(encoder.put_filler('a', 1), 1);
+        assert_eq!(encoder.as_str(), "a");
+        assert_eq!(encoder.put_filler('é', 2), 2); // Test 2 byte UTF-8
+        assert_eq!(encoder.as_str(), "aéé");
+        assert_eq!(encoder.put_filler('é', 4), 1); // Try to fill more than fits
+        assert_eq!(encoder.as_str(), "aééé");
+    }
+
+    #[test]
     fn same_as_fmt() {
         use core::fmt::{self, Write};
 
