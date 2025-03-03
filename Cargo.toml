@@ -19,10 +19,13 @@ rustdoc-args = ["--cfg", "docsrs"]
 
 [features]
 default = ["std"]
+# Activates the usage of standard library, namely implementations of std::error::Error
 std = ["alloc"]
+# Activates the usage of standard alloc library (enables Vec<u8>)
 alloc = []
+# Enables detection of newer rust versions to provide additional features
+# Turning it on may pull in dependencies that run build scripts and prolong compile time.
+newer-rust-version = ["dep:if_rust_version"]
 
 [dependencies]
-
-
-[dev-dependencies]
+if_rust_version = { version = "1.0.0", optional = true }
