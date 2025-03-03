@@ -31,21 +31,25 @@ macro_rules! write_err {
 pub struct HexToBytesError(pub(crate) ToBytesError);
 
 impl From<Infallible> for HexToBytesError {
+    #[inline]
     fn from(never: Infallible) -> Self { match never {} }
 }
 
 impl HexToBytesError {
     /// Returns a [`ToBytesError`] from this [`HexToBytesError`].
     // Use clone instead of reference to give use maximum forward flexibility.
+    #[inline]
     pub fn parse_error(&self) -> ToBytesError { self.0.clone() }
 }
 
 impl fmt::Display for HexToBytesError {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::Display::fmt(&self.0, f) }
 }
 
 #[cfg(feature = "std")]
 impl std::error::Error for HexToBytesError {
+    #[inline]
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { Some(&self.0) }
 }
 
@@ -69,6 +73,7 @@ pub enum ToBytesError {
 }
 
 impl From<Infallible> for ToBytesError {
+    #[inline]
     fn from(never: Infallible) -> Self { match never {} }
 }
 
@@ -114,17 +119,21 @@ pub struct InvalidCharError {
 }
 
 impl From<Infallible> for InvalidCharError {
+    #[inline]
     fn from(never: Infallible) -> Self { match never {} }
 }
 
 impl InvalidCharError {
     /// Returns the invalid character byte.
+    #[inline]
     pub fn invalid_char(&self) -> u8 { self.invalid }
     /// Returns the position of the invalid character byte.
+    #[inline]
     pub fn pos(&self) -> usize { self.pos }
 }
 
 impl fmt::Display for InvalidCharError {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "invalid hex char {} at pos {}", self.invalid_char(), self.pos())
     }
@@ -140,15 +149,18 @@ pub struct OddLengthStringError {
 }
 
 impl From<Infallible> for OddLengthStringError {
+    #[inline]
     fn from(never: Infallible) -> Self { match never {} }
 }
 
 impl OddLengthStringError {
     /// Returns the odd length of the input string.
+    #[inline]
     pub fn length(&self) -> usize { self.len }
 }
 
 impl fmt::Display for OddLengthStringError {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "odd hex string length {}", self.length())
     }
@@ -162,21 +174,25 @@ impl std::error::Error for OddLengthStringError {}
 pub struct HexToArrayError(pub(crate) ToArrayError);
 
 impl From<Infallible> for HexToArrayError {
+    #[inline]
     fn from(never: Infallible) -> Self { match never {} }
 }
 
 impl HexToArrayError {
     /// Returns a [`ToArrayError`] from this [`HexToArrayError`].
     // Use clone instead of reference to give use maximum forward flexibility.
+    #[inline]
     pub fn parse_error(&self) -> ToArrayError { self.0.clone() }
 }
 
 impl fmt::Display for HexToArrayError {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::Display::fmt(&self.0, f) }
 }
 
 #[cfg(feature = "std")]
 impl std::error::Error for HexToArrayError {
+    #[inline]
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { Some(&self.0) }
 }
 
@@ -200,6 +216,7 @@ pub enum ToArrayError {
 }
 
 impl From<Infallible> for ToArrayError {
+    #[inline]
     fn from(never: Infallible) -> Self { match never {} }
 }
 
@@ -246,13 +263,16 @@ pub struct InvalidLengthError {
 }
 
 impl From<Infallible> for InvalidLengthError {
+    #[inline]
     fn from(never: Infallible) -> Self { match never {} }
 }
 
 impl InvalidLengthError {
     /// Returns the expected length.
+    #[inline]
     pub fn expected_length(&self) -> usize { self.expected }
     /// Returns the position of the invalid character byte.
+    #[inline]
     pub fn invalid_length(&self) -> usize { self.invalid }
 }
 

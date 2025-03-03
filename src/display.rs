@@ -58,6 +58,7 @@ pub trait DisplayHex: Copy + sealed::IsRef + sealed::Sealed {
     ///
     /// This may be faster than `.display_hex().to_string()` because it uses `reserve_suggestion`.
     #[cfg(feature = "alloc")]
+    #[inline]
     fn to_lower_hex_string(self) -> String { self.to_hex_string(Case::Lower) }
 
     /// Create an upper-hex-encoded string.
@@ -66,6 +67,7 @@ pub trait DisplayHex: Copy + sealed::IsRef + sealed::Sealed {
     ///
     /// This may be faster than `.display_hex().to_string()` because it uses `reserve_suggestion`.
     #[cfg(feature = "alloc")]
+    #[inline]
     fn to_upper_hex_string(self) -> String { self.to_hex_string(Case::Upper) }
 
     /// Create a hex-encoded string.
@@ -272,24 +274,29 @@ pub struct DisplayByteSlice<'a> {
 }
 
 impl DisplayByteSlice<'_> {
+    #[inline]
     fn display(&self, f: &mut fmt::Formatter, case: Case) -> fmt::Result {
         internal_display(self.bytes, f, case)
     }
 }
 
 impl fmt::Display for DisplayByteSlice<'_> {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
 }
 
 impl fmt::Debug for DisplayByteSlice<'_> {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
 }
 
 impl fmt::LowerHex for DisplayByteSlice<'_> {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { self.display(f, Case::Lower) }
 }
 
 impl fmt::UpperHex for DisplayByteSlice<'_> {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { self.display(f, Case::Upper) }
 }
 
@@ -312,24 +319,29 @@ impl<'a, const CAP: usize> DisplayArray<'a, CAP> {
         DisplayArray { array }
     }
 
+    #[inline]
     fn display(&self, f: &mut fmt::Formatter, case: Case) -> fmt::Result {
         internal_display(self.array, f, case)
     }
 }
 
 impl<const LEN: usize> fmt::Display for DisplayArray<'_, LEN> {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
 }
 
 impl<const LEN: usize> fmt::Debug for DisplayArray<'_, LEN> {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
 }
 
 impl<const LEN: usize> fmt::LowerHex for DisplayArray<'_, LEN> {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { self.display(f, Case::Lower) }
 }
 
 impl<const LEN: usize> fmt::UpperHex for DisplayArray<'_, LEN> {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { self.display(f, Case::Upper) }
 }
 
