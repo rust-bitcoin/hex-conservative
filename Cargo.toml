@@ -1,6 +1,6 @@
 [package]
 name = "hex-conservative"
-version = "0.3.0"
+version = "1.0.0-alpha.0"
 authors = ["Martin Habovštiak <martin.habovstiak@gmail.com>", "Andrew Poelstra <apoelstra@wpsoftware.net>"]
 license = "CC0-1.0"
 repository = "https://github.com/rust-bitcoin/hex-conservative"
