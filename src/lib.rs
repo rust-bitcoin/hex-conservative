@@ -80,6 +80,15 @@ pub use self::{
     parse::FromHex,
 };
 
+/// Decodes a hex string into a vector of bytes.
+#[cfg(feature = "alloc")]
+pub fn decode_vec(s: &str) -> Result<Vec<u8>, HexToBytesError> { Vec::from_hex(s) }
+
+/// Decodes a hex string into an array of bytes.
+pub fn decode_array<const N: usize>(s: &str) -> Result<[u8; N], HexToArrayError> {
+    <[u8; N]>::from_hex(s)
+}
+
 /// Possible case of hex.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Case {
