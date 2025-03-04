@@ -51,7 +51,7 @@ impl<const CAP: usize> BufEncoder<CAP> {
     #[inline]
     #[allow(clippy::let_unit_value)] // Allow the unit value of the const check
     pub fn new(case: Case) -> Self {
-        let _ = Self::_CHECK_EVEN_CAPACITY;
+        let () = Self::_CHECK_EVEN_CAPACITY;
         BufEncoder { buf: ArrayString::new(), table: case.table() }
     }
 
@@ -80,7 +80,7 @@ impl<const CAP: usize> BufEncoder<CAP> {
         I: IntoIterator,
         I::Item: Borrow<u8>,
     {
-        self.put_bytes_inner(bytes.into_iter())
+        self.put_bytes_inner(bytes.into_iter());
     }
 
     #[inline]

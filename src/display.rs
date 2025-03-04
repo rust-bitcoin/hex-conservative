@@ -98,7 +98,7 @@ pub trait DisplayHex: Copy + sealed::IsRef + sealed::Sealed {
             // We don't expect `std` to ever be buggy, so the bug is most likely in the `Display`
             // impl of `Self::Display`.
             panic!("The implementation of Display for {} returned an error when it shouldn't", name)
-        })
+        });
     }
 
     /// Hints how many bytes to reserve when creating a `String`.
