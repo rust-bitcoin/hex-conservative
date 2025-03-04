@@ -34,11 +34,15 @@ fn main() {
     println!("Debug: {:?}", wrap);
     println!("Debug pretty: {:#?}", wrap);
 
-    // We cannot call `to_lower_hex_string` on the wrapped type to allocate a string, if you wish to
-    // use that trait method see `./wrap_array_display_hex_trait.rs`.
-    let array_hex = array.as_hex().to_string();
-    let wrap_hex = wrap.to_string();
-    assert_eq!(array_hex, wrap_hex);
+    #[cfg(feature = "alloc")]
+    {
+        let array_hex = array.to_lower_hex_string();
+        let other = array.as_hex().to_string();
+        assert_eq!(array_hex, other);
+
+        let wrap_hex = wrap.to_string();
+        assert_eq!(array_hex, wrap_hex);
+    }
 }
 
 pub struct Wrap([u8; 32]);
