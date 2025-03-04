@@ -42,6 +42,7 @@ impl<'a> HexToBytesIter<HexDigitsIter<'a>> {
         }
     }
 
+    #[inline]
     pub(crate) fn new_unchecked(s: &'a str) -> Self {
         Self::from_pairs(HexDigitsIter::new_unchecked(s.as_bytes()))
     }

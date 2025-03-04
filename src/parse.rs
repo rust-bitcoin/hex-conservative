@@ -25,6 +25,7 @@ pub trait FromHex: Sized + sealed::Sealed {
 impl FromHex for Vec<u8> {
     type Error = HexToBytesError;
 
+    #[inline]
     fn from_hex(s: &str) -> Result<Self, Self::Error> {
         Ok(HexToBytesIter::new(s)?.drain_to_vec()?)
     }

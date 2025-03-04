@@ -145,6 +145,7 @@ impl<const CAP: usize> BufEncoder<CAP> {
 }
 
 impl<const CAP: usize> Default for BufEncoder<CAP> {
+    #[inline]
     fn default() -> Self { Self::new(Case::Lower) }
 }
 
