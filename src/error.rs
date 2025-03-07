@@ -79,11 +79,12 @@ impl From<Infallible> for ToBytesError {
 
 impl fmt::Display for ToBytesError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use ToBytesError::*;
+        use ToBytesError as E;
 
         match *self {
-            InvalidChar(ref e) => write_err!(f, "invalid char, failed to create bytes from hex"; e),
-            OddLengthString(ref e) =>
+            E::InvalidChar(ref e) =>
+                write_err!(f, "invalid char, failed to create bytes from hex"; e),
+            E::OddLengthString(ref e) =>
                 write_err!(f, "odd length, failed to create bytes from hex"; e),
         }
     }
@@ -92,11 +93,11 @@ impl fmt::Display for ToBytesError {
 #[cfg(feature = "std")]
 impl std::error::Error for ToBytesError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        use ToBytesError::*;
+        use ToBytesError as E;
 
         match *self {
-            InvalidChar(ref e) => Some(e),
-            OddLengthString(ref e) => Some(e),
+            E::InvalidChar(ref e) => Some(e),
+            E::OddLengthString(ref e) => Some(e),
         }
     }
 }
@@ -222,11 +223,11 @@ impl From<Infallible> for ToArrayError {
 
 impl fmt::Display for ToArrayError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use ToArrayError::*;
+        use ToArrayError as E;
 
         match *self {
-            InvalidChar(ref e) => write_err!(f, "failed to parse hex digit"; e),
-            InvalidLength(ref e) => write_err!(f, "failed to parse hex"; e),
+            E::InvalidChar(ref e) => write_err!(f, "failed to parse hex digit"; e),
+            E::InvalidLength(ref e) => write_err!(f, "failed to parse hex"; e),
         }
     }
 }
@@ -234,11 +235,11 @@ impl fmt::Display for ToArrayError {
 #[cfg(feature = "std")]
 impl std::error::Error for ToArrayError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        use ToArrayError::*;
+        use ToArrayError as E;
 
         match *self {
-            InvalidChar(ref e) => Some(e),
-            InvalidLength(ref e) => Some(e),
+            E::InvalidChar(ref e) => Some(e),
+            E::InvalidLength(ref e) => Some(e),
         }
     }
 }
