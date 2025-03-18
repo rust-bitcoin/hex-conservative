@@ -1,3 +1,14 @@
+# 0.4.0 - 2025-03-17
+
+- Introduce crate level decoding functions [#166](https://github.com/rust-bitcoin/hex-conservative/pull/166)
+- Remove default impl of `hex_reserve_suggestion` [#158](https://github.com/rust-bitcoin/hex-conservative/pull/158)
+- Enforce `BufEncoder` capacity check for evenness [#155](https://github.com/rust-bitcoin/hex-conservative/pull/155)
+- Seal all public traits [#152](https://github.com/rust-bitcoin/hex-conservative/pull/152)
+- Implement `From<Infallible>` for all error types [#149](https://github.com/rust-bitcoin/hex-conservative/pull/149)
+- Make `HexToBytes` trait bounds consistent [#148](https://github.com/rust-bitcoin/hex-conservative/pull/148)
+- Make `write_err` macro private [#134](https://github.com/rust-bitcoin/hex-conservative/pull/134)
+- Hide error internals [#129](https://github.com/rust-bitcoin/hex-conservative/pull/129)
+
 # 0.3.0 - 2024-09-18
 
 - Re-implement `HexWriter` [#113](https://github.com/rust-bitcoin/hex-conservative/pull/113)
