@@ -218,3 +218,14 @@ jobs:
         run: rustup component add rustfmt
       - name: "Check formatting"
         run: cargo +nightly fmt --all -- --check
+
+  Compile:
+    name: Compile tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout repo"
+        uses: actions/checkout@v4
+      - name: "Select toolchain"
+        uses: dtolnay/rust-toolchain@stable
+      - name: "Run compile tests"
+        run: ./contrib/compile-tests.sh

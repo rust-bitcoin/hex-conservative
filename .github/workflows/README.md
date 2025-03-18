@@ -24,3 +24,4 @@ Run from rust.yml unless stated otherwise. Unfortunately we are now exceeding th
 10. `Arch32bit`
 11. `Cross`
 12. `Format`
+13. `Compile tests`
