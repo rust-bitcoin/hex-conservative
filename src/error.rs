@@ -207,7 +207,7 @@ impl From<InvalidLengthError> for HexToArrayError {
     fn from(e: InvalidLengthError) -> Self { Self(e.into()) }
 }
 
-/// Hex decoding error while parsing a byte array.
+/// Hex decoding error while parsing to an array of bytes.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ToArrayError {
     /// Non-hexadecimal character.
