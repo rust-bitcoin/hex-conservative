@@ -58,7 +58,7 @@ pub mod _export {
 
 pub mod buf_encoder;
 pub mod display;
-pub mod error;
+mod error;
 mod iter;
 pub mod parse;
 #[cfg(feature = "serde")]
@@ -80,8 +80,7 @@ pub(crate) use table::Table;
 pub use self::{
     display::DisplayHex,
     error::{
-        HexToArrayError, HexToBytesError, InvalidCharError, InvalidLengthError,
-        OddLengthStringError, ToArrayError, ToBytesError,
+        HexToArrayError, HexToBytesError, InvalidCharError, InvalidLengthError, OddLengthStringError,
     },
     iter::{BytesToHexIter, HexToBytesIter, HexSliceToBytesIter},
     parse::FromHex,
