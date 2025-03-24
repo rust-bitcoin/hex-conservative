@@ -10,12 +10,16 @@
 //! // In your manifest use the `package` key to improve import ergonomics.
 //! // hex = { package = "hex-conservative", version = "*" }
 //! # use hex_conservative as hex; // No need for this if using `package` as above.
-//! use hex::prelude::*;
+//! use hex::prelude::*;  // Imports `FromHex` and `Display`.
 //!
 //! // Decode an arbitrary length hex string into a vector.
 //! let v = Vec::from_hex("deadbeef").expect("valid hex digits");
 //! // Or a known length hex string into a fixed size array.
 //! let a = <[u8; 4]>::from_hex("deadbeef").expect("valid length and valid hex digits");
+//!
+//! // If you don't want to import the `FromHex` trait use inherent functions instead.
+//! let v = hex::decode_vec("deadbeef").expect("even string length and valid hex digits");
+//! let a = hex::decode_array::<[u8; 4]>("deadbeef").expect("valid length and valid hex digits");
 //!
 //! // We support `LowerHex` and `UpperHex` out of the box for `[u8]` slices.
 //! println!("An array as lower hex: {:x}", a.as_hex());
@@ -54,7 +58,7 @@ pub mod _export {
 
 pub mod buf_encoder;
 pub mod display;
-pub mod error;
+mod error;
 mod iter;
 pub mod parse;
 #[cfg(feature = "serde")]
@@ -76,8 +80,7 @@ pub(crate) use table::Table;
 pub use self::{
     display::DisplayHex,
     error::{
-        HexToArrayError, HexToBytesError, InvalidCharError, InvalidLengthError,
-        OddLengthStringError, ToArrayError, ToBytesError,
+        HexToArrayError, HexToBytesError, InvalidCharError, InvalidLengthError, OddLengthStringError,
     },
     iter::{BytesToHexIter, HexToBytesIter, HexSliceToBytesIter},
     parse::FromHex,

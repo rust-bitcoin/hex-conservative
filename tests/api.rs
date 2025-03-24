@@ -18,7 +18,7 @@ use hex_conservative::serde;
 // These imports test "typical" usage by user code.
 use hex_conservative::{
     buf_encoder, display, BytesToHexIter, Case, DisplayHex as _, HexToArrayError, HexToBytesError,
-    InvalidCharError, InvalidLengthError, OddLengthStringError, ToArrayError, ToBytesError,
+    InvalidCharError, InvalidLengthError, OddLengthStringError,
 };
 
 /// A struct that includes all public non-error enums.
@@ -86,13 +86,11 @@ impl Structs<'_, slice::Iter<'_, u8>, String> {
 // These derives are the policy of `rust-bitcoin` not Rust API guidelines.
 #[derive(Debug, Clone, PartialEq, Eq)] // All public types implement Debug (C-DEBUG).
 struct Errors {
-    a: ToArrayError,
-    b: ToBytesError,
-    c: HexToArrayError,
-    d: HexToBytesError,
-    e: InvalidCharError,
-    f: InvalidLengthError,
-    g: OddLengthStringError,
+    a: HexToArrayError,
+    b: HexToBytesError,
+    c: InvalidCharError,
+    d: InvalidLengthError,
+    e: OddLengthStringError,
 }
 
 // `Debug` representation is never empty (C-DEBUG-NONEMPTY).
