@@ -1,3 +1,8 @@
+# 1.0.0-alpha.0 - 2025-02-27
+
+- Add two crate level decoding functions (for `Vec` and const generic arrays)
+- Remove everything except the decoding functions and associated error types
+
 # 0.3.0 - 2024-09-18
 
 - Re-implement `HexWriter` [#113](https://github.com/rust-bitcoin/hex-conservative/pull/113)
