@@ -28,13 +28,13 @@ impl FromHex for Vec<u8> {
     type Error = HexToBytesError;
 
     #[inline]
-    fn from_hex(s: &str) -> Result<Self, Self::Error> { crate::decode_vec(s) }
+    fn from_hex(s: &str) -> Result<Self, Self::Error> { crate::decode_to_vec(s) }
 }
 
 impl<const LEN: usize> FromHex for [u8; LEN] {
     type Error = HexToArrayError;
 
-    fn from_hex(s: &str) -> Result<Self, Self::Error> { crate::decode_array(s) }
+    fn from_hex(s: &str) -> Result<Self, Self::Error> { crate::decode_to_array(s) }
 }
 
 mod sealed {

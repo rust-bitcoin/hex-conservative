@@ -98,7 +98,7 @@ pub use self::{
 ///
 /// Errors if `s` is not a valid hex string.
 #[cfg(feature = "alloc")]
-pub fn decode_vec(s: &str) -> Result<Vec<u8>, HexToBytesError> {
+pub fn decode_to_vec(s: &str) -> Result<Vec<u8>, HexToBytesError> {
     Ok(HexToBytesIter::new(s)?.drain_to_vec()?)
 }
 
@@ -107,7 +107,7 @@ pub fn decode_vec(s: &str) -> Result<Vec<u8>, HexToBytesError> {
 /// # Errors
 ///
 /// Errors if `s` is not a valid hex string or the correct length.
-pub fn decode_array<const N: usize>(s: &str) -> Result<[u8; N], HexToArrayError> {
+pub fn decode_to_array<const N: usize>(s: &str) -> Result<[u8; N], HexToArrayError> {
     if s.len() == N * 2 {
         let mut ret = [0u8; N];
         // checked above
