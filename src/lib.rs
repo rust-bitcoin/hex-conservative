@@ -113,7 +113,7 @@ pub(crate) use table::Table;
 pub use self::{
     display::DisplayHex,
     error::{
-        HexToArrayError, HexToBytesError, InvalidCharError, InvalidLengthError,
+        DecodeFixedSizedBytesError, DecodeDynSizedBytesError, InvalidCharError, InvalidLengthError,
         OddLengthStringError,
     },
     iter::{BytesToHexIter, HexToBytesIter, HexSliceToBytesIter},
@@ -130,11 +130,11 @@ pub use self::{
 ///
 /// Returns an error if `hex` contains invalid characters or doesn't have even length.
 #[cfg(feature = "alloc")]
-pub fn decode_to_vec(hex: &str) -> Result<Vec<u8>, HexToBytesError> {
+pub fn decode_to_vec(hex: &str) -> Result<Vec<u8>, DecodeDynSizedBytesError> {
     Ok(HexToBytesIter::new(hex)?.drain_to_vec()?)
 }
 
-/// Decodes a hex string with an expected length kown at compile time.
+/// Decodes a hex string with an expected length known at compile time.
 ///
 /// If you don't know the required length at compile time you need to use [`decode_to_vec`]
 /// instead.
@@ -143,7 +143,7 @@ pub fn decode_to_vec(hex: &str) -> Result<Vec<u8>, HexToBytesError> {
 ///
 /// Returns an error if `hex` contains invalid characters or has incorrect length. (Should be
 /// `N * 2`.)
-pub fn decode_to_array<const N: usize>(hex: &str) -> Result<[u8; N], HexToArrayError> {
+pub fn decode_to_array<const N: usize>(hex: &str) -> Result<[u8; N], DecodeFixedSizedBytesError> {
     if hex.len() == N * 2 {
         let mut ret = [0u8; N];
         // checked above

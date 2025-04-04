@@ -70,17 +70,17 @@ pub(crate) use write_err;
 /// This represents the first error encountered during decoding, however we may add other remaining
 /// ones in the future.
 ///
-/// This error differs from [`HexToArrayError`] in that the number of bytes is only known at
-/// run time - e.g. when decoding `Vec<u8>`.
+/// This error differs from [`DecodeFixedSizedBytesError`] in that the number of bytes is only known
+/// at run time - e.g. when decoding `Vec<u8>`.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum HexToBytesError {
+pub enum DecodeDynSizedBytesError {
     /// Non-hexadecimal character.
     InvalidChar(InvalidCharError),
     /// Purported hex string had odd (not even) length.
     OddLengthString(OddLengthStringError),
 }
 
-impl HexToBytesError {
+impl DecodeDynSizedBytesError {
     /// Adds `by_bytes` to all character positions stored inside.
     ///
     /// If you're parsing a larger string that consists of multiple hex sub-strings and want to
@@ -97,7 +97,7 @@ impl HexToBytesError {
     #[must_use]
     #[inline]
     pub fn offset(self, by_bytes: usize) -> Self {
-        use HexToBytesError as E;
+        use DecodeDynSizedBytesError as E;
 
         match self {
             E::InvalidChar(e) => E::InvalidChar(e.offset(by_bytes)),
@@ -106,15 +106,15 @@ impl HexToBytesError {
     }
 }
 
-impl From<Infallible> for HexToBytesError {
+impl From<Infallible> for DecodeDynSizedBytesError {
     #[inline]
     fn from(never: Infallible) -> Self { match never {} }
 }
 
-impl fmt::Display for HexToBytesError {
+impl fmt::Display for DecodeDynSizedBytesError {
     #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use HexToBytesError as E;
+        use DecodeDynSizedBytesError as E;
 
         match *self {
             E::InvalidChar(ref e) => write_err!(f, "failed to decode hex"; e),
@@ -124,10 +124,10 @@ impl fmt::Display for HexToBytesError {
 }
 
 if_std_error! {{
-    impl StdError for HexToBytesError {
+    impl StdError for DecodeDynSizedBytesError {
         #[inline]
         fn source(&self) -> Option<&(dyn StdError + 'static)> {
-            use HexToBytesError as E;
+            use DecodeDynSizedBytesError as E;
 
             match *self {
                 E::InvalidChar(ref e) => Some(e),
@@ -137,12 +137,12 @@ if_std_error! {{
     }
 }}
 
-impl From<InvalidCharError> for HexToBytesError {
+impl From<InvalidCharError> for DecodeDynSizedBytesError {
     #[inline]
     fn from(e: InvalidCharError) -> Self { Self::InvalidChar(e) }
 }
 
-impl From<OddLengthStringError> for HexToBytesError {
+impl From<OddLengthStringError> for DecodeDynSizedBytesError {
     #[inline]
     fn from(e: OddLengthStringError) -> Self { Self::OddLengthString(e) }
 }
@@ -169,7 +169,7 @@ impl InvalidCharError {
 
     /// Adds `by_bytes` to all character positions stored inside.
     ///
-    /// **Important**: if you have `HexToBytesError` or `HexToArrayError` you
+    /// **Important**: if you have `DecodeDynSizedBytesError` or `DecodeFixedSizedBytesError` you
     /// should call the method *on them* - do not match them and manually call this method. Doing
     /// so may lead to broken behavior in the future.
     ///
@@ -280,17 +280,17 @@ if_std_error! {{
 
 /// Error returned when hex decoding bytes whose length is known at compile time.
 ///
-/// This error differs from [`HexToBytesError`] in that the number of bytes is known at
+/// This error differs from [`DecodeDynSizedBytesError`] in that the number of bytes is known at
 /// compile time - e.g. when decoding to an array of bytes.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum HexToArrayError {
+pub enum DecodeFixedSizedBytesError {
     /// Non-hexadecimal character.
     InvalidChar(InvalidCharError),
     /// Tried to parse fixed-length hash from a string with the wrong length.
     InvalidLength(InvalidLengthError),
 }
 
-impl HexToArrayError {
+impl DecodeFixedSizedBytesError {
     /// Adds `by_bytes` to all character positions stored inside.
     ///
     /// If you're parsing a larger string that consists of multiple hex sub-strings and want to
@@ -307,7 +307,7 @@ impl HexToArrayError {
     #[must_use]
     #[inline]
     pub fn offset(self, by_bytes: usize) -> Self {
-        use HexToArrayError as E;
+        use DecodeFixedSizedBytesError as E;
 
         match self {
             E::InvalidChar(e) => E::InvalidChar(e.offset(by_bytes)),
@@ -316,15 +316,15 @@ impl HexToArrayError {
     }
 }
 
-impl From<Infallible> for HexToArrayError {
+impl From<Infallible> for DecodeFixedSizedBytesError {
     #[inline]
     fn from(never: Infallible) -> Self { match never {} }
 }
 
-impl fmt::Display for HexToArrayError {
+impl fmt::Display for DecodeFixedSizedBytesError {
     #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use HexToArrayError as E;
+        use DecodeFixedSizedBytesError as E;
 
         match *self {
             E::InvalidChar(ref e) => write_err!(f, "failed to parse hex"; e),
@@ -334,10 +334,10 @@ impl fmt::Display for HexToArrayError {
 }
 
 if_std_error! {{
-    impl StdError for HexToArrayError {
+    impl StdError for DecodeFixedSizedBytesError {
         #[inline]
         fn source(&self) -> Option<&(dyn StdError + 'static)> {
-            use HexToArrayError as E;
+            use DecodeFixedSizedBytesError as E;
 
             match *self {
                 E::InvalidChar(ref e) => Some(e),
@@ -347,12 +347,12 @@ if_std_error! {{
     }
 }}
 
-impl From<InvalidCharError> for HexToArrayError {
+impl From<InvalidCharError> for DecodeFixedSizedBytesError {
     #[inline]
     fn from(e: InvalidCharError) -> Self { Self::InvalidChar(e) }
 }
 
-impl From<InvalidLengthError> for HexToArrayError {
+impl From<InvalidLengthError> for DecodeFixedSizedBytesError {
     #[inline]
     fn from(e: InvalidLengthError) -> Self { Self::InvalidLength(e) }
 }
@@ -421,7 +421,7 @@ mod tests {
     fn invalid_char_error() {
         let result = <Vec<u8> as FromHex>::from_hex("12G4");
         let error = result.unwrap_err();
-        if let HexToBytesError::InvalidChar(e) = error {
+        if let DecodeDynSizedBytesError::InvalidChar(e) = error {
             assert!(!format!("{}", e).is_empty());
             assert_eq!(e.invalid_char(), b'G');
             assert_eq!(e.pos(), 2);
@@ -437,7 +437,7 @@ mod tests {
         let error = result.unwrap_err();
         assert!(!format!("{}", error).is_empty());
         check_source(&error);
-        if let HexToBytesError::OddLengthString(e) = error {
+        if let DecodeDynSizedBytesError::OddLengthString(e) = error {
             assert!(!format!("{}", e).is_empty());
             assert_eq!(e.length(), 3);
         } else {
@@ -451,7 +451,7 @@ mod tests {
         let error = result.unwrap_err();
         assert!(!format!("{}", error).is_empty());
         check_source(&error);
-        if let HexToArrayError::InvalidLength(e) = error {
+        if let DecodeFixedSizedBytesError::InvalidLength(e) = error {
             assert!(!format!("{}", e).is_empty());
             assert_eq!(e.expected_length(), 8);
             assert_eq!(e.invalid_length(), 3);
@@ -462,14 +462,17 @@ mod tests {
 
     #[test]
     fn to_bytes_error() {
-        let error = HexToBytesError::OddLengthString(OddLengthStringError { len: 7 });
+        let error = DecodeDynSizedBytesError::OddLengthString(OddLengthStringError { len: 7 });
         assert!(!format!("{}", error).is_empty());
         check_source(&error);
     }
 
     #[test]
     fn to_array_error() {
-        let error = HexToArrayError::InvalidLength(InvalidLengthError { expected: 8, invalid: 7 });
+        let error = DecodeFixedSizedBytesError::InvalidLength(InvalidLengthError {
+            expected: 8,
+            invalid: 7,
+        });
         assert!(!format!("{}", error).is_empty());
         check_source(&error);
     }

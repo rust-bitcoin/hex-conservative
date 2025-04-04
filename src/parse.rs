@@ -8,7 +8,7 @@ use core::{fmt, str};
 use crate::alloc::vec::Vec;
 
 #[rustfmt::skip]                // Keep public re-exports separate.
-pub use crate::error::{HexToBytesError, HexToArrayError};
+pub use crate::error::{DecodeDynSizedBytesError, DecodeFixedSizedBytesError};
 
 /// Trait for objects that can be deserialized from hex strings.
 pub trait FromHex: Sized + sealed::Sealed {
@@ -25,14 +25,14 @@ pub trait FromHex: Sized + sealed::Sealed {
 
 #[cfg(feature = "alloc")]
 impl FromHex for Vec<u8> {
-    type Error = HexToBytesError;
+    type Error = DecodeDynSizedBytesError;
 
     #[inline]
     fn from_hex(s: &str) -> Result<Self, Self::Error> { crate::decode_to_vec(s) }
 }
 
 impl<const LEN: usize> FromHex for [u8; LEN] {
-    type Error = HexToArrayError;
+    type Error = DecodeFixedSizedBytesError;
 
     fn from_hex(s: &str) -> Result<Self, Self::Error> { crate::decode_to_array(s) }
 }

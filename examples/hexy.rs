@@ -8,7 +8,9 @@
 use std::fmt;
 use std::str::FromStr;
 
-use hex_conservative::{fmt_hex_exact, Case, DisplayHex as _, FromHex as _, HexToArrayError};
+use hex_conservative::{
+    fmt_hex_exact, Case, DecodeFixedSizedBytesError, DisplayHex as _, FromHex as _,
+};
 
 fn main() {
     let s = "deadbeefcafebabedeadbeefcafebabedeadbeefcafebabedeadbeefcafebabe";
@@ -46,7 +48,7 @@ impl fmt::Display for Hexy {
 }
 
 impl FromStr for Hexy {
-    type Err = HexToArrayError;
+    type Err = DecodeFixedSizedBytesError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // Errors if the input is invalid
