@@ -8,7 +8,7 @@ This library should compile with almost any combination of features on **Rust 1.
 reserve the right to use features to guard compiler specific code so `--all-features` may not work
 using the MSRV toolchain.
 
-### Githooks
+## Githooks
 
 To assist devs in catching errors _before_ running CI we provide some githooks. If you do not
 already have locally configured githooks you can use the ones in this repository by running, in the
