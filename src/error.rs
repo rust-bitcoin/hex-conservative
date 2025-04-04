@@ -65,12 +65,18 @@ macro_rules! write_err {
 }
 pub(crate) use write_err;
 
-/// Hex decoding error.
+/// Error returned when hex decoding a hex string with variable length.
+///
+/// This represents the first error encountered during decoding, however we may add other remaining
+/// ones in the future.
+///
+/// This error differs from [`HexToArrayError`] in that the number of bytes is only known at
+/// run time - e.g. when decoding `Vec<u8>`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum HexToBytesError {
     /// Non-hexadecimal character.
     InvalidChar(InvalidCharError),
-    /// Purported hex string had odd length.
+    /// Purported hex string had odd (not even) length.
     OddLengthString(OddLengthStringError),
 }
 
@@ -272,7 +278,10 @@ if_std_error! {{
     impl StdError for OddLengthStringError {}
 }}
 
-/// Hex decoding error.
+/// Error returned when hex decoding bytes whose length is known at compile time.
+///
+/// This error differs from [`HexToBytesError`] in that the number of bytes is known at
+/// compile time - e.g. when decoding to an array of bytes.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum HexToArrayError {
     /// Non-hexadecimal character.
@@ -364,9 +373,16 @@ impl From<Infallible> for InvalidLengthError {
 
 impl InvalidLengthError {
     /// Returns the expected length.
+    ///
+    /// Note that this represents both the number of bytes and the number of characters that needs
+    /// to be passed into the decoder, since the hex digits are ASCII and thus always 1-byte long.
     #[inline]
     pub fn expected_length(&self) -> usize { self.expected }
-    /// Returns the position of the invalid character byte.
+
+    /// Returns the number of *hex bytes* passed to the hex decoder.
+    ///
+    /// Note that this does not imply the number of characters nor hex digits since they may be
+    /// invalid (wide unicode chars).
     #[inline]
     pub fn invalid_length(&self) -> usize { self.invalid }
 }
