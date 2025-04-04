@@ -82,10 +82,8 @@ impl fmt::Display for ToBytesError {
         use ToBytesError as E;
 
         match *self {
-            E::InvalidChar(ref e) =>
-                write_err!(f, "invalid char, failed to create bytes from hex"; e),
-            E::OddLengthString(ref e) =>
-                write_err!(f, "odd length, failed to create bytes from hex"; e),
+            E::InvalidChar(ref e) => write_err!(f, "failed to decode hex"; e),
+            E::OddLengthString(ref e) => write_err!(f, "failed to decode hex"; e),
         }
     }
 }
@@ -133,10 +131,53 @@ impl InvalidCharError {
     pub fn pos(&self) -> usize { self.pos }
 }
 
+/// Note that the implementation displays position as 1-based instead of 0-based to be more
+/// suitable to end users who might be non-programmers.
 impl fmt::Display for InvalidCharError {
     #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "invalid hex char {} at pos {}", self.invalid_char(), self.pos())
+        // We're displaying this for general audience, not programmers, so we want to do 1-based
+        // position but that might confuse programmers who might think it's 0-based. Hopefully
+        // using more wordy approach will avoid the confusion.
+
+        // format_args! would be simpler but we can't use it because of  Rust issue #92698.
+        struct Format<F: Fn(&mut fmt::Formatter<'_>) -> fmt::Result>(F);
+        impl<F: Fn(&mut fmt::Formatter<'_>) -> fmt::Result> fmt::Display for Format<F> {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result { self.0(f) }
+        }
+
+        // The lifetime is not extended in MSRV, so we need this.
+        let which;
+        let which: &dyn fmt::Display = match self.pos() {
+            0 => &"1st",
+            1 => &"2nd",
+            2 => &"3rd",
+            pos => {
+                which = Format(move |f| write!(f, "{}th", pos + 1));
+                &which
+            }
+        };
+
+        // The lifetime is not extended in MSRV, so we need these.
+        let chr_ascii;
+        let chr_non_ascii;
+
+        let invalid_char = self.invalid_char();
+        // We're currently not storing the entire character, so we need to make sure values >=
+        // 128 don't get misinterpreted as ISO-8859-1.
+        let chr: &dyn fmt::Display = if self.invalid_char().is_ascii() {
+            // Yes, the Debug output is correct here. Display would print the characters
+            // directly which would be confusing in case of control characters and it would
+            // also mess up the formatting. The `Debug` implementation of `char` properly
+            // escapes such characters.
+            chr_ascii = Format(move |f| write!(f, "{:?}", invalid_char as char));
+            &chr_ascii
+        } else {
+            chr_non_ascii = Format(move |f| write!(f, "{:#02x}", invalid_char));
+            &chr_non_ascii
+        };
+
+        write!(f, "the {} character, {}, is not a valid hex digit", which, chr)
     }
 }
 
@@ -163,7 +204,11 @@ impl OddLengthStringError {
 impl fmt::Display for OddLengthStringError {
     #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "odd hex string length {}", self.length())
+        if self.length() == 1 {
+            write!(f, "the hex string is 1 byte long which is not an even number")
+        } else {
+            write!(f, "the hex string is {} bytes long which is not an even number", self.length())
+        }
     }
 }
 
@@ -226,7 +271,7 @@ impl fmt::Display for ToArrayError {
         use ToArrayError as E;
 
         match *self {
-            E::InvalidChar(ref e) => write_err!(f, "failed to parse hex digit"; e),
+            E::InvalidChar(ref e) => write_err!(f, "failed to parse hex"; e),
             E::InvalidLength(ref e) => write_err!(f, "failed to parse hex"; e),
         }
     }
@@ -281,7 +326,8 @@ impl fmt::Display for InvalidLengthError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "invalid hex string length {} (expected {})",
+            // Note on singular vs plural: expected length is never odd, so it cannot be 1
+            "the hex string is {} bytes long but exactly {} bytes were required",
             self.invalid_length(),
             self.expected_length()
         )
