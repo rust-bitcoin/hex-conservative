@@ -98,7 +98,9 @@ pub use self::{
 ///
 /// Errors if `s` is not a valid hex string.
 #[cfg(feature = "alloc")]
-pub fn decode_vec(s: &str) -> Result<Vec<u8>, HexToBytesError> { Vec::from_hex(s) }
+pub fn decode_vec(s: &str) -> Result<Vec<u8>, HexToBytesError> {
+    Ok(HexToBytesIter::new(s)?.drain_to_vec()?)
+}
 
 /// Decodes a hex string into an array of bytes.
 ///
@@ -106,7 +108,14 @@ pub fn decode_vec(s: &str) -> Result<Vec<u8>, HexToBytesError> { Vec::from_hex(s
 ///
 /// Errors if `s` is not a valid hex string or the correct length.
 pub fn decode_array<const N: usize>(s: &str) -> Result<[u8; N], HexToArrayError> {
-    <[u8; N]>::from_hex(s)
+    if s.len() == N * 2 {
+        let mut ret = [0u8; N];
+        // checked above
+        HexToBytesIter::new_unchecked(s).drain_to_slice(&mut ret)?;
+        Ok(ret)
+    } else {
+        Err(InvalidLengthError { invalid: s.len(), expected: 2 * N }.into())
+    }
 }
 
 /// Possible case of hex.

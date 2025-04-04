@@ -6,8 +6,6 @@ use core::{fmt, str};
 
 #[cfg(all(feature = "alloc", not(feature = "std")))]
 use crate::alloc::vec::Vec;
-use crate::error::InvalidLengthError;
-use crate::iter::HexToBytesIter;
 
 #[rustfmt::skip]                // Keep public re-exports separate.
 pub use crate::error::{HexToBytesError, HexToArrayError};
@@ -30,24 +28,13 @@ impl FromHex for Vec<u8> {
     type Error = HexToBytesError;
 
     #[inline]
-    fn from_hex(s: &str) -> Result<Self, Self::Error> {
-        Ok(HexToBytesIter::new(s)?.drain_to_vec()?)
-    }
+    fn from_hex(s: &str) -> Result<Self, Self::Error> { crate::decode_vec(s) }
 }
 
 impl<const LEN: usize> FromHex for [u8; LEN] {
     type Error = HexToArrayError;
 
-    fn from_hex(s: &str) -> Result<Self, Self::Error> {
-        if s.len() == LEN * 2 {
-            let mut ret = [0u8; LEN];
-            // checked above
-            HexToBytesIter::new_unchecked(s).drain_to_slice(&mut ret)?;
-            Ok(ret)
-        } else {
-            Err(InvalidLengthError { invalid: s.len(), expected: 2 * LEN }.into())
-        }
-    }
+    fn from_hex(s: &str) -> Result<Self, Self::Error> { crate::decode_array(s) }
 }
 
 mod sealed {
@@ -63,6 +50,7 @@ mod sealed {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::{HexToBytesIter, InvalidLengthError};
 
     #[test]
     #[cfg(feature = "alloc")]
