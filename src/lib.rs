@@ -86,7 +86,7 @@ pub use self::{
     display::DisplayHex,
     error::{
         HexToArrayError, HexToBytesError, InvalidCharError, InvalidLengthError,
-        OddLengthStringError, ToArrayError, ToBytesError,
+        OddLengthStringError,
     },
     iter::{BytesToHexIter, HexToBytesIter, HexSliceToBytesIter},
     parse::FromHex,

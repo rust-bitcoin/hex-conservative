@@ -28,58 +28,22 @@ macro_rules! write_err {
 
 /// Hex decoding error.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct HexToBytesError(pub(crate) ToBytesError);
-
-impl From<Infallible> for HexToBytesError {
-    #[inline]
-    fn from(never: Infallible) -> Self { match never {} }
-}
-
-impl HexToBytesError {
-    /// Returns a [`ToBytesError`] from this [`HexToBytesError`].
-    // Use clone instead of reference to give use maximum forward flexibility.
-    #[inline]
-    pub fn parse_error(&self) -> ToBytesError { self.0.clone() }
-}
-
-impl fmt::Display for HexToBytesError {
-    #[inline]
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::Display::fmt(&self.0, f) }
-}
-
-#[cfg(feature = "std")]
-impl std::error::Error for HexToBytesError {
-    #[inline]
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { Some(&self.0) }
-}
-
-impl From<InvalidCharError> for HexToBytesError {
-    #[inline]
-    fn from(e: InvalidCharError) -> Self { Self(e.into()) }
-}
-
-impl From<OddLengthStringError> for HexToBytesError {
-    #[inline]
-    fn from(e: OddLengthStringError) -> Self { Self(e.into()) }
-}
-
-/// Hex decoding error while parsing to a vector of bytes.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum ToBytesError {
+pub enum HexToBytesError {
     /// Non-hexadecimal character.
     InvalidChar(InvalidCharError),
     /// Purported hex string had odd length.
     OddLengthString(OddLengthStringError),
 }
 
-impl From<Infallible> for ToBytesError {
+impl From<Infallible> for HexToBytesError {
     #[inline]
     fn from(never: Infallible) -> Self { match never {} }
 }
 
-impl fmt::Display for ToBytesError {
+impl fmt::Display for HexToBytesError {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use ToBytesError as E;
+        use HexToBytesError as E;
 
         match *self {
             E::InvalidChar(ref e) => write_err!(f, "failed to decode hex"; e),
@@ -89,9 +53,10 @@ impl fmt::Display for ToBytesError {
 }
 
 #[cfg(feature = "std")]
-impl std::error::Error for ToBytesError {
+impl std::error::Error for HexToBytesError {
+    #[inline]
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        use ToBytesError as E;
+        use HexToBytesError as E;
 
         match *self {
             E::InvalidChar(ref e) => Some(e),
@@ -100,12 +65,12 @@ impl std::error::Error for ToBytesError {
     }
 }
 
-impl From<InvalidCharError> for ToBytesError {
+impl From<InvalidCharError> for HexToBytesError {
     #[inline]
     fn from(e: InvalidCharError) -> Self { Self::InvalidChar(e) }
 }
 
-impl From<OddLengthStringError> for ToBytesError {
+impl From<OddLengthStringError> for HexToBytesError {
     #[inline]
     fn from(e: OddLengthStringError) -> Self { Self::OddLengthString(e) }
 }
@@ -217,58 +182,22 @@ impl std::error::Error for OddLengthStringError {}
 
 /// Hex decoding error.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct HexToArrayError(pub(crate) ToArrayError);
-
-impl From<Infallible> for HexToArrayError {
-    #[inline]
-    fn from(never: Infallible) -> Self { match never {} }
-}
-
-impl HexToArrayError {
-    /// Returns a [`ToArrayError`] from this [`HexToArrayError`].
-    // Use clone instead of reference to give use maximum forward flexibility.
-    #[inline]
-    pub fn parse_error(&self) -> ToArrayError { self.0.clone() }
-}
-
-impl fmt::Display for HexToArrayError {
-    #[inline]
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::Display::fmt(&self.0, f) }
-}
-
-#[cfg(feature = "std")]
-impl std::error::Error for HexToArrayError {
-    #[inline]
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { Some(&self.0) }
-}
-
-impl From<InvalidCharError> for HexToArrayError {
-    #[inline]
-    fn from(e: InvalidCharError) -> Self { Self(e.into()) }
-}
-
-impl From<InvalidLengthError> for HexToArrayError {
-    #[inline]
-    fn from(e: InvalidLengthError) -> Self { Self(e.into()) }
-}
-
-/// Hex decoding error while parsing a byte array.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum ToArrayError {
+pub enum HexToArrayError {
     /// Non-hexadecimal character.
     InvalidChar(InvalidCharError),
     /// Tried to parse fixed-length hash from a string with the wrong length.
     InvalidLength(InvalidLengthError),
 }
 
-impl From<Infallible> for ToArrayError {
+impl From<Infallible> for HexToArrayError {
     #[inline]
     fn from(never: Infallible) -> Self { match never {} }
 }
 
-impl fmt::Display for ToArrayError {
+impl fmt::Display for HexToArrayError {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use ToArrayError as E;
+        use HexToArrayError as E;
 
         match *self {
             E::InvalidChar(ref e) => write_err!(f, "failed to parse hex"; e),
@@ -278,9 +207,10 @@ impl fmt::Display for ToArrayError {
 }
 
 #[cfg(feature = "std")]
-impl std::error::Error for ToArrayError {
+impl std::error::Error for HexToArrayError {
+    #[inline]
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        use ToArrayError as E;
+        use HexToArrayError as E;
 
         match *self {
             E::InvalidChar(ref e) => Some(e),
@@ -289,12 +219,12 @@ impl std::error::Error for ToArrayError {
     }
 }
 
-impl From<InvalidCharError> for ToArrayError {
+impl From<InvalidCharError> for HexToArrayError {
     #[inline]
     fn from(e: InvalidCharError) -> Self { Self::InvalidChar(e) }
 }
 
-impl From<InvalidLengthError> for ToArrayError {
+impl From<InvalidLengthError> for HexToArrayError {
     #[inline]
     fn from(e: InvalidLengthError) -> Self { Self::InvalidLength(e) }
 }
@@ -351,7 +281,7 @@ mod tests {
     fn invalid_char_error() {
         let result = <Vec<u8> as FromHex>::from_hex("12G4");
         let error = result.unwrap_err();
-        if let HexToBytesError(ToBytesError::InvalidChar(e)) = error {
+        if let HexToBytesError::InvalidChar(e) = error {
             assert!(!format!("{}", e).is_empty());
             assert_eq!(e.invalid_char(), b'G');
             assert_eq!(e.pos(), 2);
@@ -366,7 +296,7 @@ mod tests {
         let error = result.unwrap_err();
         assert!(!format!("{}", error).is_empty());
         check_source(&error);
-        if let HexToBytesError(ToBytesError::OddLengthString(e)) = error {
+        if let HexToBytesError::OddLengthString(e) = error {
             assert!(!format!("{}", e).is_empty());
             assert_eq!(e.length(), 3);
         } else {
@@ -380,7 +310,7 @@ mod tests {
         let error = result.unwrap_err();
         assert!(!format!("{}", error).is_empty());
         check_source(&error);
-        if let HexToArrayError(ToArrayError::InvalidLength(e)) = error {
+        if let HexToArrayError::InvalidLength(e) = error {
             assert!(!format!("{}", e).is_empty());
             assert_eq!(e.expected_length(), 8);
             assert_eq!(e.invalid_length(), 3);
@@ -391,14 +321,14 @@ mod tests {
 
     #[test]
     fn to_bytes_error() {
-        let error = ToBytesError::OddLengthString(OddLengthStringError { len: 7 });
+        let error = HexToBytesError::OddLengthString(OddLengthStringError { len: 7 });
         assert!(!format!("{}", error).is_empty());
         check_source(&error);
     }
 
     #[test]
     fn to_array_error() {
-        let error = ToArrayError::InvalidLength(InvalidLengthError { expected: 8, invalid: 7 });
+        let error = HexToArrayError::InvalidLength(InvalidLengthError { expected: 8, invalid: 7 });
         assert!(!format!("{}", error).is_empty());
         check_source(&error);
     }
