@@ -25,13 +25,13 @@
 //! assert_eq!(format!("{:0>8}", v.as_hex()), "0000abab");
 //!```
 
-#[cfg(all(feature = "alloc", not(feature = "std")))]
+#[cfg(feature = "alloc")]
 use alloc::string::String;
 use core::borrow::Borrow;
 use core::fmt;
 
 use super::Case;
-#[cfg(any(test, feature = "std"))]
+#[cfg(feature = "std")]
 use super::Table;
 use crate::buf_encoder::BufEncoder;
 
@@ -607,16 +607,14 @@ where
 
 /// Given a `T:` [`fmt::Write`], `HexWriter` implements [`std::io::Write`]
 /// and writes the source bytes to its inner `T` as hex characters.
-#[cfg(any(test, feature = "std"))]
-#[cfg_attr(docsrs, doc(cfg(any(test, feature = "std"))))]
+#[cfg(feature = "std")]
 #[derive(Debug)]
 pub struct HexWriter<T> {
     writer: T,
     table: &'static Table,
 }
 
-#[cfg(any(test, feature = "std"))]
-#[cfg_attr(docsrs, doc(cfg(any(test, feature = "std"))))]
+#[cfg(feature = "std")]
 impl<T> HexWriter<T> {
     /// Creates a `HexWriter` that writes the source bytes to `dest` as hex characters
     /// in the given `case`.
@@ -627,8 +625,7 @@ impl<T> HexWriter<T> {
     pub fn into_inner(self) -> T { self.writer }
 }
 
-#[cfg(any(test, feature = "std"))]
-#[cfg_attr(docsrs, doc(cfg(any(test, feature = "std"))))]
+#[cfg(feature = "std")]
 impl<T> std::io::Write for HexWriter<T>
 where
     T: core::fmt::Write,
@@ -674,6 +671,7 @@ mod tests {
         use core::marker::PhantomData;
 
         use super::*;
+        use crate::alloc::vec::Vec;
 
         fn check_encoding(bytes: &[u8]) {
             use core::fmt::Write;
@@ -1002,6 +1000,8 @@ mod tests {
 
     #[cfg(feature = "std")]
     mod std {
+        use alloc::string::String;
+        use alloc::vec::Vec;
         use std::io::Write as _;
 
         use arrayvec::ArrayString;

@@ -4,7 +4,7 @@
 
 use core::{fmt, str};
 
-#[cfg(all(feature = "alloc", not(feature = "std")))]
+#[cfg(feature = "alloc")]
 use crate::alloc::vec::Vec;
 
 #[rustfmt::skip]                // Keep public re-exports separate.

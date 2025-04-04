@@ -43,14 +43,19 @@
 //! Note though that the dependencies may have looser policy. This is not considered breaking/wrong
 //! - you would just need to pin them in `Cargo.lock` (not `.toml`).
 
-#![cfg_attr(all(not(test), not(feature = "std")), no_std)]
+#![no_std]
 // Experimental features we need.
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 // Coding conventions
 #![warn(missing_docs)]
 
+#[cfg(feature = "std")]
+extern crate std;
+
 #[cfg(feature = "alloc")]
+#[allow(unused_imports)] // false positive regarding macro
+#[macro_use]
 extern crate alloc;
 
 #[doc(hidden)]
@@ -203,6 +208,8 @@ macro_rules! test_hex_unwrap (($hex:expr) => (<Vec<u8> as $crate::FromHex>::from
 #[cfg(test)]
 #[cfg(feature = "alloc")]
 mod tests {
+    use alloc::vec::Vec;
+
     use crate::test_hex_unwrap as hex;
 
     #[test]

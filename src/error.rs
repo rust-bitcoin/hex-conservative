@@ -346,6 +346,9 @@ impl std::error::Error for InvalidLengthError {}
 #[cfg(test)]
 #[cfg(feature = "std")]
 mod tests {
+    #[cfg(feature = "alloc")]
+    use alloc::vec::Vec;
+
     use super::*;
     use crate::FromHex;
 
@@ -353,6 +356,7 @@ mod tests {
         assert!(error.source().is_some());
     }
 
+    #[cfg(feature = "alloc")]
     #[test]
     fn invalid_char_error() {
         let result = <Vec<u8> as FromHex>::from_hex("12G4");
@@ -366,6 +370,7 @@ mod tests {
         }
     }
 
+    #[cfg(feature = "alloc")]
     #[test]
     fn odd_length_string_error() {
         let result = <Vec<u8> as FromHex>::from_hex("123");
