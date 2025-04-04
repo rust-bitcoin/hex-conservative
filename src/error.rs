@@ -90,7 +90,7 @@ impl From<Infallible> for InvalidCharError {
 impl InvalidCharError {
     /// Returns the invalid character byte.
     #[inline]
-    pub fn invalid_char(&self) -> u8 { self.invalid }
+    pub(crate) fn invalid_char(&self) -> u8 { self.invalid }
     /// Returns the position of the invalid character byte.
     #[inline]
     pub fn pos(&self) -> usize { self.pos }
