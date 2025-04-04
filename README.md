@@ -1,4 +1,4 @@
-# Bitcoin Hexadecimal Library
+# A Rust hexadecimal decoding library
 
 General purpose hex encoding/decoding library with a conservative MSRV and dependency policy.
 
