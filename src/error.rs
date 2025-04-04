@@ -35,6 +35,32 @@ pub enum HexToBytesError {
     OddLengthString(OddLengthStringError),
 }
 
+impl HexToBytesError {
+    /// Adds `by_bytes` to all character positions stored inside.
+    ///
+    /// If you're parsing a larger string that consists of multiple hex sub-strings and want to
+    /// return `InvalidCharError` you may need to use this function so that the callers of your
+    /// parsing function can tell the exact position where decoding failed relative to the start of
+    /// the string passed into your parsing function.
+    ///
+    /// Note that this function has the standard Rust overflow behavior because you should only
+    /// ever pass in the position of the parsed hex string relative to the start of the entire
+    /// input. In that case overflow is impossible.
+    ///
+    /// This method consumes and returns `self` so that calling it inside a closure passed into
+    /// [`Result::map_err`] is convenient.
+    #[must_use]
+    #[inline]
+    pub fn offset(self, by_bytes: usize) -> Self {
+        use HexToBytesError as E;
+
+        match self {
+            E::InvalidChar(e) => E::InvalidChar(e.offset(by_bytes)),
+            E::OddLengthString(e) => E::OddLengthString(e),
+        }
+    }
+}
+
 impl From<Infallible> for HexToBytesError {
     #[inline]
     fn from(never: Infallible) -> Self { match never {} }
@@ -94,6 +120,30 @@ impl InvalidCharError {
     /// Returns the position of the invalid character byte.
     #[inline]
     pub fn pos(&self) -> usize { self.pos }
+
+    /// Adds `by_bytes` to all character positions stored inside.
+    ///
+    /// **Important**: if you have `HexToBytesError` or `HexToArrayError` you
+    /// should call the method *on them* - do not match them and manually call this method. Doing
+    /// so may lead to broken behavior in the future.
+    ///
+    /// If you're parsing a larger string that consists of multiple hex sub-strings and want to
+    /// return `InvalidCharError` you may need to use this function so that the callers of your
+    /// parsing function can tell the exact position where decoding failed relative to the start of
+    /// the string passed into your parsing function.
+    ///
+    /// Note that this function has the standard Rust overflow behavior because you should only
+    /// ever pass in the position of the parsed hex string relative to the start of the entire
+    /// input. In that case overflow is impossible.
+    ///
+    /// This method consumes and returns `self` so that calling it inside a closure passed into
+    /// [`Result::map_err`] is convenient.
+    #[must_use]
+    #[inline]
+    pub fn offset(mut self, by_bytes: usize) -> Self {
+        self.pos += by_bytes;
+        self
+    }
 }
 
 /// Note that the implementation displays position as 1-based instead of 0-based to be more
@@ -187,6 +237,32 @@ pub enum HexToArrayError {
     InvalidChar(InvalidCharError),
     /// Tried to parse fixed-length hash from a string with the wrong length.
     InvalidLength(InvalidLengthError),
+}
+
+impl HexToArrayError {
+    /// Adds `by_bytes` to all character positions stored inside.
+    ///
+    /// If you're parsing a larger string that consists of multiple hex sub-strings and want to
+    /// return `InvalidCharError` you may need to use this function so that the callers of your
+    /// parsing function can tell the exact position where decoding failed relative to the start of
+    /// the string passed into your parsing function.
+    ///
+    /// Note that this function has the standard Rust overflow behavior because you should only
+    /// ever pass in the position of the parsed hex string relative to the start of the entire
+    /// input. In that case overflow is impossible.
+    ///
+    /// This method consumes and returns `self` so that calling it inside a closure passed into
+    /// [`Result::map_err`] is convenient.
+    #[must_use]
+    #[inline]
+    pub fn offset(self, by_bytes: usize) -> Self {
+        use HexToArrayError as E;
+
+        match self {
+            E::InvalidChar(e) => E::InvalidChar(e.offset(by_bytes)),
+            E::InvalidLength(e) => E::InvalidLength(e),
+        }
+    }
 }
 
 impl From<Infallible> for HexToArrayError {
