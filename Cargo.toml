@@ -23,9 +23,15 @@ members = ["fuzz"]
 default = ["std"]
 std = ["alloc"]
 alloc = []
+# Enables detection of newer rust versions to provide additional features
+# Turning it on may pull in dependencies that run build scripts and prolong compile time.
+# This feature will do nothing once our MSRV supports version detection natively and will
+# be removed using semver trick
+newer-rust-version = ["dep:if_rust_version"]
 
 [dependencies]
 arrayvec = { version = "0.7.2", default-features = false }
+if_rust_version = { version = "1.0.0", optional = true }
 serde = { version = "1.0", default-features = false, optional = true }
 
 

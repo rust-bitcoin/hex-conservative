@@ -4,6 +4,41 @@
 
 use core::convert::Infallible;
 use core::fmt;
+#[cfg(feature = "std")]
+use std::error::Error as StdError;
+#[cfg(all(not(feature = "std"), feature = "newer-rust-version"))]
+if_rust_version::if_rust_version! {
+    >= 1.81 {
+        use core::error::Error as StdError;
+    }
+}
+
+#[cfg(feature = "std")]
+macro_rules! if_std_error {
+    ({ $($if_yes:tt)* } $(else { $($if_not:tt)* })?) => {
+        #[cfg_attr(docsrs, doc(cfg(any(feature = "std", all(feature = "newer-rust-version", rust_version = ">= 1.81.0")))))]
+        $($if_yes)*
+    }
+}
+
+#[cfg(all(not(feature = "std"), feature = "newer-rust-version"))]
+macro_rules! if_std_error {
+    ({ $($if_yes:tt)* } $(else { $($if_not:tt)* })?) => {
+        if_rust_version::if_rust_version! {
+            >= 1.81 {
+                #[cfg_attr(docsrs, doc(cfg(any(feature = "std", all(feature = "newer-rust-version", rust_version = ">= 1.81.0")))))]
+                $($if_yes)*
+            } $(else { $($if_not)* })?
+        }
+    }
+}
+
+#[cfg(all(not(feature = "std"), not(feature = "newer-rust-version")))]
+macro_rules! if_std_error {
+    ({ $($if_yes:tt)* } $(else { $($if_not:tt)* })?) => {
+        $($($if_not)*)?
+    }
+}
 
 /// Formats error.
 ///
@@ -13,18 +48,22 @@ use core::fmt;
 macro_rules! write_err {
     ($writer:expr, $string:literal $(, $args:expr)*; $source:expr) => {
         {
-            #[cfg(feature = "std")]
-            {
-                let _ = &$source;   // Prevents clippy warnings.
-                write!($writer, $string $(, $args)*)
-            }
-            #[cfg(not(feature = "std"))]
-            {
-                write!($writer, concat!($string, ": {}") $(, $args)*, $source)
+            if_std_error! {
+                {
+                    {
+                        let _ = &$source;   // Prevents clippy warnings.
+                        write!($writer, $string $(, $args)*)
+                    }
+                } else {
+                    {
+                        write!($writer, concat!($string, ": {}") $(, $args)*, $source)
+                    }
+                }
             }
         }
     }
 }
+pub(crate) use write_err;
 
 /// Hex decoding error.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -78,18 +117,19 @@ impl fmt::Display for HexToBytesError {
     }
 }
 
-#[cfg(feature = "std")]
-impl std::error::Error for HexToBytesError {
-    #[inline]
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        use HexToBytesError as E;
+if_std_error! {{
+    impl StdError for HexToBytesError {
+        #[inline]
+        fn source(&self) -> Option<&(dyn StdError + 'static)> {
+            use HexToBytesError as E;
 
-        match *self {
-            E::InvalidChar(ref e) => Some(e),
-            E::OddLengthString(ref e) => Some(e),
+            match *self {
+                E::InvalidChar(ref e) => Some(e),
+                E::OddLengthString(ref e) => Some(e),
+            }
         }
     }
-}
+}}
 
 impl From<InvalidCharError> for HexToBytesError {
     #[inline]
@@ -196,8 +236,9 @@ impl fmt::Display for InvalidCharError {
     }
 }
 
-#[cfg(feature = "std")]
-impl std::error::Error for InvalidCharError {}
+if_std_error! {{
+    impl StdError for InvalidCharError {}
+}}
 
 /// Purported hex string had odd length.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -227,8 +268,9 @@ impl fmt::Display for OddLengthStringError {
     }
 }
 
-#[cfg(feature = "std")]
-impl std::error::Error for OddLengthStringError {}
+if_std_error! {{
+    impl StdError for OddLengthStringError {}
+}}
 
 /// Hex decoding error.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -282,18 +324,19 @@ impl fmt::Display for HexToArrayError {
     }
 }
 
-#[cfg(feature = "std")]
-impl std::error::Error for HexToArrayError {
-    #[inline]
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        use HexToArrayError as E;
+if_std_error! {{
+    impl StdError for HexToArrayError {
+        #[inline]
+        fn source(&self) -> Option<&(dyn StdError + 'static)> {
+            use HexToArrayError as E;
 
-        match *self {
-            E::InvalidChar(ref e) => Some(e),
-            E::InvalidLength(ref e) => Some(e),
+            match *self {
+                E::InvalidChar(ref e) => Some(e),
+                E::InvalidLength(ref e) => Some(e),
+            }
         }
     }
-}
+}}
 
 impl From<InvalidCharError> for HexToArrayError {
     #[inline]
@@ -340,8 +383,9 @@ impl fmt::Display for InvalidLengthError {
     }
 }
 
-#[cfg(feature = "std")]
-impl std::error::Error for InvalidLengthError {}
+if_std_error! {{
+    impl StdError for InvalidLengthError {}
+}}
 
 #[cfg(test)]
 #[cfg(feature = "std")]

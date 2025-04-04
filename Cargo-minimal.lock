@@ -19,6 +19,7 @@ name = "hex-conservative"
 version = "0.3.0"
 dependencies = [
  "arrayvec",
+ "if_rust_version",
  "serde",
  "serde_json",
 ]
@@ -41,6 +42,12 @@ dependencies = [
  "memmap2",
  "rustc_version",
 ]
+
+[[package]]
+name = "if_rust_version"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "46dbcb333e86939721589d25a3557e180b52778cb33c7fdfe9e0158ff790d5ec"
 
 [[package]]
 name = "itoa"
