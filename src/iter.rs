@@ -9,7 +9,7 @@ use core::str;
 #[cfg(feature = "std")]
 use std::io;
 
-#[cfg(all(feature = "alloc", not(feature = "std")))]
+#[cfg(feature = "alloc")]
 use crate::alloc::vec::Vec;
 use crate::error::{InvalidCharError, OddLengthStringError};
 use crate::{Case, Table};
@@ -72,7 +72,7 @@ impl<'a> HexToBytesIter<HexDigitsIter<'a>> {
     ///
     /// This is equivalent to the combinator chain `iter().map().collect()` but was found by
     /// benchmarking to be faster.
-    #[cfg(any(test, feature = "std", feature = "alloc"))]
+    #[cfg(feature = "alloc")]
     pub(crate) fn drain_to_vec(self) -> Result<Vec<u8>, InvalidCharError> {
         let len = self.len();
         let mut ret = Vec::with_capacity(len);
@@ -350,6 +350,9 @@ where
 
 #[cfg(test)]
 mod tests {
+    #[cfg(feature = "alloc")]
+    use alloc::string::String;
+
     use super::*;
 
     #[test]
@@ -506,6 +509,7 @@ mod tests {
         );
     }
 
+    #[cfg(feature = "alloc")]
     #[test]
     fn hex_to_bytes_vec_drain() {
         let hex = "deadbeef";
@@ -520,6 +524,7 @@ mod tests {
         assert!(got.is_empty());
     }
 
+    #[cfg(feature = "alloc")]
     #[test]
     fn hex_to_bytes_vec_drain_first_char_error() {
         let hex = "geadbeef";
@@ -527,6 +532,7 @@ mod tests {
         assert_eq!(iter.drain_to_vec().unwrap_err(), InvalidCharError { invalid: b'g', pos: 0 });
     }
 
+    #[cfg(feature = "alloc")]
     #[test]
     fn hex_to_bytes_vec_drain_middle_char_error() {
         let hex = "deadgeef";
@@ -534,6 +540,7 @@ mod tests {
         assert_eq!(iter.drain_to_vec().unwrap_err(), InvalidCharError { invalid: b'g', pos: 4 });
     }
 
+    #[cfg(feature = "alloc")]
     #[test]
     fn hex_to_bytes_vec_drain_end_char_error() {
         let hex = "deadbeeg";
@@ -569,6 +576,7 @@ mod tests {
         }
     }
 
+    #[cfg(feature = "alloc")]
     #[test]
     fn roundtrip_forward() {
         let lower_want = "deadbeefcafebabe";
@@ -581,6 +589,7 @@ mod tests {
         assert_eq!(upper_got, upper_want);
     }
 
+    #[cfg(feature = "alloc")]
     #[test]
     fn roundtrip_backward() {
         let lower_want = "deadbeefcafebabe";
