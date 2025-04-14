@@ -1,3 +1,11 @@
+# 1.0.0-rc.0 - 2025-03-25
+
+- Add two crate level decoding functions (for `Vec` and const generic arrays)
+- Rename the error types to convey purpose rather than type they are decoding
+- Add `newer-rust-version` feature to enable `core::error::Error`
+- Remove everything except the decoding functions and associated error types, so that types can be stabilized quickly
+- Prepare the crate for stabilization!!!
+
 # 0.3.0 - 2024-09-18
 
 - Re-implement `HexWriter` [#113](https://github.com/rust-bitcoin/hex-conservative/pull/113)
