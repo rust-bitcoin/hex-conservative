@@ -113,7 +113,7 @@ pub(crate) use table::Table;
 pub use self::{
     display::DisplayHex,
     error::{
-        DecodeFixedLengthBytesError, DecodeDynSizedBytesError, InvalidCharError, InvalidLengthError,
+        DecodeFixedLengthBytesError, DecodeVariableLengthBytesError, InvalidCharError, InvalidLengthError,
         OddLengthStringError,
     },
     iter::{BytesToHexIter, HexToBytesIter, HexSliceToBytesIter},
@@ -130,7 +130,7 @@ pub use self::{
 ///
 /// Returns an error if `hex` contains invalid characters or doesn't have even length.
 #[cfg(feature = "alloc")]
-pub fn decode_to_vec(hex: &str) -> Result<Vec<u8>, DecodeDynSizedBytesError> {
+pub fn decode_to_vec(hex: &str) -> Result<Vec<u8>, DecodeVariableLengthBytesError> {
     Ok(HexToBytesIter::new(hex)?.drain_to_vec()?)
 }
 

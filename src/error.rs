@@ -73,14 +73,14 @@ pub(crate) use write_err;
 /// This error differs from [`DecodeFixedLengthBytesError`] in that the number of bytes is only known
 /// at run time - e.g. when decoding `Vec<u8>`.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum DecodeDynSizedBytesError {
+pub enum DecodeVariableLengthBytesError {
     /// Non-hexadecimal character.
     InvalidChar(InvalidCharError),
     /// Purported hex string had odd (not even) length.
     OddLengthString(OddLengthStringError),
 }
 
-impl DecodeDynSizedBytesError {
+impl DecodeVariableLengthBytesError {
     /// Adds `by_bytes` to all character positions stored inside.
     ///
     /// If you're parsing a larger string that consists of multiple hex sub-strings and want to
@@ -97,7 +97,7 @@ impl DecodeDynSizedBytesError {
     #[must_use]
     #[inline]
     pub fn offset(self, by_bytes: usize) -> Self {
-        use DecodeDynSizedBytesError as E;
+        use DecodeVariableLengthBytesError as E;
 
         match self {
             E::InvalidChar(e) => E::InvalidChar(e.offset(by_bytes)),
@@ -106,15 +106,15 @@ impl DecodeDynSizedBytesError {
     }
 }
 
-impl From<Infallible> for DecodeDynSizedBytesError {
+impl From<Infallible> for DecodeVariableLengthBytesError {
     #[inline]
     fn from(never: Infallible) -> Self { match never {} }
 }
 
-impl fmt::Display for DecodeDynSizedBytesError {
+impl fmt::Display for DecodeVariableLengthBytesError {
     #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use DecodeDynSizedBytesError as E;
+        use DecodeVariableLengthBytesError as E;
 
         match *self {
             E::InvalidChar(ref e) => write_err!(f, "failed to decode hex"; e),
@@ -124,10 +124,10 @@ impl fmt::Display for DecodeDynSizedBytesError {
 }
 
 if_std_error! {{
-    impl StdError for DecodeDynSizedBytesError {
+    impl StdError for DecodeVariableLengthBytesError {
         #[inline]
         fn source(&self) -> Option<&(dyn StdError + 'static)> {
-            use DecodeDynSizedBytesError as E;
+            use DecodeVariableLengthBytesError as E;
 
             match *self {
                 E::InvalidChar(ref e) => Some(e),
@@ -137,12 +137,12 @@ if_std_error! {{
     }
 }}
 
-impl From<InvalidCharError> for DecodeDynSizedBytesError {
+impl From<InvalidCharError> for DecodeVariableLengthBytesError {
     #[inline]
     fn from(e: InvalidCharError) -> Self { Self::InvalidChar(e) }
 }
 
-impl From<OddLengthStringError> for DecodeDynSizedBytesError {
+impl From<OddLengthStringError> for DecodeVariableLengthBytesError {
     #[inline]
     fn from(e: OddLengthStringError) -> Self { Self::OddLengthString(e) }
 }
@@ -169,7 +169,7 @@ impl InvalidCharError {
 
     /// Adds `by_bytes` to all character positions stored inside.
     ///
-    /// **Important**: if you have `DecodeDynSizedBytesError` or `DecodeFixedLengthBytesError` you
+    /// **Important**: if you have `DecodeVariableLengthBytesError` or `DecodeFixedLengthBytesError` you
     /// should call the method *on them* - do not match them and manually call this method. Doing
     /// so may lead to broken behavior in the future.
     ///
@@ -280,7 +280,7 @@ if_std_error! {{
 
 /// Error returned when hex decoding bytes whose length is known at compile time.
 ///
-/// This error differs from [`DecodeDynSizedBytesError`] in that the number of bytes is known at
+/// This error differs from [`DecodeVariableLengthBytesError`] in that the number of bytes is known at
 /// compile time - e.g. when decoding to an array of bytes.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DecodeFixedLengthBytesError {
@@ -421,7 +421,7 @@ mod tests {
     fn invalid_char_error() {
         let result = <Vec<u8> as FromHex>::from_hex("12G4");
         let error = result.unwrap_err();
-        if let DecodeDynSizedBytesError::InvalidChar(e) = error {
+        if let DecodeVariableLengthBytesError::InvalidChar(e) = error {
             assert!(!format!("{}", e).is_empty());
             assert_eq!(e.invalid_char(), b'G');
             assert_eq!(e.pos(), 2);
@@ -437,7 +437,7 @@ mod tests {
         let error = result.unwrap_err();
         assert!(!format!("{}", error).is_empty());
         check_source(&error);
-        if let DecodeDynSizedBytesError::OddLengthString(e) = error {
+        if let DecodeVariableLengthBytesError::OddLengthString(e) = error {
             assert!(!format!("{}", e).is_empty());
             assert_eq!(e.length(), 3);
         } else {
@@ -462,7 +462,8 @@ mod tests {
 
     #[test]
     fn to_bytes_error() {
-        let error = DecodeDynSizedBytesError::OddLengthString(OddLengthStringError { len: 7 });
+        let error =
+            DecodeVariableLengthBytesError::OddLengthString(OddLengthStringError { len: 7 });
         assert!(!format!("{}", error).is_empty());
         check_source(&error);
     }
