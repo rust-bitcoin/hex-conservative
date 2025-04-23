@@ -113,7 +113,7 @@ pub(crate) use table::Table;
 pub use self::{
     display::DisplayHex,
     error::{
-        DecodeFixedSizedBytesError, DecodeDynSizedBytesError, InvalidCharError, InvalidLengthError,
+        DecodeFixedLengthBytesError, DecodeDynSizedBytesError, InvalidCharError, InvalidLengthError,
         OddLengthStringError,
     },
     iter::{BytesToHexIter, HexToBytesIter, HexSliceToBytesIter},
@@ -143,7 +143,7 @@ pub fn decode_to_vec(hex: &str) -> Result<Vec<u8>, DecodeDynSizedBytesError> {
 ///
 /// Returns an error if `hex` contains invalid characters or has incorrect length. (Should be
 /// `N * 2`.)
-pub fn decode_to_array<const N: usize>(hex: &str) -> Result<[u8; N], DecodeFixedSizedBytesError> {
+pub fn decode_to_array<const N: usize>(hex: &str) -> Result<[u8; N], DecodeFixedLengthBytesError> {
     if hex.len() == N * 2 {
         let mut ret = [0u8; N];
         // checked above

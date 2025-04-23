@@ -9,7 +9,7 @@ use std::fmt;
 use std::str::FromStr;
 
 use hex_conservative::{
-    fmt_hex_exact, Case, DecodeFixedSizedBytesError, DisplayHex as _, FromHex as _,
+    fmt_hex_exact, Case, DecodeFixedLengthBytesError, DisplayHex as _, FromHex as _,
 };
 
 fn main() {
@@ -48,7 +48,7 @@ impl fmt::Display for Hexy {
 }
 
 impl FromStr for Hexy {
-    type Err = DecodeFixedSizedBytesError;
+    type Err = DecodeFixedLengthBytesError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // Errors if the input is invalid

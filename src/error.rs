@@ -70,7 +70,7 @@ pub(crate) use write_err;
 /// This represents the first error encountered during decoding, however we may add other remaining
 /// ones in the future.
 ///
-/// This error differs from [`DecodeFixedSizedBytesError`] in that the number of bytes is only known
+/// This error differs from [`DecodeFixedLengthBytesError`] in that the number of bytes is only known
 /// at run time - e.g. when decoding `Vec<u8>`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DecodeDynSizedBytesError {
@@ -169,7 +169,7 @@ impl InvalidCharError {
 
     /// Adds `by_bytes` to all character positions stored inside.
     ///
-    /// **Important**: if you have `DecodeDynSizedBytesError` or `DecodeFixedSizedBytesError` you
+    /// **Important**: if you have `DecodeDynSizedBytesError` or `DecodeFixedLengthBytesError` you
     /// should call the method *on them* - do not match them and manually call this method. Doing
     /// so may lead to broken behavior in the future.
     ///
@@ -283,14 +283,14 @@ if_std_error! {{
 /// This error differs from [`DecodeDynSizedBytesError`] in that the number of bytes is known at
 /// compile time - e.g. when decoding to an array of bytes.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum DecodeFixedSizedBytesError {
+pub enum DecodeFixedLengthBytesError {
     /// Non-hexadecimal character.
     InvalidChar(InvalidCharError),
     /// Tried to parse fixed-length hash from a string with the wrong length.
     InvalidLength(InvalidLengthError),
 }
 
-impl DecodeFixedSizedBytesError {
+impl DecodeFixedLengthBytesError {
     /// Adds `by_bytes` to all character positions stored inside.
     ///
     /// If you're parsing a larger string that consists of multiple hex sub-strings and want to
@@ -307,7 +307,7 @@ impl DecodeFixedSizedBytesError {
     #[must_use]
     #[inline]
     pub fn offset(self, by_bytes: usize) -> Self {
-        use DecodeFixedSizedBytesError as E;
+        use DecodeFixedLengthBytesError as E;
 
         match self {
             E::InvalidChar(e) => E::InvalidChar(e.offset(by_bytes)),
@@ -316,15 +316,15 @@ impl DecodeFixedSizedBytesError {
     }
 }
 
-impl From<Infallible> for DecodeFixedSizedBytesError {
+impl From<Infallible> for DecodeFixedLengthBytesError {
     #[inline]
     fn from(never: Infallible) -> Self { match never {} }
 }
 
-impl fmt::Display for DecodeFixedSizedBytesError {
+impl fmt::Display for DecodeFixedLengthBytesError {
     #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use DecodeFixedSizedBytesError as E;
+        use DecodeFixedLengthBytesError as E;
 
         match *self {
             E::InvalidChar(ref e) => write_err!(f, "failed to parse hex"; e),
@@ -334,10 +334,10 @@ impl fmt::Display for DecodeFixedSizedBytesError {
 }
 
 if_std_error! {{
-    impl StdError for DecodeFixedSizedBytesError {
+    impl StdError for DecodeFixedLengthBytesError {
         #[inline]
         fn source(&self) -> Option<&(dyn StdError + 'static)> {
-            use DecodeFixedSizedBytesError as E;
+            use DecodeFixedLengthBytesError as E;
 
             match *self {
                 E::InvalidChar(ref e) => Some(e),
@@ -347,12 +347,12 @@ if_std_error! {{
     }
 }}
 
-impl From<InvalidCharError> for DecodeFixedSizedBytesError {
+impl From<InvalidCharError> for DecodeFixedLengthBytesError {
     #[inline]
     fn from(e: InvalidCharError) -> Self { Self::InvalidChar(e) }
 }
 
-impl From<InvalidLengthError> for DecodeFixedSizedBytesError {
+impl From<InvalidLengthError> for DecodeFixedLengthBytesError {
     #[inline]
     fn from(e: InvalidLengthError) -> Self { Self::InvalidLength(e) }
 }
@@ -451,7 +451,7 @@ mod tests {
         let error = result.unwrap_err();
         assert!(!format!("{}", error).is_empty());
         check_source(&error);
-        if let DecodeFixedSizedBytesError::InvalidLength(e) = error {
+        if let DecodeFixedLengthBytesError::InvalidLength(e) = error {
             assert!(!format!("{}", e).is_empty());
             assert_eq!(e.expected_length(), 8);
             assert_eq!(e.invalid_length(), 3);
@@ -469,7 +469,7 @@ mod tests {
 
     #[test]
     fn to_array_error() {
-        let error = DecodeFixedSizedBytesError::InvalidLength(InvalidLengthError {
+        let error = DecodeFixedLengthBytesError::InvalidLength(InvalidLengthError {
             expected: 8,
             invalid: 7,
         });
