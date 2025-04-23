@@ -7,7 +7,7 @@
 use core::fmt;
 use core::str::FromStr;
 
-use hex_conservative::{DecodeFixedSizedBytesError, DisplayHex as _, FromHex as _};
+use hex_conservative::{DecodeFixedLengthBytesError, DisplayHex as _, FromHex as _};
 
 fn main() {
     let hex = "deadbeefcafebabedeadbeefcafebabedeadbeefcafebabedeadbeefcafebabe";
@@ -72,6 +72,6 @@ impl fmt::UpperHex for Wrap {
 }
 
 impl FromStr for Wrap {
-    type Err = DecodeFixedSizedBytesError;
+    type Err = DecodeFixedLengthBytesError;
     fn from_str(s: &str) -> Result<Self, Self::Err> { Ok(Self(<[u8; 32]>::from_hex(s)?)) }
 }

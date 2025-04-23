@@ -17,8 +17,8 @@ use core::{fmt, slice};
 use hex_conservative::serde;
 // These imports test "typical" usage by user code.
 use hex_conservative::{
-    buf_encoder, display, BytesToHexIter, Case, DecodeDynSizedBytesError,
-    DecodeFixedSizedBytesError, DisplayHex as _, InvalidCharError, InvalidLengthError,
+    buf_encoder, display, BytesToHexIter, Case, DecodeFixedLengthBytesError,
+    DecodeVariableLengthBytesError, DisplayHex as _, InvalidCharError, InvalidLengthError,
     OddLengthStringError,
 };
 
@@ -87,8 +87,8 @@ impl Structs<'_, slice::Iter<'_, u8>, String> {
 // These derives are the policy of `rust-bitcoin` not Rust API guidelines.
 #[derive(Debug, Clone, PartialEq, Eq)] // All public types implement Debug (C-DEBUG).
 struct Errors {
-    c: DecodeFixedSizedBytesError,
-    d: DecodeDynSizedBytesError,
+    c: DecodeFixedLengthBytesError,
+    d: DecodeVariableLengthBytesError,
     e: InvalidCharError,
     f: InvalidLengthError,
     g: OddLengthStringError,
