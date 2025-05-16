@@ -5,10 +5,10 @@
 # shellcheck disable=SC2034
 
 # Test all these features with "std" enabled.
-FEATURES_WITH_STD=""
+FEATURES_WITH_STD="newer-rust-version"
 
 # Test all these features without "std" or "alloc" enabled.
-FEATURES_WITHOUT_STD="alloc"
+FEATURES_WITHOUT_STD="alloc newer-rust-version"
 
 # Run these examples.
 EXAMPLES=""
