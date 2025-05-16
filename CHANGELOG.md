@@ -45,6 +45,10 @@ There are a bunch of breaking changes in this release, including:
 - Hide error internal [#44](https://github.com/rust-bitcoin/hex-conservative/pull/44)
 - Return specific error from `HexToByesIter::new` [#62](https://github.com/rust-bitcoin/hex-conservative/pull/62)
 
+# 0.1.2 - 2024-05-14
+
+- Fix bug in output of `InvalidError` [#88](https://github.com/rust-bitcoin/hex-conservative/pull/88).
+
 # 0.1.1 - 2023-07-19
 
 - [Add `test_hex_unwrap`](https://github.com/rust-bitcoin/hex-conservative/pull/24) hex parsing macro for test usage.
