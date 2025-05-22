@@ -11,8 +11,17 @@ The minimal/recent lock files are handled by CI (`rust.yml`).
 Run from rust.yml unless stated otherwise. Unfortunately we are now exceeding the 20 job target.
 (Prepare is quick and must be run first anyway.)
 
+0.  `Prepare`
 1.  `Stable - minimal`
 2.  `Stable - recent`
-3.  `MSRV - minimal`
-4.  `MSRV - recent`
-5.  `Docs`
+3.  `Nightly - minimal`
+4.  `Nightly - recent`
+5.  `MSRV - minimal`
+6.  `MSRV - recent`
+7.  `Lint`
+8.  `Docs`
+9.  `Docsrs`
+10. `Arch32bit`
+11. `Cross`
+12. `Format`
+13. `Compile tests`

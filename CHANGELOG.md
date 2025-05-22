@@ -1,3 +1,13 @@
+# 1.0.0 release candidate 1 -- 2025-05-16
+
+- Exports `decode_to_array`, `decode_to_vec`, and all error types.
+
+The goal of this release is to enable library authors to use hex-conservative,
+exposing error types from this library in their own APIs, and not need to worry
+that they will face API breakage because of this.
+
+Future minor releases will add encoding support and a more expansive set of traits.
+
 # 0.3.0 - 2024-09-18
 
 - Re-implement `HexWriter` [#113](https://github.com/rust-bitcoin/hex-conservative/pull/113)
@@ -44,6 +54,10 @@ There are a bunch of breaking changes in this release, including:
 - Update the derives on error types [#31](https://github.com/rust-bitcoin/hex-conservative/pull/31)
 - Hide error internal [#44](https://github.com/rust-bitcoin/hex-conservative/pull/44)
 - Return specific error from `HexToByesIter::new` [#62](https://github.com/rust-bitcoin/hex-conservative/pull/62)
+
+# 0.1.2 - 2024-05-14
+
+- Fix bug in output of `InvalidError` [#88](https://github.com/rust-bitcoin/hex-conservative/pull/88).
 
 # 0.1.1 - 2023-07-19
 
