@@ -1,3 +1,7 @@
+# 1.0.0 - 2025-06-12
+
+No changes from rc-1.
+
 # 1.0.0 release candidate 1 -- 2025-05-16
 
 - Exports `decode_to_array`, `decode_to_vec`, and all error types.
