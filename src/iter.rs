@@ -183,7 +183,8 @@ where
                     *dst = src;
                     bytes_read += 1;
                 }
-                _ => break,
+                Some(Err(e)) => return Err(io::Error::new(io::ErrorKind::InvalidData, e)),
+                None => break,
             }
         }
         Ok(bytes_read)
@@ -631,5 +632,11 @@ mod tests {
         let bytes_read = iter.read(&mut buf).unwrap();
         assert_eq!(bytes_read, 4);
         assert_eq!(buf[..4], [0xde, 0xad, 0xbe, 0xef]);
+
+        let hex = "deadbeefXX";
+        let mut iter = HexToBytesIter::new(hex).unwrap();
+        let mut buf = [0u8; 6];
+        let err = iter.read(&mut buf).unwrap_err();
+        assert_eq!(err.kind(), io::ErrorKind::InvalidData);
     }
 }
