@@ -65,6 +65,8 @@ mod iter;
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
 
+use crate::iter::HexToBytesIter;
+
 #[rustfmt::skip]                // Keep public re-exports separate.
 #[doc(inline)]
 pub use self::{
@@ -72,7 +74,6 @@ pub use self::{
         DecodeFixedLengthBytesError, DecodeVariableLengthBytesError, InvalidCharError, InvalidLengthError,
         OddLengthStringError,
     },
-    iter::HexToBytesIter,
 };
 
 /// Decodes a hex string with variable length.
