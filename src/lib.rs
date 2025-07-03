@@ -33,8 +33,8 @@
 //! version is at least two years old and also included in Debian stable (1.63 is in Debian 12 at
 //! the moment).
 //!
-//! Note though that the dependencies may have looser policy. This is not considered breaking/wrong
-//! - you would just need to pin them in `Cargo.lock` (not `.toml`).
+//! Note though that the dependencies may have looser policy. This is not considered
+//! breaking/wrong - you would just need to pin them in `Cargo.lock` (not `.toml`).
 
 #![no_std]
 // Experimental features we need.
