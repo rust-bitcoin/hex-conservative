@@ -20,7 +20,7 @@ const BYTES: [u8; 8] = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07];
 const CAP: usize = 16; // BYTES.len() * 2
 
 /// A struct that includes all public error types.
-// These derives are the policy of `rust-bitcoin` not Rust API guidelines.
+// These derives are the policy of `hex-conservative` not Rust API guidelines.
 #[derive(Debug, Clone, PartialEq, Eq)] // All public types implement Debug (C-DEBUG).
 struct Errors {
     c: DecodeFixedLengthBytesError,
