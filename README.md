@@ -2,6 +2,11 @@
 
 General purpose hex encoding/decoding library with a conservative MSRV and dependency policy.
 
+**You're currently looking at the stable crate which has advanced features removed** to make
+stabilization quicker and thus allowing downstream crates to stabilize quicker too. To get the
+full feature set check the lower (0.x.y) versions. Read Stabilization strategy section for more
+information.
+
 ## Stabilization strategy
 
 Because downstream crates may need to return hex errors in their APIs and they need to be
