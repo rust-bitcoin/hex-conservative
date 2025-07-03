@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: CC0-1.0
 
-//! Error code for the `hex-conservative` crate.
+//! The error types.
+//!
+//! These types are returned when hex decoding fails. The high-level ones are
+//! [`DecodeFixedLengthBytesError`] and [`DecodeVariableLengthBytesError`] which represent all
+//! possible ways in which hex decoding may fail in the two most common decoding scenarios.
 
 use core::convert::Infallible;
 use core::fmt;
