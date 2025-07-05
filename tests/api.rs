@@ -9,10 +9,8 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
 
-use hex_conservative::{
-    DecodeFixedLengthBytesError, DecodeVariableLengthBytesError, InvalidCharError,
-    InvalidLengthError, OddLengthStringError,
-};
+use hex_conservative::error::{InvalidCharError, InvalidLengthError, OddLengthStringError};
+use hex_conservative::{DecodeFixedLengthBytesError, DecodeVariableLengthBytesError};
 
 /// A struct that includes all public error types.
 // These derives are the policy of `hex-conservative` not Rust API guidelines.
