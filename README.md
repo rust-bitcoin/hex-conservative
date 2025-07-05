@@ -2,6 +2,11 @@
 
 General purpose hex encoding/decoding library with a conservative MSRV and dependency policy.
 
+**You're currently looking at the stable crate which has advanced features removed** to make
+stabilization quicker and thus allowing downstream crates to stabilize quicker too. To get the
+full feature set check the lower (0.x.y) versions. Read Stabilization strategy section for more
+information.
+
 ## Stabilization strategy
 
 Because downstream crates may need to return hex errors in their APIs and they need to be
@@ -39,15 +44,3 @@ included in Debian stable (1.63 is in Debian 12 at the moment).
 
 Note though that the dependencies may have looser policy. This is not considered
 breaking/wrong - you would just need to pin them in `Cargo.lock` (not `.toml`).
-
-
-## Githooks
-
-To assist devs in catching errors _before_ running CI we provide some githooks. If you do not
-already have locally configured githooks you can use the ones in this repository by running, in the
-root directory of the repository:
-```
-git config --local core.hooksPath githooks/
-```
-
-Alternatively add symlinks in your `.git/hooks` directory to any of the githooks we provide.
