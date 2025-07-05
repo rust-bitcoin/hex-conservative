@@ -1,3 +1,12 @@
+# 1.0.0 - 2025-0?-??
+
+- Various documentation improvements
+- A few test improvements
+
+# 1.0.0 release candidate 2 -- 2025-06-27
+
+- Removed iterator API that got published by accident
+
 # 1.0.0 release candidate 1 -- 2025-05-16
 
 - Exports `decode_to_array`, `decode_to_vec`, and all error types.

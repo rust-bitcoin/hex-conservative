@@ -71,8 +71,7 @@ use crate::iter::HexToBytesIter;
 #[doc(inline)]
 pub use self::{
     error::{
-        DecodeFixedLengthBytesError, DecodeVariableLengthBytesError, InvalidCharError, InvalidLengthError,
-        OddLengthStringError,
+        DecodeFixedLengthBytesError, DecodeVariableLengthBytesError,
     },
 };
 
@@ -106,7 +105,7 @@ pub fn decode_to_array<const N: usize>(hex: &str) -> Result<[u8; N], DecodeFixed
         HexToBytesIter::new_unchecked(hex).drain_to_slice(&mut ret)?;
         Ok(ret)
     } else {
-        Err(InvalidLengthError { invalid: hex.len(), expected: 2 * N }.into())
+        Err(error::InvalidLengthError { invalid: hex.len(), expected: 2 * N }.into())
     }
 }
 
