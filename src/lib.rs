@@ -63,6 +63,8 @@ pub mod error;
 mod iter;
 
 #[cfg(feature = "alloc")]
+use alloc::string::String;
+#[cfg(feature = "alloc")]
 use alloc::vec::Vec;
 
 use crate::iter::HexToBytesIter;
@@ -107,6 +109,44 @@ pub fn decode_to_array<const N: usize>(hex: &str) -> Result<[u8; N], DecodeFixed
     } else {
         Err(error::InvalidLengthError { invalid: hex.len(), expected: 2 * N }.into())
     }
+}
+
+/// Encodes `data` as hex string using lowercase characters.
+///
+/// Lowercase characters are used (e.g. `f9b4ca`). The resulting string's length is always even,
+/// each byte in `data` is always encoded using two hex digits. Thus, the resulting string contains
+/// exactly twice as many bytes as the input data.
+///
+/// # Example
+///
+/// ```
+/// use hex_conservative as hex;
+/// assert_eq!(hex::encode_lower("Hello world!"), "48656c6c6f20776f726c6421");
+/// assert_eq!(hex::encode_lower(vec![1, 2, 3, 15, 16]), "0102030f10");
+/// ```
+#[must_use]
+#[cfg(feature = "alloc")]
+pub fn encode_lower<T: AsRef<[u8]>>(data: T) -> String {
+    use hex_unstable::prelude::DisplayHex as _;
+    data.as_ref().to_lower_hex_string()
+}
+
+/// Encodes `data` as hex string using uppercase characters.
+///
+/// Apart from the characters' casing, this works exactly like `encode_lower()`.
+///
+/// # Example
+///
+/// ```
+/// use hex_conservative as hex;
+/// assert_eq!(hex::encode_upper("Hello world!"), "48656C6C6F20776F726C6421");
+/// assert_eq!(hex::encode_upper(vec![1, 2, 3, 15, 16]), "0102030F10");
+/// ```
+#[must_use]
+#[cfg(feature = "alloc")]
+pub fn encode_upper<T: AsRef<[u8]>>(data: T) -> String {
+    use hex_unstable::prelude::DisplayHex as _;
+    data.as_ref().to_upper_hex_string()
 }
 
 #[cfg(test)]
