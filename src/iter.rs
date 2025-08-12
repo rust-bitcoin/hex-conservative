@@ -437,7 +437,7 @@ mod tests {
         assert_eq!(got, want);
 
         let hex = "";
-        let want = [];
+        let want: [u8; 0] = [];
         let iter = HexToBytesIter::new_unchecked(hex);
         let mut got = [];
         iter.drain_to_slice(&mut got).unwrap();

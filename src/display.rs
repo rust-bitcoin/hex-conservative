@@ -1028,8 +1028,20 @@ mod tests {
             }
 
             test_hex_writer!(0, Lower, &[], Result::Ok(0), "");
-            test_hex_writer!(0, Lower, &[0xab, 0xcd], Result::Err(ErrorKind::Other.into()), "");
-            test_hex_writer!(1, Lower, &[0xab, 0xcd], Result::Err(ErrorKind::Other.into()), "");
+            test_hex_writer!(
+                0,
+                Lower,
+                &[0xab, 0xcd],
+                Result::<usize>::Err(ErrorKind::Other.into()),
+                ""
+            );
+            test_hex_writer!(
+                1,
+                Lower,
+                &[0xab, 0xcd],
+                Result::<usize>::Err(ErrorKind::Other.into()),
+                ""
+            );
             test_hex_writer!(2, Lower, &[0xab, 0xcd], Result::Ok(1), "ab");
             test_hex_writer!(3, Lower, &[0xab, 0xcd], Result::Ok(1), "ab");
             test_hex_writer!(4, Lower, &[0xab, 0xcd], Result::Ok(2), "abcd");
