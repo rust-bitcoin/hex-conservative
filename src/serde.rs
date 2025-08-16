@@ -156,8 +156,31 @@ where
 
     // Don't do anything special when not human readable.
     if d.is_human_readable() {
-        d.deserialize_map(HexVisitor(PhantomData))
+        d.deserialize_str(HexVisitor(PhantomData))
     } else {
         serde::Deserialize::deserialize(d)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    #[test]
+    fn serialize_lower_roundtrip() -> Result<(), serde_json::Error> {
+        let bytes: [u8; 4] = [0xde, 0xad, 0xbe, 0xef];
+        let serialized: serde_json::Value =
+            super::serialize_lower(&bytes, serde_json::value::Serializer)?;
+        let deserialized: [u8; 4] = super::deserialize(serialized)?;
+        assert_eq!(bytes, deserialized);
+        Ok(())
+    }
+
+    #[test]
+    fn serialize_upper_roundtrip() -> Result<(), serde_json::Error> {
+        let bytes: [u8; 4] = [0xde, 0xad, 0xbe, 0xef];
+        let serialized: serde_json::Value =
+            super::serialize_upper(&bytes, serde_json::value::Serializer)?;
+        let deserialized: [u8; 4] = super::deserialize(serialized)?;
+        assert_eq!(bytes, deserialized);
+        Ok(())
     }
 }
