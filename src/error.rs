@@ -63,7 +63,6 @@ macro_rules! write_err {
         }
     }
 }
-pub(crate) use write_err;
 
 /// Error returned when hex decoding a hex string with variable length.
 ///
