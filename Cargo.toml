@@ -176,3 +176,6 @@ used_underscore_items = "warn"
 verbose_bit_mask = "warn"
 wildcard_imports = "warn"
 zero_sized_map_values = "warn"
+
+[lints.rust]
+unexpected_cfgs = { level = "deny", check-cfg = ['cfg(rust_version, values(">= 1.81.0"))'] }
