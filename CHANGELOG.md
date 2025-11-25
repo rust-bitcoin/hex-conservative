@@ -1,3 +1,7 @@
+# 0.2.1 - 2025-11-25
+
+* Remove `doc_auto_cfg` attribute.
+
 # 0.2.0 - 2024-02-27
 
 ### Breaking changes
