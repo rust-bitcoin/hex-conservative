@@ -1,3 +1,7 @@
+# Unreleased
+
+- Add `hex!` macro for const hex literal parsing.
+
 # 0.3.0 - 2024-09-18
 
 - Re-implement `HexWriter` [#113](https://github.com/rust-bitcoin/hex-conservative/pull/113)

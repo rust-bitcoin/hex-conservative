@@ -4,7 +4,16 @@
 //!
 //! General purpose hex encoding/decoding library with a conservative MSRV and dependency policy.
 //!
-//! ## Basic Usage
+//! ## Const hex literals
+//!
+//! ```
+//! use hex_conservative::hex;
+//!
+//! const GENESIS: [u8; 32] = hex!("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
+//! ```
+//!
+//! ## Runtime hex parsing
+//!
 //! ```
 //! # #[cfg(feature = "alloc")] {
 //! // In your manifest use the `package` key to improve import ergonomics.
@@ -95,6 +104,38 @@ mod iter;
 pub mod parse;
 #[cfg(feature = "serde")]
 pub mod serde;
+
+/// Parses hex strings in const contexts.
+///
+/// Returns `[u8; N]` arrays. The string must have even length.
+#[macro_export]
+macro_rules! hex {
+    ($hex:expr) => {{
+        const _: () = assert!($hex.len() % 2 == 0, "hex string must have even length");
+
+        const fn decode_digit(digit: u8) -> u8 {
+            match digit {
+                b'0'..=b'9' => digit - b'0',
+                b'a'..=b'f' => digit - b'a' + 10,
+                b'A'..=b'F' => digit - b'A' + 10,
+                _ => panic!("invalid hex digit"),
+            }
+        }
+
+        let mut output = [0u8; $hex.len() / 2];
+        let bytes = $hex.as_bytes();
+
+        let mut i = 0;
+        while i < output.len() {
+            let high = decode_digit(bytes[i * 2]);
+            let low = decode_digit(bytes[i * 2 + 1]);
+            output[i] = (high << 4) | low;
+            i += 1;
+        }
+
+        output
+    }};
+}
 
 /// Re-exports of the common crate traits.
 pub mod prelude {
@@ -240,12 +281,29 @@ macro_rules! test_hex_unwrap (($hex:expr) => (<Vec<u8> as $crate::FromHex>::from
 mod tests {
     use alloc::vec::Vec;
 
-    use crate::test_hex_unwrap as hex;
-
     #[test]
     fn parse_hex_into_vector() {
-        let got = hex!("deadbeef");
+        let got = crate::test_hex_unwrap!("deadbeef");
         let want = vec![0xde, 0xad, 0xbe, 0xef];
         assert_eq!(got, want);
+    }
+
+    #[test]
+    fn hex_macro() {
+        let data = hex!("deadbeef");
+        assert_eq!(data, [0xde, 0xad, 0xbe, 0xef]);
+    }
+
+    #[test]
+    fn hex_macro_case_insensitive() {
+        assert_eq!(hex!("DEADBEEF"), hex!("deadbeef"));
+    }
+
+    #[test]
+    fn hex_macro_const_context() {
+        const HASH: [u8; 32] =
+            hex!("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
+        assert_eq!(HASH[0], 0x00);
+        assert_eq!(HASH[31], 0x6f);
     }
 }
