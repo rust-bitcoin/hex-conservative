@@ -16,7 +16,7 @@ checksum = "5edd69c67b2f8e0911629b7e6b8a34cb3956613cd7c6e6414966dee349c2db4f"
 
 [[package]]
 name = "hex-conservative"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "arrayvec",
  "serde",
