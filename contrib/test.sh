@@ -3,7 +3,7 @@
 set -ex
 
 FEATURES="std alloc core2 serde"
-MSRV="1\.48\.0"
+MSRV="1\.56\.0"
 
 cargo --version
 rustc --version

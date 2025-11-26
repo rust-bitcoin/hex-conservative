@@ -1,3 +1,7 @@
+# 0.2.2 - 2025-11-25
+
+- remove `doc_auto_cfg` from src/lib.rs due to breaking compiler change
+
 # 0.2.1 - 2024-05-17
 
 - Add a new `impl_fmt_traits` macro that can be used to implement `fmt::{LowerHex, UpperHex,
