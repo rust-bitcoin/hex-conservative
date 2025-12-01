@@ -1,3 +1,7 @@
+# 1.0.1 - 2025-12-02
+
+- Remove `doc_auto_cfg`
+
 # 1.0.0 - 2025-07-11
 
 - Removed niche reexports from root
