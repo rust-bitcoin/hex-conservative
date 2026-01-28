@@ -1,4 +1,4 @@
-# 0.3.2 - 2025-11-28
+# 0.3.2 - 2026-01-28
 
 - Add `hex!` macro for const hex literal parsing.
 
