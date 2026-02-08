@@ -1,3 +1,7 @@
+# 0.3.2 - 2026-01-28
+
+- Add `hex!` macro for const hex literal parsing.
+
 # 0.3.1 - 2025-11-24
 
 - Remove `doc_auto_cfg` because it breaks the docs builds on crates.io
