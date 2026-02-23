@@ -4,8 +4,6 @@
 
 use core::fmt;
 
-use crate::write_err;
-
 /// Formats error.
 ///
 /// If `std` feature is OFF appends error source (delimited by `: `). We do this because
