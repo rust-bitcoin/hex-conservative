@@ -95,7 +95,7 @@ where
 {
     /// Constructs a custom hex decoding iterator from another iterator.
     #[inline]
-    pub fn from_pairs(iter: I) -> Self { Self { original_len: iter.len(), iter } }
+    fn from_pairs(iter: I) -> Self { Self { original_len: iter.len(), iter } }
 }
 
 impl<I> Iterator for HexToBytesIter<I>
