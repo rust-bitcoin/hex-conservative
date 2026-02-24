@@ -29,8 +29,7 @@ impl<'a> HexToBytesIter<HexDigitsIter<'a>> {
     ///
     /// If the input string is of odd length.
     #[inline]
-    #[allow(dead_code)] // Remove this when making HexToBytesIter public.
-    pub(crate) fn new(s: &'a str) -> Result<Self, OddLengthStringError> {
+    pub fn new(s: &'a str) -> Result<Self, OddLengthStringError> {
         if s.len() % 2 != 0 {
             Err(OddLengthStringError { len: s.len() })
         } else {
@@ -95,7 +94,7 @@ where
 {
     /// Constructs a custom hex decoding iterator from another iterator.
     #[inline]
-    pub fn from_pairs(iter: I) -> Self { Self { original_len: iter.len(), iter } }
+    fn from_pairs(iter: I) -> Self { Self { original_len: iter.len(), iter } }
 }
 
 impl<I> Iterator for HexToBytesIter<I>
@@ -190,8 +189,7 @@ where
 /// An internal iterator returning hex digits from a string.
 ///
 /// Generally you shouldn't need to refer to this or bother with it and just use
-/// [`HexToBytesIter::new`] consuming the returned value and use `HexSliceToBytesIter` if you need
-/// to refer to the iterator in your types.
+/// [`HexToBytesIter::new`] consuming the returned value.
 #[derive(Debug)]
 pub struct HexDigitsIter<'a> {
     // Invariant: the length of the chunks is 2.
