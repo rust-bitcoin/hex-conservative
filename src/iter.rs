@@ -190,8 +190,7 @@ where
 /// An internal iterator returning hex digits from a string.
 ///
 /// Generally you shouldn't need to refer to this or bother with it and just use
-/// [`HexToBytesIter::new`] consuming the returned value and use `HexSliceToBytesIter` if you need
-/// to refer to the iterator in your types.
+/// [`HexToBytesIter::new`] consuming the returned value.
 #[derive(Debug)]
 pub struct HexDigitsIter<'a> {
     // Invariant: the length of the chunks is 2.
