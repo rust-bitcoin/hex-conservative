@@ -29,8 +29,7 @@ impl<'a> HexToBytesIter<HexDigitsIter<'a>> {
     ///
     /// If the input string is of odd length.
     #[inline]
-    #[allow(dead_code)] // Remove this when making HexToBytesIter public.
-    pub(crate) fn new(s: &'a str) -> Result<Self, OddLengthStringError> {
+    pub fn new(s: &'a str) -> Result<Self, OddLengthStringError> {
         if s.len() % 2 != 0 {
             Err(OddLengthStringError { len: s.len() })
         } else {
