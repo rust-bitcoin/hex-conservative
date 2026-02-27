@@ -105,38 +105,6 @@ pub mod parse;
 #[cfg(feature = "serde")]
 pub mod serde;
 
-/// Parses hex strings in const contexts.
-///
-/// Returns `[u8; N]` arrays. The string must have even length.
-#[macro_export]
-macro_rules! hex {
-    ($hex:expr) => {{
-        const _: () = assert!($hex.len() % 2 == 0, "hex string must have even length");
-
-        const fn decode_digit(digit: u8) -> u8 {
-            match digit {
-                b'0'..=b'9' => digit - b'0',
-                b'a'..=b'f' => digit - b'a' + 10,
-                b'A'..=b'F' => digit - b'A' + 10,
-                _ => panic!("invalid hex digit"),
-            }
-        }
-
-        let mut output = [0u8; $hex.len() / 2];
-        let bytes = $hex.as_bytes();
-
-        let mut i = 0;
-        while i < output.len() {
-            let high = decode_digit(bytes[i * 2]);
-            let low = decode_digit(bytes[i * 2 + 1]);
-            output[i] = (high << 4) | low;
-            i += 1;
-        }
-
-        output
-    }};
-}
-
 /// Re-exports of the common crate traits.
 pub mod prelude {
     #[doc(inline)]
@@ -192,6 +160,38 @@ pub fn decode_to_array<const N: usize>(hex: &str) -> Result<[u8; N], DecodeFixed
     } else {
         Err(InvalidLengthError { invalid: hex.len(), expected: 2 * N }.into())
     }
+}
+
+/// Parses hex strings in const contexts.
+///
+/// Returns `[u8; N]` arrays. The string must have even length.
+#[macro_export]
+macro_rules! hex {
+    ($hex:expr) => {{
+        const _: () = assert!($hex.len() % 2 == 0, "hex string must have even length");
+
+        const fn decode_digit(digit: u8) -> u8 {
+            match digit {
+                b'0'..=b'9' => digit - b'0',
+                b'a'..=b'f' => digit - b'a' + 10,
+                b'A'..=b'F' => digit - b'A' + 10,
+                _ => panic!("invalid hex digit"),
+            }
+        }
+
+        let mut output = [0u8; $hex.len() / 2];
+        let bytes = $hex.as_bytes();
+
+        let mut i = 0;
+        while i < output.len() {
+            let high = decode_digit(bytes[i * 2]);
+            let low = decode_digit(bytes[i * 2 + 1]);
+            output[i] = (high << 4) | low;
+            i += 1;
+        }
+
+        output
+    }};
 }
 
 /// Possible case of hex.
