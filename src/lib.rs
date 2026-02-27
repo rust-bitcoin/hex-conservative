@@ -268,26 +268,9 @@ mod table {
     }
 }
 
-/// Quick and dirty macro for parsing hex in tests.
-///
-/// For improved ergonomics import with: `use hex_conservative::test_hex_unwrap as hex;`
-#[macro_export]
-#[deprecated(since = "TBD", note = "use the one-liner `Vec::from_hex(hex).unwrap()` instead")]
-#[cfg(feature = "alloc")]
-macro_rules! test_hex_unwrap (($hex:expr) => (<Vec<u8> as $crate::FromHex>::from_hex($hex).unwrap()));
-
 #[cfg(test)]
 #[cfg(feature = "alloc")]
 mod tests {
-    use alloc::vec::Vec;
-
-    #[test]
-    fn parse_hex_into_vector() {
-        let got = crate::test_hex_unwrap!("deadbeef");
-        let want = vec![0xde, 0xad, 0xbe, 0xef];
-        assert_eq!(got, want);
-    }
-
     #[test]
     fn hex_macro() {
         let data = hex!("deadbeef");
