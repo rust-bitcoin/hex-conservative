@@ -1,11 +1,11 @@
-use hex::{DisplayHex, FromHex};
+use hex::DisplayHex;
 use honggfuzz::fuzz;
 
 const LEN: usize = 32; // Arbitrary amount of data.
 
 fn do_test(data: &[u8]) {
     if let Ok(s) = std::str::from_utf8(data) {
-        if let Ok(hexy) = <[u8; LEN]>::from_hex(s) {
+        if let Ok(hexy) = hex::decode_to_array::<LEN>(s) {
             let got = format!("{:x}", hexy.as_hex());
             assert_eq!(got, s.to_lowercase());
         }
