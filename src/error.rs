@@ -409,11 +409,10 @@ if_std_error! {{
 #[cfg(test)]
 #[cfg(feature = "std")]
 mod tests {
-    #[cfg(feature = "alloc")]
-    use alloc::vec::Vec;
-
     use super::*;
-    use crate::FromHex;
+    use crate::decode_to_array;
+    #[cfg(feature = "alloc")]
+    use crate::decode_to_vec;
 
     fn check_source<T: std::error::Error>(error: &T) {
         assert!(error.source().is_some());
@@ -422,7 +421,7 @@ mod tests {
     #[cfg(feature = "alloc")]
     #[test]
     fn invalid_char_error() {
-        let result = <Vec<u8> as FromHex>::from_hex("12G4");
+        let result = decode_to_vec("12G4");
         let error = result.unwrap_err();
         if let DecodeVariableLengthBytesError::InvalidChar(e) = error {
             assert!(!format!("{}", e).is_empty());
@@ -436,7 +435,7 @@ mod tests {
     #[cfg(feature = "alloc")]
     #[test]
     fn odd_length_string_error() {
-        let result = <Vec<u8> as FromHex>::from_hex("123");
+        let result = decode_to_vec("123");
         let error = result.unwrap_err();
         assert!(!format!("{}", error).is_empty());
         check_source(&error);
@@ -450,7 +449,7 @@ mod tests {
 
     #[test]
     fn invalid_length_error() {
-        let result = <[u8; 4] as FromHex>::from_hex("123");
+        let result = decode_to_array::<4>("123");
         let error = result.unwrap_err();
         assert!(!format!("{}", error).is_empty());
         check_source(&error);
