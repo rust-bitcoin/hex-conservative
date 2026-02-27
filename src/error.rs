@@ -410,10 +410,10 @@ if_std_error! {{
 #[cfg(feature = "std")]
 mod tests {
     use super::*;
-    use crate::error::{InvalidCharError, OddLengthStringError};
-    use crate::{decode_to_array, HexToBytesIter, InvalidLengthError};
     #[cfg(feature = "alloc")]
     use crate::decode_to_vec;
+    use crate::error::{InvalidCharError, OddLengthStringError};
+    use crate::{decode_to_array, HexToBytesIter, InvalidLengthError};
 
     fn check_source<T: std::error::Error>(error: &T) {
         assert!(error.source().is_some());
@@ -489,10 +489,7 @@ mod tests {
         let badchar2 = "012Y456789abcdeb";
         let badchar3 = "«23456789abcdef";
 
-        assert_eq!(
-            decode_to_vec(oddlen).unwrap_err(),
-            OddLengthStringError { len: 17 }.into()
-        );
+        assert_eq!(decode_to_vec(oddlen).unwrap_err(), OddLengthStringError { len: 17 }.into());
         assert_eq!(
             decode_to_array::<4>(oddlen).unwrap_err(),
             InvalidLengthError { invalid: 17, expected: 8 }.into()
