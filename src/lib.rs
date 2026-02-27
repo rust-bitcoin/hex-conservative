@@ -101,12 +101,11 @@ pub mod buf_encoder;
 pub mod display;
 pub mod error;
 mod iter;
-pub mod parse;
 
 /// Re-exports of the common crate traits.
 pub mod prelude {
     #[doc(inline)]
-    pub use crate::{display::DisplayHex, parse::FromHex};
+    pub use crate::display::DisplayHex;
 }
 
 #[cfg(feature = "alloc")]
@@ -123,7 +122,6 @@ pub use self::{
         OddLengthStringError,
     },
     iter::{BytesToHexIter, HexToBytesIter, HexSliceToBytesIter},
-    parse::FromHex,
 };
 
 /// Decodes a hex string with variable length.
