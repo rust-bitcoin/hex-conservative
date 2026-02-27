@@ -1,0 +1,123 @@
+impl core::clone::Clone for hex_conservative::error::DecodeFixedLengthBytesError
+impl core::clone::Clone for hex_conservative::error::DecodeVariableLengthBytesError
+impl core::clone::Clone for hex_conservative::error::InvalidCharError
+impl core::clone::Clone for hex_conservative::error::InvalidLengthError
+impl core::clone::Clone for hex_conservative::error::OddLengthStringError
+impl core::cmp::Eq for hex_conservative::error::DecodeFixedLengthBytesError
+impl core::cmp::Eq for hex_conservative::error::DecodeVariableLengthBytesError
+impl core::cmp::Eq for hex_conservative::error::InvalidCharError
+impl core::cmp::Eq for hex_conservative::error::InvalidLengthError
+impl core::cmp::Eq for hex_conservative::error::OddLengthStringError
+impl core::cmp::PartialEq for hex_conservative::error::DecodeFixedLengthBytesError
+impl core::cmp::PartialEq for hex_conservative::error::DecodeVariableLengthBytesError
+impl core::cmp::PartialEq for hex_conservative::error::InvalidCharError
+impl core::cmp::PartialEq for hex_conservative::error::InvalidLengthError
+impl core::cmp::PartialEq for hex_conservative::error::OddLengthStringError
+impl core::convert::From<core::convert::Infallible> for hex_conservative::error::DecodeFixedLengthBytesError
+impl core::convert::From<core::convert::Infallible> for hex_conservative::error::DecodeVariableLengthBytesError
+impl core::convert::From<core::convert::Infallible> for hex_conservative::error::InvalidCharError
+impl core::convert::From<core::convert::Infallible> for hex_conservative::error::InvalidLengthError
+impl core::convert::From<core::convert::Infallible> for hex_conservative::error::OddLengthStringError
+impl core::convert::From<hex_conservative::error::InvalidCharError> for hex_conservative::error::DecodeFixedLengthBytesError
+impl core::convert::From<hex_conservative::error::InvalidCharError> for hex_conservative::error::DecodeVariableLengthBytesError
+impl core::convert::From<hex_conservative::error::InvalidLengthError> for hex_conservative::error::DecodeFixedLengthBytesError
+impl core::convert::From<hex_conservative::error::OddLengthStringError> for hex_conservative::error::DecodeVariableLengthBytesError
+impl core::fmt::Debug for hex_conservative::error::DecodeFixedLengthBytesError
+impl core::fmt::Debug for hex_conservative::error::DecodeVariableLengthBytesError
+impl core::fmt::Debug for hex_conservative::error::InvalidCharError
+impl core::fmt::Debug for hex_conservative::error::InvalidLengthError
+impl core::fmt::Debug for hex_conservative::error::OddLengthStringError
+impl core::fmt::Display for hex_conservative::error::DecodeFixedLengthBytesError
+impl core::fmt::Display for hex_conservative::error::DecodeVariableLengthBytesError
+impl core::fmt::Display for hex_conservative::error::InvalidCharError
+impl core::fmt::Display for hex_conservative::error::InvalidLengthError
+impl core::fmt::Display for hex_conservative::error::OddLengthStringError
+impl core::marker::Freeze for hex_conservative::error::DecodeFixedLengthBytesError
+impl core::marker::Freeze for hex_conservative::error::DecodeVariableLengthBytesError
+impl core::marker::Freeze for hex_conservative::error::InvalidCharError
+impl core::marker::Freeze for hex_conservative::error::InvalidLengthError
+impl core::marker::Freeze for hex_conservative::error::OddLengthStringError
+impl core::marker::Send for hex_conservative::error::DecodeFixedLengthBytesError
+impl core::marker::Send for hex_conservative::error::DecodeVariableLengthBytesError
+impl core::marker::Send for hex_conservative::error::InvalidCharError
+impl core::marker::Send for hex_conservative::error::InvalidLengthError
+impl core::marker::Send for hex_conservative::error::OddLengthStringError
+impl core::marker::StructuralPartialEq for hex_conservative::error::DecodeFixedLengthBytesError
+impl core::marker::StructuralPartialEq for hex_conservative::error::DecodeVariableLengthBytesError
+impl core::marker::StructuralPartialEq for hex_conservative::error::InvalidCharError
+impl core::marker::StructuralPartialEq for hex_conservative::error::InvalidLengthError
+impl core::marker::StructuralPartialEq for hex_conservative::error::OddLengthStringError
+impl core::marker::Sync for hex_conservative::error::DecodeFixedLengthBytesError
+impl core::marker::Sync for hex_conservative::error::DecodeVariableLengthBytesError
+impl core::marker::Sync for hex_conservative::error::InvalidCharError
+impl core::marker::Sync for hex_conservative::error::InvalidLengthError
+impl core::marker::Sync for hex_conservative::error::OddLengthStringError
+impl core::marker::Unpin for hex_conservative::error::DecodeFixedLengthBytesError
+impl core::marker::Unpin for hex_conservative::error::DecodeVariableLengthBytesError
+impl core::marker::Unpin for hex_conservative::error::InvalidCharError
+impl core::marker::Unpin for hex_conservative::error::InvalidLengthError
+impl core::marker::Unpin for hex_conservative::error::OddLengthStringError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::error::DecodeFixedLengthBytesError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::error::DecodeVariableLengthBytesError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::error::InvalidCharError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::error::InvalidLengthError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::error::OddLengthStringError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative::error::DecodeFixedLengthBytesError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative::error::DecodeVariableLengthBytesError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative::error::InvalidCharError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative::error::InvalidLengthError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative::error::OddLengthStringError
+impl hex_conservative::error::DecodeFixedLengthBytesError
+impl hex_conservative::error::DecodeVariableLengthBytesError
+impl hex_conservative::error::InvalidCharError
+impl hex_conservative::error::InvalidLengthError
+impl hex_conservative::error::OddLengthStringError
+pub enum hex_conservative::DecodeFixedLengthBytesError
+pub enum hex_conservative::DecodeVariableLengthBytesError
+pub enum hex_conservative::error::DecodeFixedLengthBytesError
+pub enum hex_conservative::error::DecodeVariableLengthBytesError
+pub fn hex_conservative::decode_to_array<const N: usize>(hex: &str) -> core::result::Result<[u8; N], hex_conservative::error::DecodeFixedLengthBytesError>
+pub fn hex_conservative::error::DecodeFixedLengthBytesError::clone(&self) -> hex_conservative::error::DecodeFixedLengthBytesError
+pub fn hex_conservative::error::DecodeFixedLengthBytesError::eq(&self, other: &hex_conservative::error::DecodeFixedLengthBytesError) -> bool
+pub fn hex_conservative::error::DecodeFixedLengthBytesError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn hex_conservative::error::DecodeFixedLengthBytesError::from(e: hex_conservative::error::InvalidCharError) -> Self
+pub fn hex_conservative::error::DecodeFixedLengthBytesError::from(e: hex_conservative::error::InvalidLengthError) -> Self
+pub fn hex_conservative::error::DecodeFixedLengthBytesError::from(never: core::convert::Infallible) -> Self
+pub fn hex_conservative::error::DecodeFixedLengthBytesError::offset(self, by_bytes: usize) -> Self
+pub fn hex_conservative::error::DecodeVariableLengthBytesError::clone(&self) -> hex_conservative::error::DecodeVariableLengthBytesError
+pub fn hex_conservative::error::DecodeVariableLengthBytesError::eq(&self, other: &hex_conservative::error::DecodeVariableLengthBytesError) -> bool
+pub fn hex_conservative::error::DecodeVariableLengthBytesError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn hex_conservative::error::DecodeVariableLengthBytesError::from(e: hex_conservative::error::InvalidCharError) -> Self
+pub fn hex_conservative::error::DecodeVariableLengthBytesError::from(e: hex_conservative::error::OddLengthStringError) -> Self
+pub fn hex_conservative::error::DecodeVariableLengthBytesError::from(never: core::convert::Infallible) -> Self
+pub fn hex_conservative::error::DecodeVariableLengthBytesError::offset(self, by_bytes: usize) -> Self
+pub fn hex_conservative::error::InvalidCharError::clone(&self) -> hex_conservative::error::InvalidCharError
+pub fn hex_conservative::error::InvalidCharError::eq(&self, other: &hex_conservative::error::InvalidCharError) -> bool
+pub fn hex_conservative::error::InvalidCharError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn hex_conservative::error::InvalidCharError::from(never: core::convert::Infallible) -> Self
+pub fn hex_conservative::error::InvalidCharError::offset(self, by_bytes: usize) -> Self
+pub fn hex_conservative::error::InvalidCharError::pos(&self) -> usize
+pub fn hex_conservative::error::InvalidLengthError::clone(&self) -> hex_conservative::error::InvalidLengthError
+pub fn hex_conservative::error::InvalidLengthError::eq(&self, other: &hex_conservative::error::InvalidLengthError) -> bool
+pub fn hex_conservative::error::InvalidLengthError::expected_length(&self) -> usize
+pub fn hex_conservative::error::InvalidLengthError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn hex_conservative::error::InvalidLengthError::from(never: core::convert::Infallible) -> Self
+pub fn hex_conservative::error::InvalidLengthError::invalid_length(&self) -> usize
+pub fn hex_conservative::error::OddLengthStringError::clone(&self) -> hex_conservative::error::OddLengthStringError
+pub fn hex_conservative::error::OddLengthStringError::eq(&self, other: &hex_conservative::error::OddLengthStringError) -> bool
+pub fn hex_conservative::error::OddLengthStringError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn hex_conservative::error::OddLengthStringError::from(never: core::convert::Infallible) -> Self
+pub fn hex_conservative::error::OddLengthStringError::length(&self) -> usize
+pub hex_conservative::DecodeFixedLengthBytesError::InvalidChar(hex_conservative::error::InvalidCharError)
+pub hex_conservative::DecodeFixedLengthBytesError::InvalidLength(hex_conservative::error::InvalidLengthError)
+pub hex_conservative::DecodeVariableLengthBytesError::InvalidChar(hex_conservative::error::InvalidCharError)
+pub hex_conservative::DecodeVariableLengthBytesError::OddLengthString(hex_conservative::error::OddLengthStringError)
+pub hex_conservative::error::DecodeFixedLengthBytesError::InvalidChar(hex_conservative::error::InvalidCharError)
+pub hex_conservative::error::DecodeFixedLengthBytesError::InvalidLength(hex_conservative::error::InvalidLengthError)
+pub hex_conservative::error::DecodeVariableLengthBytesError::InvalidChar(hex_conservative::error::InvalidCharError)
+pub hex_conservative::error::DecodeVariableLengthBytesError::OddLengthString(hex_conservative::error::OddLengthStringError)
+pub mod hex_conservative
+pub mod hex_conservative::error
+pub struct hex_conservative::error::InvalidCharError
+pub struct hex_conservative::error::InvalidLengthError
+pub struct hex_conservative::error::OddLengthStringError
