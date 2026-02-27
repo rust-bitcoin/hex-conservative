@@ -22,9 +22,9 @@
 //! use hex::prelude::*;
 //!
 //! // Decode an arbitrary length hex string into a vector.
-//! let v = Vec::from_hex("deadbeef").expect("valid hex digits");
+//! let v = hex::decode_to_vec("deadbeef").expect("valid hex digits");
 //! // Or a known length hex string into a fixed size array.
-//! let a = <[u8; 4]>::from_hex("deadbeef").expect("valid length and valid hex digits");
+//! let a = hex::decode_to_array::<4>("deadbeef").expect("valid length and valid hex digits");
 //!
 //! // We support `LowerHex` and `UpperHex` out of the box for `[u8]` slices.
 //! println!("An array as lower hex: {:x}", a.as_hex());
@@ -37,8 +37,8 @@
 //! // Please note, mixed case strings will still parse successfully but we only
 //! // support displaying hex in a single case.
 //! assert_eq!(
-//!     Vec::from_hex("dEaDbEeF").expect("valid mixed case hex digits"),
-//!     Vec::from_hex("deadbeef").expect("valid hex digits"),
+//!     hex::decode_to_vec("dEaDbEeF").expect("valid mixed case hex digits"),
+//!     hex::decode_to_vec("deadbeef").expect("valid hex digits"),
 //! );
 //! # }
 //! ```
