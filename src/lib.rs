@@ -102,8 +102,6 @@ pub mod display;
 pub mod error;
 mod iter;
 pub mod parse;
-#[cfg(feature = "serde")]
-pub mod serde;
 
 /// Re-exports of the common crate traits.
 pub mod prelude {

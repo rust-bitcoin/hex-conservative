@@ -13,8 +13,6 @@ use core::borrow::Borrow;
 use core::marker::PhantomData;
 use core::{fmt, slice};
 
-#[cfg(feature = "serde")]
-use hex_conservative::serde;
 // These imports test "typical" usage by user code.
 use hex_conservative::{
     buf_encoder, display, BytesToHexIter, Case, DecodeFixedLengthBytesError,
@@ -52,13 +50,7 @@ where
     d: display::DisplayByteSlice<'a>,
     #[cfg(feature = "std")]
     e: display::HexWriter<T>,
-    #[cfg(feature = "serde")]
-    f: serde::SerializeBytesAsHex<'a>,
-    #[cfg(feature = "serde")]
-    g: serde::SerializeBytesAsHexLower<'a>,
-    #[cfg(feature = "serde")]
-    h: serde::SerializeBytesAsHexUpper<'a>,
-    _i: PhantomData<T>, // For when `std` is not enabled.
+    _marker: PhantomData<T>, // For when `std` is not enabled.
 }
 
 impl Structs<'_, slice::Iter<'_, u8>, String> {
@@ -72,13 +64,7 @@ impl Structs<'_, slice::Iter<'_, u8>, String> {
             d: BYTES[..].as_hex(),
             #[cfg(feature = "std")]
             e: display::HexWriter::new(String::new(), Case::Lower),
-            #[cfg(feature = "serde")]
-            f: serde::SerializeBytesAsHex(&BYTES),
-            #[cfg(feature = "serde")]
-            g: serde::SerializeBytesAsHexLower(&BYTES),
-            #[cfg(feature = "serde")]
-            h: serde::SerializeBytesAsHexUpper(&BYTES),
-            _i: PhantomData,
+            _marker: PhantomData,
         }
     }
 }
@@ -113,15 +99,6 @@ fn api_all_non_error_types_have_non_empty_debug() {
     #[cfg(feature = "std")]
     let debug = format!("{:?}", t.e);
     assert!(!debug.is_empty());
-    #[cfg(feature = "serde")]
-    {
-        let debug = format!("{:?}", t.f);
-        assert!(!debug.is_empty());
-        let debug = format!("{:?}", t.g);
-        assert!(!debug.is_empty());
-        let debug = format!("{:?}", t.h);
-        assert!(!debug.is_empty());
-    }
 }
 
 #[test]

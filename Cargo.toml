@@ -45,10 +45,6 @@ name = "hexy"
 [[example]]
 name = "wrap_array"
 
-[[example]]
-name = "serde"
-required-features = ["std", "serde"]
-
 [lints.clippy]
 # Exclude lints we don't think are valuable.
 needless_question_mark = "allow" # https://github.com/rust-bitcoin/rust-bitcoin/pull/2134
