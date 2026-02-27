@@ -49,8 +49,9 @@ mod sealed {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::{HexToBytesIter, InvalidLengthError};
+    #[cfg(feature = "alloc")]
+    use crate::decode_to_vec;
+    use crate::{decode_to_array, HexToBytesIter, InvalidLengthError};
 
     #[test]
     #[cfg(feature = "alloc")]
@@ -63,23 +64,23 @@ mod tests {
         let badchar3 = "«23456789abcdef";
 
         assert_eq!(
-            Vec::<u8>::from_hex(oddlen).unwrap_err(),
+            decode_to_vec(oddlen).unwrap_err(),
             OddLengthStringError { len: 17 }.into()
         );
         assert_eq!(
-            <[u8; 4]>::from_hex(oddlen).unwrap_err(),
+            decode_to_array::<4>(oddlen).unwrap_err(),
             InvalidLengthError { invalid: 17, expected: 8 }.into()
         );
         assert_eq!(
-            Vec::<u8>::from_hex(badchar1).unwrap_err(),
+            decode_to_vec(badchar1).unwrap_err(),
             InvalidCharError { pos: 0, invalid: b'Z' }.into()
         );
         assert_eq!(
-            Vec::<u8>::from_hex(badchar2).unwrap_err(),
+            decode_to_vec(badchar2).unwrap_err(),
             InvalidCharError { pos: 3, invalid: b'Y' }.into()
         );
         assert_eq!(
-            Vec::<u8>::from_hex(badchar3).unwrap_err(),
+            decode_to_vec(badchar3).unwrap_err(),
             InvalidCharError { pos: 0, invalid: 194 }.into()
         );
     }
@@ -113,14 +114,14 @@ mod tests {
     #[test]
     fn hex_to_array() {
         let len_sixteen = "0123456789abcdef";
-        assert!(<[u8; 8]>::from_hex(len_sixteen).is_ok());
+        assert!(decode_to_array::<8>(len_sixteen).is_ok());
     }
 
     #[test]
     fn hex_to_array_error() {
         let len_sixteen = "0123456789abcdef";
         assert_eq!(
-            <[u8; 4]>::from_hex(len_sixteen).unwrap_err(),
+            decode_to_array::<4>(len_sixteen).unwrap_err(),
             InvalidLengthError { invalid: 16, expected: 8 }.into()
         );
     }
@@ -134,7 +135,7 @@ mod tests {
         let want_lower = "deadbeef0123";
         let want_upper = "DEADBEEF0123";
 
-        let v = Vec::<u8>::from_hex(s).expect("valid hex");
+        let v = decode_to_vec(s).expect("valid hex");
         assert_eq!(format!("{:x}", v.as_hex()), want_lower);
         assert_eq!(format!("{:X}", v.as_hex()), want_upper);
     }
