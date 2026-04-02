@@ -14,7 +14,7 @@ jobs:
       nightly_version: ${{ steps.read_toolchain.outputs.nightly_version }}
     steps:
       - name: "Checkout repo"
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: "Read nightly version"
         id: read_toolchain
         run: echo "nightly_version=$(cat nightly-version)" >> $GITHUB_OUTPUT
@@ -28,9 +28,9 @@ jobs:
         dep: [minimal, recent]
     steps:
       - name: "Checkout repo"
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: "Checkout maintainer tools"
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           repository: rust-bitcoin/rust-bitcoin-maintainer-tools
           ref: 4f17a059a2f57c1b99b7c240a1467a5c0acebdc3
@@ -52,9 +52,9 @@ jobs:
         dep: [minimal, recent]
     steps:
       - name: "Checkout repo"
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: "Checkout maintainer tools"
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           repository: rust-bitcoin/rust-bitcoin-maintainer-tools
           ref: 4f17a059a2f57c1b99b7c240a1467a5c0acebdc3
@@ -77,9 +77,9 @@ jobs:
         dep: [minimal, recent]
     steps:
       - name: "Checkout repo"
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: "Checkout maintainer tools"
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           repository: rust-bitcoin/rust-bitcoin-maintainer-tools
           ref: 4f17a059a2f57c1b99b7c240a1467a5c0acebdc3
@@ -103,9 +103,9 @@ jobs:
         dep: [recent]
     steps:
       - name: "Checkout repo"
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: "Checkout maintainer tools"
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           repository: rust-bitcoin/rust-bitcoin-maintainer-tools
           ref: 4f17a059a2f57c1b99b7c240a1467a5c0acebdc3
@@ -130,9 +130,9 @@ jobs:
         dep: [recent]
     steps:
       - name: "Checkout repo"
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: "Checkout maintainer tools"
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           repository: rust-bitcoin/rust-bitcoin-maintainer-tools
           ref: 4f17a059a2f57c1b99b7c240a1467a5c0acebdc3
@@ -154,9 +154,9 @@ jobs:
         dep: [recent]
     steps:
       - name: "Checkout repo"
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: "Checkout maintainer tools"
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           repository: rust-bitcoin/rust-bitcoin-maintainer-tools
           ref: 4f17a059a2f57c1b99b7c240a1467a5c0acebdc3
@@ -175,7 +175,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: "Checkout repo"
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: "Select toolchain"
         uses: dtolnay/rust-toolchain@stable
       - name: "Add architecture i386"
@@ -193,7 +193,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: "Checkout repo"
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: "Select toolchain"
         uses: dtolnay/rust-toolchain@stable
       - name: "Install target"
@@ -210,7 +210,7 @@ jobs:
       fail-fast: false
     steps:
       - name: "Checkout repo"
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: "Select toolchain"
         uses: dtolnay/rust-toolchain@nightly
       - name: "Install rustfmt"
@@ -223,7 +223,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: "Checkout repo"
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: "Select toolchain"
         uses: dtolnay/rust-toolchain@stable
       - name: "Run compile tests"
