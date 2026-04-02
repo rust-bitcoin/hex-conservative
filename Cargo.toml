@@ -59,7 +59,7 @@ exact_features = [
 unexpected_cfgs = { level = "deny", check-cfg = ['cfg(rust_version, values(">= 1.81.0"))'] }
 
 [workspace.metadata.rbmt.toolchains]
-nightly = "nightly-2025-10-03"
+nightly = "nightly-2026-03-27"
 stable = "1.93.1"
 
 [lints.clippy]
