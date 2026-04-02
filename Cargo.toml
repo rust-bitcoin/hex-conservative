@@ -45,6 +45,12 @@ name = "wrap_array"
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
+[package.metadata.rbmt.test]
+exact_features = [
+    ["alloc", "newer-rust-version"],
+    ["std", "newer-rust-version"],
+]
+
 [lints.clippy]
 # Exclude lints we don't think are valuable.
 needless_question_mark = "allow" # https://github.com/rust-bitcoin/rust-bitcoin/pull/2134

@@ -8,6 +8,24 @@ on:   # yamllint disable-line rule:truthy
 name: Continuous integration
 
 jobs:
+  Test:
+    name: Test - ${{ matrix.toolchain }} toolchain, ${{ matrix.dep }} deps
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        toolchain: [stable, nightly, msrv]
+        dep: [minimal, recent]
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+      - uses: rust-bitcoin/rust-bitcoin-maintainer-tools/.github/actions/setup-rbmt@af3c2868415b17eedc808da6d0589e10b7482660
+      - name: "Run tests"
+        run: cargo rbmt test --toolchain ${{ matrix.toolchain }} --lock-file ${{ matrix.dep }}
+
   Prepare:
     runs-on: ubuntu-24.04
     outputs:
@@ -20,92 +38,6 @@ jobs:
       - name: "Read nightly version"
         id: read_toolchain
         run: echo "nightly_version=$(cat nightly-version)" >> $GITHUB_OUTPUT
-
-  Stable:                       # 2 jobs, one per manifest.
-    name: Test - stable toolchain
-    runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        dep: [minimal, recent]
-    steps:
-      - name: "Checkout repo"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          persist-credentials: false
-      - name: "Checkout maintainer tools"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          persist-credentials: false
-        with:
-          repository: rust-bitcoin/rust-bitcoin-maintainer-tools
-          ref: 4f17a059a2f57c1b99b7c240a1467a5c0acebdc3
-          path: maintainer-tools
-      - name: "Select toolchain"
-        uses: dtolnay/rust-toolchain@stable
-      - name: "Set dependencies"
-        run: cp Cargo-${{ matrix.dep }}.lock Cargo.lock
-      - name: "Run test script"
-        run: ./maintainer-tools/ci/run_task.sh stable
-
-  Nightly:                      # 2 jobs, one per manifest.
-    name: Test - nightly toolchain
-    needs: Prepare
-    runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        dep: [minimal, recent]
-    steps:
-      - name: "Checkout repo"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          persist-credentials: false
-      - name: "Checkout maintainer tools"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          persist-credentials: false
-        with:
-          repository: rust-bitcoin/rust-bitcoin-maintainer-tools
-          ref: 4f17a059a2f57c1b99b7c240a1467a5c0acebdc3
-          path: maintainer-tools
-      - name: "Select toolchain"
-        uses: dtolnay/rust-toolchain@v1
-        with:
-          toolchain: ${{ needs.Prepare.outputs.nightly_version }}
-      - name: "Set dependencies"
-        run: cp Cargo-${{ matrix.dep }}.lock Cargo.lock
-      - name: "Run test script"
-        run: ./maintainer-tools/ci/run_task.sh nightly
-
-  MSRV:                         # 2 jobs, one per manifest.
-    name: Test - MSRV toolchain
-    runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        dep: [minimal, recent]
-    steps:
-      - name: "Checkout repo"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          persist-credentials: false
-      - name: "Checkout maintainer tools"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          persist-credentials: false
-        with:
-          repository: rust-bitcoin/rust-bitcoin-maintainer-tools
-          ref: 4f17a059a2f57c1b99b7c240a1467a5c0acebdc3
-          path: maintainer-tools
-      - name: "Select toolchain"
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: "1.63.0"
-      - name: "Set dependencies"
-        run: cp Cargo-${{ matrix.dep }}.lock Cargo.lock
-      - name: "Run test script"
-        run: ./maintainer-tools/ci/run_task.sh msrv
 
   Lint:
     name: Lint - nightly toolchain
