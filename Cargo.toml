@@ -45,6 +45,10 @@ name = "wrap_array"
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
+[package.metadata.rbmt.api]
+enabled = true
+features = [["alloc"]]
+
 [package.metadata.rbmt.test]
 exact_features = [
     ["alloc", "newer-rust-version"],

@@ -26,6 +26,22 @@ jobs:
       - name: "Run tests"
         run: cargo rbmt test --toolchain ${{ matrix.toolchain }} --lock-file ${{ matrix.dep }}
 
+  Check:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        task: [lint, docs, docsrs, "fmt --check"]
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+      - uses: rust-bitcoin/rust-bitcoin-maintainer-tools/.github/actions/setup-rbmt@af3c2868415b17eedc808da6d0589e10b7482660
+      - name: "Run ${{ matrix.task }}"
+        run: cargo rbmt ${{ matrix.task }}
+
   Prepare:
     runs-on: ubuntu-24.04
     outputs:
@@ -38,95 +54,6 @@ jobs:
       - name: "Read nightly version"
         id: read_toolchain
         run: echo "nightly_version=$(cat nightly-version)" >> $GITHUB_OUTPUT
-
-  Lint:
-    name: Lint - nightly toolchain
-    needs: Prepare
-    runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        dep: [recent]
-    steps:
-      - name: "Checkout repo"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          persist-credentials: false
-      - name: "Checkout maintainer tools"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          persist-credentials: false
-        with:
-          repository: rust-bitcoin/rust-bitcoin-maintainer-tools
-          ref: 4f17a059a2f57c1b99b7c240a1467a5c0acebdc3
-          path: maintainer-tools
-      - name: "Select toolchain"
-        uses: dtolnay/rust-toolchain@v1
-        with:
-          toolchain: ${{ needs.Prepare.outputs.nightly_version }}
-      - name: "Install clippy"
-        run: rustup component add clippy
-      - name: "Set dependencies"
-        run: cp Cargo-${{ matrix.dep }}.lock Cargo.lock
-      - name: "Run test script"
-        run: ./maintainer-tools/ci/run_task.sh lint
-
-  Docs:
-    name: Docs - stable toolchain
-    runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        dep: [recent]
-    steps:
-      - name: "Checkout repo"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          persist-credentials: false
-      - name: "Checkout maintainer tools"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          persist-credentials: false
-        with:
-          repository: rust-bitcoin/rust-bitcoin-maintainer-tools
-          ref: 4f17a059a2f57c1b99b7c240a1467a5c0acebdc3
-          path: maintainer-tools
-      - name: "Select toolchain"
-        uses: dtolnay/rust-toolchain@stable
-      - name: "Set dependencies"
-        run: cp Cargo-${{ matrix.dep }}.lock Cargo.lock
-      - name: "Run test script"
-        run: ./maintainer-tools/ci/run_task.sh docs
-
-  Docsrs:
-    name: Docs - nightly toolchain
-    needs: Prepare
-    runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        dep: [recent]
-    steps:
-      - name: "Checkout repo"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          persist-credentials: false
-      - name: "Checkout maintainer tools"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          persist-credentials: false
-        with:
-          repository: rust-bitcoin/rust-bitcoin-maintainer-tools
-          ref: 4f17a059a2f57c1b99b7c240a1467a5c0acebdc3
-          path: maintainer-tools
-      - name: "Select toolchain"
-        uses: dtolnay/rust-toolchain@v1
-        with:
-          toolchain: ${{ needs.Prepare.outputs.nightly_version }}
-      - name: "Set dependencies"
-        run: cp Cargo-${{ matrix.dep }}.lock Cargo.lock
-      - name: "Run test script"
-        run: ./maintainer-tools/ci/run_task.sh docsrs
 
   Arch32bit:
     name: Test 32-bit version
@@ -164,23 +91,6 @@ jobs:
         run: cargo install cross --locked
       - name: "Run cross test"
         run: cross test --target s390x-unknown-linux-gnu
-
-  Format:                       #  1 jobs, run cargo fmt directly.
-    name: Format - nightly toolchain
-    runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-    steps:
-      - name: "Checkout repo"
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          persist-credentials: false
-      - name: "Select toolchain"
-        uses: dtolnay/rust-toolchain@nightly
-      - name: "Install rustfmt"
-        run: rustup component add rustfmt
-      - name: "Check formatting"
-        run: cargo +nightly fmt --all -- --check
 
   Compile:
     name: Compile tests
