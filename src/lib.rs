@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: CC0-1.0
 
-//! Hex encoding and decoding.
+//! # Hex encoding and decoding
 //!
 //! General purpose hex encoding/decoding library with a conservative MSRV and dependency policy.
 //!
