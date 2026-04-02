@@ -58,6 +58,10 @@ exact_features = [
 [lints.rust]
 unexpected_cfgs = { level = "deny", check-cfg = ['cfg(rust_version, values(">= 1.81.0"))'] }
 
+[workspace.metadata.rbmt.toolchains]
+nightly = "nightly-2025-10-03"
+stable = "1.93.1"
+
 [lints.clippy]
 # Exclude lints we don't think are valuable.
 needless_question_mark = "allow" # https://github.com/rust-bitcoin/rust-bitcoin/pull/2134

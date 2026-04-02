@@ -42,6 +42,7 @@ jobs:
       - name: "Run ${{ matrix.task }}"
         run: cargo rbmt ${{ matrix.task }}
 
+  # Non cargo-rbmt jobs manage their toolchain version directly.
   Prepare:
     runs-on: ubuntu-24.04
     outputs:
@@ -53,7 +54,7 @@ jobs:
           persist-credentials: false
       - name: "Read nightly version"
         id: read_toolchain
-        run: echo "nightly_version=$(cat nightly-version)" >> $GITHUB_OUTPUT
+        run: echo "nightly_version=$(cargo metadata --format-version 1 | jq -r '.metadata.rbmt.toolchains.nightly')" >> $GITHUB_OUTPUT
 
   Arch32bit:
     name: Test 32-bit version
