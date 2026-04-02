@@ -117,11 +117,12 @@ pub(crate) use table::Table;
 #[doc(inline)]
 pub use self::{
     display::DisplayHex,
-    error::{
-        DecodeFixedLengthBytesError, DecodeVariableLengthBytesError, InvalidCharError, InvalidLengthError,
-        OddLengthStringError,
-    },
     iter::{BytesToHexIter, HexToBytesIter, HexSliceToBytesIter},
+};
+#[doc(no_inline)]
+pub use self::error::{
+    DecodeFixedLengthBytesError, DecodeVariableLengthBytesError, InvalidCharError, InvalidLengthError,
+    OddLengthStringError,
 };
 
 /// Decodes a hex string with variable length.
