@@ -9,7 +9,7 @@ name: Continuous integration
 
 jobs:
   Prepare:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       nightly_version: ${{ steps.read_toolchain.outputs.nightly_version }}
     steps:
@@ -21,7 +21,7 @@ jobs:
 
   Stable:                       # 2 jobs, one per manifest.
     name: Test - stable toolchain
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -45,7 +45,7 @@ jobs:
   Nightly:                      # 2 jobs, one per manifest.
     name: Test - nightly toolchain
     needs: Prepare
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -70,7 +70,7 @@ jobs:
 
   MSRV:                         # 2 jobs, one per manifest.
     name: Test - MSRV toolchain
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -96,7 +96,7 @@ jobs:
   Lint:
     name: Lint - nightly toolchain
     needs: Prepare
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -123,7 +123,7 @@ jobs:
 
   Docs:
     name: Docs - stable toolchain
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -147,7 +147,7 @@ jobs:
   Docsrs:
     name: Docs - nightly toolchain
     needs: Prepare
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -172,7 +172,7 @@ jobs:
 
   Arch32bit:
     name: Test 32-bit version
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout repo"
         uses: actions/checkout@v4
@@ -190,7 +190,7 @@ jobs:
   Cross:
     name: Cross test - stable toolchain
     if: ${{ !github.event.act }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout repo"
         uses: actions/checkout@v4
@@ -205,7 +205,7 @@ jobs:
 
   Format:                       #  1 jobs, run cargo fmt directly.
     name: Format - nightly toolchain
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
     steps:
@@ -220,7 +220,7 @@ jobs:
 
   Compile:
     name: Compile tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Checkout repo"
         uses: actions/checkout@v4
