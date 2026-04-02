@@ -43,19 +43,6 @@
 //! # }
 //! ```
 //!
-//! ## Stabilization strategy
-//!
-//! Because downstream crates may need to return hex errors in their APIs and they need to be
-//! stabilized soon, this crate only exposes the errors and two basic decoding functions. This
-//! should already help with the vast majority of the cases and we're sufficiently confident that
-//! these errors won't have a breaking change any time soon (possibly never).
-//!
-//! If you're writing a binary you don't need to worry about any of this and just use the unstable
-//! version for now. If you're writing a library you should use these stable errors in the API but
-//! you may internally depend on the unstable crate version to get the advanced features that won't
-//! affect your API. This way your API can stabilize before all features in this crate are fully
-//! stable and you still can use all of them.
-//!
 //! ## Crate feature flags
 //!
 //! * `std` - enables the standard library, on by default.
