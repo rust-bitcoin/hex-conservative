@@ -157,11 +157,6 @@ pub struct InvalidCharError {
     pub(crate) pos: usize,
 }
 
-impl From<Infallible> for InvalidCharError {
-    #[inline]
-    fn from(never: Infallible) -> Self { match never {} }
-}
-
 impl InvalidCharError {
     /// Returns the invalid character byte.
     #[inline]
@@ -193,6 +188,11 @@ impl InvalidCharError {
         self.pos += by_bytes;
         self
     }
+}
+
+impl From<Infallible> for InvalidCharError {
+    #[inline]
+    fn from(never: Infallible) -> Self { match never {} }
 }
 
 /// Note that the implementation displays position as 1-based instead of 0-based to be more
@@ -255,15 +255,15 @@ pub struct OddLengthStringError {
     pub(crate) len: usize,
 }
 
-impl From<Infallible> for OddLengthStringError {
-    #[inline]
-    fn from(never: Infallible) -> Self { match never {} }
-}
-
 impl OddLengthStringError {
     /// Returns the odd length of the input string.
     #[inline]
     pub fn length(&self) -> usize { self.len }
+}
+
+impl From<Infallible> for OddLengthStringError {
+    #[inline]
+    fn from(never: Infallible) -> Self { match never {} }
 }
 
 impl fmt::Display for OddLengthStringError {
@@ -369,11 +369,6 @@ pub struct InvalidLengthError {
     pub(crate) invalid: usize,
 }
 
-impl From<Infallible> for InvalidLengthError {
-    #[inline]
-    fn from(never: Infallible) -> Self { match never {} }
-}
-
 impl InvalidLengthError {
     /// Returns the expected length.
     ///
@@ -388,6 +383,11 @@ impl InvalidLengthError {
     /// invalid (wide unicode chars).
     #[inline]
     pub fn invalid_length(&self) -> usize { self.invalid }
+}
+
+impl From<Infallible> for InvalidLengthError {
+    #[inline]
+    fn from(never: Infallible) -> Self { match never {} }
 }
 
 impl fmt::Display for InvalidLengthError {
