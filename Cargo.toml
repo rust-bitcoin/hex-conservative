@@ -12,10 +12,6 @@ edition = "2021"
 rust-version = "1.63.0"
 exclude = ["tests", "contrib"]
 
-[package.metadata.docs.rs]
-all-features = true
-rustdoc-args = ["--cfg", "docsrs"]
-
 [workspace]
 members = ["fuzz"]
 
@@ -44,6 +40,10 @@ name = "hexy"
 
 [[example]]
 name = "wrap_array"
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
 
 [lints.clippy]
 # Exclude lints we don't think are valuable.
