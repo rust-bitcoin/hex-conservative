@@ -38,7 +38,7 @@ use super::{Case, Table};
 /// let mut encoder = BufEncoder::<3>::new(Case::Lower);
 /// # let _ = encoder;
 /// ```
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct BufEncoder<const CAP: usize> {
     buf: ArrayString<CAP>,
     table: &'static Table,
