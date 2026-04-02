@@ -22,9 +22,9 @@
 //! use hex::prelude::*;
 //!
 //! // Decode an arbitrary length hex string into a vector.
-//! let v = Vec::from_hex("deadbeef").expect("valid hex digits");
+//! let v = hex::decode_to_vec("deadbeef").expect("valid hex digits");
 //! // Or a known length hex string into a fixed size array.
-//! let a = <[u8; 4]>::from_hex("deadbeef").expect("valid length and valid hex digits");
+//! let a = hex::decode_to_array::<4>("deadbeef").expect("valid length and valid hex digits");
 //!
 //! // We support `LowerHex` and `UpperHex` out of the box for `[u8]` slices.
 //! println!("An array as lower hex: {:x}", a.as_hex());
@@ -37,8 +37,8 @@
 //! // Please note, mixed case strings will still parse successfully but we only
 //! // support displaying hex in a single case.
 //! assert_eq!(
-//!     Vec::from_hex("dEaDbEeF").expect("valid mixed case hex digits"),
-//!     Vec::from_hex("deadbeef").expect("valid hex digits"),
+//!     hex::decode_to_vec("dEaDbEeF").expect("valid mixed case hex digits"),
+//!     hex::decode_to_vec("deadbeef").expect("valid hex digits"),
 //! );
 //! # }
 //! ```
@@ -101,46 +101,11 @@ pub mod buf_encoder;
 pub mod display;
 pub mod error;
 mod iter;
-pub mod parse;
-#[cfg(feature = "serde")]
-pub mod serde;
-
-/// Parses hex strings in const contexts.
-///
-/// Returns `[u8; N]` arrays. The string must have even length.
-#[macro_export]
-macro_rules! hex {
-    ($hex:expr) => {{
-        const _: () = assert!($hex.len() % 2 == 0, "hex string must have even length");
-
-        const fn decode_digit(digit: u8) -> u8 {
-            match digit {
-                b'0'..=b'9' => digit - b'0',
-                b'a'..=b'f' => digit - b'a' + 10,
-                b'A'..=b'F' => digit - b'A' + 10,
-                _ => panic!("invalid hex digit"),
-            }
-        }
-
-        let mut output = [0u8; $hex.len() / 2];
-        let bytes = $hex.as_bytes();
-
-        let mut i = 0;
-        while i < output.len() {
-            let high = decode_digit(bytes[i * 2]);
-            let low = decode_digit(bytes[i * 2 + 1]);
-            output[i] = (high << 4) | low;
-            i += 1;
-        }
-
-        output
-    }};
-}
 
 /// Re-exports of the common crate traits.
 pub mod prelude {
     #[doc(inline)]
-    pub use crate::{display::DisplayHex, parse::FromHex};
+    pub use crate::display::DisplayHex;
 }
 
 #[cfg(feature = "alloc")]
@@ -157,7 +122,6 @@ pub use self::{
         OddLengthStringError,
     },
     iter::{BytesToHexIter, HexToBytesIter, HexSliceToBytesIter},
-    parse::FromHex,
 };
 
 /// Decodes a hex string with variable length.
@@ -192,6 +156,38 @@ pub fn decode_to_array<const N: usize>(hex: &str) -> Result<[u8; N], DecodeFixed
     } else {
         Err(InvalidLengthError { invalid: hex.len(), expected: 2 * N }.into())
     }
+}
+
+/// Parses hex strings in const contexts.
+///
+/// Returns `[u8; N]` arrays. The string must have even length.
+#[macro_export]
+macro_rules! hex {
+    ($hex:expr) => {{
+        const _: () = assert!($hex.len() % 2 == 0, "hex string must have even length");
+
+        const fn decode_digit(digit: u8) -> u8 {
+            match digit {
+                b'0'..=b'9' => digit - b'0',
+                b'a'..=b'f' => digit - b'a' + 10,
+                b'A'..=b'F' => digit - b'A' + 10,
+                _ => panic!("invalid hex digit"),
+            }
+        }
+
+        let mut output = [0u8; $hex.len() / 2];
+        let bytes = $hex.as_bytes();
+
+        let mut i = 0;
+        while i < output.len() {
+            let high = decode_digit(bytes[i * 2]);
+            let low = decode_digit(bytes[i * 2 + 1]);
+            output[i] = (high << 4) | low;
+            i += 1;
+        }
+
+        output
+    }};
 }
 
 /// Possible case of hex.
@@ -268,26 +264,9 @@ mod table {
     }
 }
 
-/// Quick and dirty macro for parsing hex in tests.
-///
-/// For improved ergonomics import with: `use hex_conservative::test_hex_unwrap as hex;`
-#[macro_export]
-#[deprecated(since = "TBD", note = "use the one-liner `Vec::from_hex(hex).unwrap()` instead")]
-#[cfg(feature = "alloc")]
-macro_rules! test_hex_unwrap (($hex:expr) => (<Vec<u8> as $crate::FromHex>::from_hex($hex).unwrap()));
-
 #[cfg(test)]
 #[cfg(feature = "alloc")]
 mod tests {
-    use alloc::vec::Vec;
-
-    #[test]
-    fn parse_hex_into_vector() {
-        let got = crate::test_hex_unwrap!("deadbeef");
-        let want = vec![0xde, 0xad, 0xbe, 0xef];
-        assert_eq!(got, want);
-    }
-
     #[test]
     fn hex_macro() {
         let data = hex!("deadbeef");
