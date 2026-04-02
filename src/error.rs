@@ -246,7 +246,10 @@ impl fmt::Display for InvalidCharError {
 }
 
 if_std_error! {{
-    impl StdError for InvalidCharError {}
+    impl StdError for InvalidCharError {
+        #[inline]
+        fn source(&self) -> Option<&(dyn StdError + 'static)> { None }
+    }
 }}
 
 /// Purported hex string had odd length.
@@ -278,7 +281,10 @@ impl fmt::Display for OddLengthStringError {
 }
 
 if_std_error! {{
-    impl StdError for OddLengthStringError {}
+    impl StdError for OddLengthStringError {
+        #[inline]
+        fn source(&self) -> Option<&(dyn StdError + 'static)> { None }
+    }
 }}
 
 /// Error returned when hex decoding bytes whose length is known at compile time.
@@ -403,7 +409,10 @@ impl fmt::Display for InvalidLengthError {
 }
 
 if_std_error! {{
-    impl StdError for InvalidLengthError {}
+    impl StdError for InvalidLengthError {
+        #[inline]
+        fn source(&self) -> Option<&(dyn StdError + 'static)> { None }
+    }
 }}
 
 #[cfg(test)]
