@@ -18,6 +18,7 @@ impl<const CAP: usize> core::marker::Freeze for hex_conservative::buf_encoder::B
 impl<const CAP: usize> core::marker::Send for hex_conservative::buf_encoder::BufEncoder<CAP>
 impl<const CAP: usize> core::marker::Sync for hex_conservative::buf_encoder::BufEncoder<CAP>
 impl<const CAP: usize> core::marker::Unpin for hex_conservative::buf_encoder::BufEncoder<CAP>
+impl<const CAP: usize> core::marker::UnsafeUnpin for hex_conservative::buf_encoder::BufEncoder<CAP>
 impl<const CAP: usize> core::panic::unwind_safe::RefUnwindSafe for hex_conservative::buf_encoder::BufEncoder<CAP>
 impl<const CAP: usize> core::panic::unwind_safe::UnwindSafe for hex_conservative::buf_encoder::BufEncoder<CAP>
 impl<T, U> core::convert::Into<U> for hex_conservative::buf_encoder::BufEncoder<CAP> where U: core::convert::From<T>
@@ -52,6 +53,7 @@ impl<'a, const CAP: usize> core::marker::Freeze for hex_conservative::display::D
 impl<'a, const CAP: usize> core::marker::Send for hex_conservative::display::DisplayArray<'a, CAP>
 impl<'a, const CAP: usize> core::marker::Sync for hex_conservative::display::DisplayArray<'a, CAP>
 impl<'a, const CAP: usize> core::marker::Unpin for hex_conservative::display::DisplayArray<'a, CAP>
+impl<'a, const CAP: usize> core::marker::UnsafeUnpin for hex_conservative::display::DisplayArray<'a, CAP>
 impl<'a, const CAP: usize> core::panic::unwind_safe::RefUnwindSafe for hex_conservative::display::DisplayArray<'a, CAP>
 impl<'a, const CAP: usize> core::panic::unwind_safe::UnwindSafe for hex_conservative::display::DisplayArray<'a, CAP>
 impl<T, U> core::convert::Into<U> for hex_conservative::display::DisplayArray<'a, CAP> where U: core::convert::From<T>
@@ -85,6 +87,7 @@ impl<'a> core::marker::Freeze for hex_conservative::display::DisplayByteSlice<'a
 impl<'a> core::marker::Send for hex_conservative::display::DisplayByteSlice<'a>
 impl<'a> core::marker::Sync for hex_conservative::display::DisplayByteSlice<'a>
 impl<'a> core::marker::Unpin for hex_conservative::display::DisplayByteSlice<'a>
+impl<'a> core::marker::UnsafeUnpin for hex_conservative::display::DisplayByteSlice<'a>
 impl<'a> core::panic::unwind_safe::RefUnwindSafe for hex_conservative::display::DisplayByteSlice<'a>
 impl<'a> core::panic::unwind_safe::UnwindSafe for hex_conservative::display::DisplayByteSlice<'a>
 impl<T, U> core::convert::Into<U> for hex_conservative::display::DisplayByteSlice<'a> where U: core::convert::From<T>
@@ -118,6 +121,7 @@ impl<T> core::marker::Freeze for hex_conservative::display::HexWriter<T> where T
 impl<T> core::marker::Send for hex_conservative::display::HexWriter<T> where T: core::marker::Send
 impl<T> core::marker::Sync for hex_conservative::display::HexWriter<T> where T: core::marker::Sync
 impl<T> core::marker::Unpin for hex_conservative::display::HexWriter<T> where T: core::marker::Unpin
+impl<T> core::marker::UnsafeUnpin for hex_conservative::display::HexWriter<T> where T: core::marker::UnsafeUnpin
 impl<T> core::panic::unwind_safe::RefUnwindSafe for hex_conservative::display::HexWriter<T> where T: core::panic::unwind_safe::RefUnwindSafe
 impl<T> core::panic::unwind_safe::UnwindSafe for hex_conservative::display::HexWriter<T> where T: core::panic::unwind_safe::UnwindSafe
 impl<T, U> core::convert::Into<U> for hex_conservative::display::HexWriter<T> where U: core::convert::From<T>
@@ -288,6 +292,7 @@ impl core::marker::Freeze for hex_conservative::error::DecodeFixedLengthBytesErr
 impl core::marker::Send for hex_conservative::error::DecodeFixedLengthBytesError
 impl core::marker::Sync for hex_conservative::error::DecodeFixedLengthBytesError
 impl core::marker::Unpin for hex_conservative::error::DecodeFixedLengthBytesError
+impl core::marker::UnsafeUnpin for hex_conservative::error::DecodeFixedLengthBytesError
 impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::error::DecodeFixedLengthBytesError
 impl core::panic::unwind_safe::UnwindSafe for hex_conservative::error::DecodeFixedLengthBytesError
 impl<T, U> core::convert::Into<U> for hex_conservative::error::DecodeFixedLengthBytesError where U: core::convert::From<T>
@@ -341,6 +346,7 @@ impl core::marker::Freeze for hex_conservative::error::DecodeVariableLengthBytes
 impl core::marker::Send for hex_conservative::error::DecodeVariableLengthBytesError
 impl core::marker::Sync for hex_conservative::error::DecodeVariableLengthBytesError
 impl core::marker::Unpin for hex_conservative::error::DecodeVariableLengthBytesError
+impl core::marker::UnsafeUnpin for hex_conservative::error::DecodeVariableLengthBytesError
 impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::error::DecodeVariableLengthBytesError
 impl core::panic::unwind_safe::UnwindSafe for hex_conservative::error::DecodeVariableLengthBytesError
 impl<T, U> core::convert::Into<U> for hex_conservative::error::DecodeVariableLengthBytesError where U: core::convert::From<T>
@@ -392,6 +398,7 @@ impl core::marker::Freeze for hex_conservative::error::InvalidCharError
 impl core::marker::Send for hex_conservative::error::InvalidCharError
 impl core::marker::Sync for hex_conservative::error::InvalidCharError
 impl core::marker::Unpin for hex_conservative::error::InvalidCharError
+impl core::marker::UnsafeUnpin for hex_conservative::error::InvalidCharError
 impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::error::InvalidCharError
 impl core::panic::unwind_safe::UnwindSafe for hex_conservative::error::InvalidCharError
 impl<T, U> core::convert::Into<U> for hex_conservative::error::InvalidCharError where U: core::convert::From<T>
@@ -441,6 +448,7 @@ impl core::marker::Freeze for hex_conservative::error::InvalidLengthError
 impl core::marker::Send for hex_conservative::error::InvalidLengthError
 impl core::marker::Sync for hex_conservative::error::InvalidLengthError
 impl core::marker::Unpin for hex_conservative::error::InvalidLengthError
+impl core::marker::UnsafeUnpin for hex_conservative::error::InvalidLengthError
 impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::error::InvalidLengthError
 impl core::panic::unwind_safe::UnwindSafe for hex_conservative::error::InvalidLengthError
 impl<T, U> core::convert::Into<U> for hex_conservative::error::InvalidLengthError where U: core::convert::From<T>
@@ -489,6 +497,7 @@ impl core::marker::Freeze for hex_conservative::error::OddLengthStringError
 impl core::marker::Send for hex_conservative::error::OddLengthStringError
 impl core::marker::Sync for hex_conservative::error::OddLengthStringError
 impl core::marker::Unpin for hex_conservative::error::OddLengthStringError
+impl core::marker::UnsafeUnpin for hex_conservative::error::OddLengthStringError
 impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::error::OddLengthStringError
 impl core::panic::unwind_safe::UnwindSafe for hex_conservative::error::OddLengthStringError
 impl<T, U> core::convert::Into<U> for hex_conservative::error::OddLengthStringError where U: core::convert::From<T>
@@ -663,6 +672,7 @@ impl core::marker::Freeze for hex_conservative::Case
 impl core::marker::Send for hex_conservative::Case
 impl core::marker::Sync for hex_conservative::Case
 impl core::marker::Unpin for hex_conservative::Case
+impl core::marker::UnsafeUnpin for hex_conservative::Case
 impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::Case
 impl core::panic::unwind_safe::UnwindSafe for hex_conservative::Case
 impl<T, U> core::convert::Into<U> for hex_conservative::Case where U: core::convert::From<T>
@@ -714,6 +724,7 @@ impl core::marker::Freeze for hex_conservative::error::DecodeFixedLengthBytesErr
 impl core::marker::Send for hex_conservative::error::DecodeFixedLengthBytesError
 impl core::marker::Sync for hex_conservative::error::DecodeFixedLengthBytesError
 impl core::marker::Unpin for hex_conservative::error::DecodeFixedLengthBytesError
+impl core::marker::UnsafeUnpin for hex_conservative::error::DecodeFixedLengthBytesError
 impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::error::DecodeFixedLengthBytesError
 impl core::panic::unwind_safe::UnwindSafe for hex_conservative::error::DecodeFixedLengthBytesError
 impl<T, U> core::convert::Into<U> for hex_conservative::error::DecodeFixedLengthBytesError where U: core::convert::From<T>
@@ -767,6 +778,7 @@ impl core::marker::Freeze for hex_conservative::error::DecodeVariableLengthBytes
 impl core::marker::Send for hex_conservative::error::DecodeVariableLengthBytesError
 impl core::marker::Sync for hex_conservative::error::DecodeVariableLengthBytesError
 impl core::marker::Unpin for hex_conservative::error::DecodeVariableLengthBytesError
+impl core::marker::UnsafeUnpin for hex_conservative::error::DecodeVariableLengthBytesError
 impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::error::DecodeVariableLengthBytesError
 impl core::panic::unwind_safe::UnwindSafe for hex_conservative::error::DecodeVariableLengthBytesError
 impl<T, U> core::convert::Into<U> for hex_conservative::error::DecodeVariableLengthBytesError where U: core::convert::From<T>
@@ -811,6 +823,7 @@ impl<I> core::marker::Freeze for hex_conservative::BytesToHexIter<I> where I: co
 impl<I> core::marker::Send for hex_conservative::BytesToHexIter<I> where I: core::marker::Send
 impl<I> core::marker::Sync for hex_conservative::BytesToHexIter<I> where I: core::marker::Sync
 impl<I> core::marker::Unpin for hex_conservative::BytesToHexIter<I> where I: core::marker::Unpin
+impl<I> core::marker::UnsafeUnpin for hex_conservative::BytesToHexIter<I> where I: core::marker::UnsafeUnpin
 impl<I> core::panic::unwind_safe::RefUnwindSafe for hex_conservative::BytesToHexIter<I> where I: core::panic::unwind_safe::RefUnwindSafe
 impl<I> core::panic::unwind_safe::UnwindSafe for hex_conservative::BytesToHexIter<I> where I: core::panic::unwind_safe::UnwindSafe
 impl<I> core::iter::traits::collect::IntoIterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::iterator::Iterator
@@ -856,6 +869,7 @@ impl<I> core::marker::Freeze for hex_conservative::HexToBytesIter<I> where I: co
 impl<I> core::marker::Send for hex_conservative::HexToBytesIter<I> where I: core::marker::Send
 impl<I> core::marker::Sync for hex_conservative::HexToBytesIter<I> where I: core::marker::Sync
 impl<I> core::marker::Unpin for hex_conservative::HexToBytesIter<I> where I: core::marker::Unpin
+impl<I> core::marker::UnsafeUnpin for hex_conservative::HexToBytesIter<I> where I: core::marker::UnsafeUnpin
 impl<I> core::panic::unwind_safe::RefUnwindSafe for hex_conservative::HexToBytesIter<I> where I: core::panic::unwind_safe::RefUnwindSafe
 impl<I> core::panic::unwind_safe::UnwindSafe for hex_conservative::HexToBytesIter<I> where I: core::panic::unwind_safe::UnwindSafe
 impl<I> core::iter::traits::collect::IntoIterator for hex_conservative::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator
@@ -903,6 +917,7 @@ impl core::marker::Freeze for hex_conservative::error::InvalidCharError
 impl core::marker::Send for hex_conservative::error::InvalidCharError
 impl core::marker::Sync for hex_conservative::error::InvalidCharError
 impl core::marker::Unpin for hex_conservative::error::InvalidCharError
+impl core::marker::UnsafeUnpin for hex_conservative::error::InvalidCharError
 impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::error::InvalidCharError
 impl core::panic::unwind_safe::UnwindSafe for hex_conservative::error::InvalidCharError
 impl<T, U> core::convert::Into<U> for hex_conservative::error::InvalidCharError where U: core::convert::From<T>
@@ -952,6 +967,7 @@ impl core::marker::Freeze for hex_conservative::error::InvalidLengthError
 impl core::marker::Send for hex_conservative::error::InvalidLengthError
 impl core::marker::Sync for hex_conservative::error::InvalidLengthError
 impl core::marker::Unpin for hex_conservative::error::InvalidLengthError
+impl core::marker::UnsafeUnpin for hex_conservative::error::InvalidLengthError
 impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::error::InvalidLengthError
 impl core::panic::unwind_safe::UnwindSafe for hex_conservative::error::InvalidLengthError
 impl<T, U> core::convert::Into<U> for hex_conservative::error::InvalidLengthError where U: core::convert::From<T>
@@ -1000,6 +1016,7 @@ impl core::marker::Freeze for hex_conservative::error::OddLengthStringError
 impl core::marker::Send for hex_conservative::error::OddLengthStringError
 impl core::marker::Sync for hex_conservative::error::OddLengthStringError
 impl core::marker::Unpin for hex_conservative::error::OddLengthStringError
+impl core::marker::UnsafeUnpin for hex_conservative::error::OddLengthStringError
 impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::error::OddLengthStringError
 impl core::panic::unwind_safe::UnwindSafe for hex_conservative::error::OddLengthStringError
 impl<T, U> core::convert::Into<U> for hex_conservative::error::OddLengthStringError where U: core::convert::From<T>
