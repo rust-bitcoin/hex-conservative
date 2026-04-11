@@ -39,18 +39,16 @@ use crate::buf_encoder::BufEncoder;
 ///
 /// Types that have a single, obvious text representation being hex should **not** implement this
 /// trait and simply implement `Display` instead.
-///
-/// This trait should be generally implemented for references only. We would prefer to use GAT but
-/// that is beyond our MSRV. As a lint we require the `IsRef` trait which is implemented for all
-/// references.
-pub trait DisplayHex: Copy + sealed::IsRef + sealed::Sealed {
+pub trait DisplayHex: sealed::Sealed {
     /// The type providing [`fmt::Display`] implementation.
     ///
-    /// This is usually a wrapper type holding a reference to `Self`.
-    type Display: fmt::Display + fmt::Debug + fmt::LowerHex + fmt::UpperHex;
+    /// This is a wrapper type holding a reference to `Self`.
+    type Display<'a>: fmt::Display + fmt::Debug + fmt::LowerHex + fmt::UpperHex
+    where
+        Self: 'a;
 
     /// Display `Self` as a continuous sequence of ASCII hex chars.
-    fn as_hex(self) -> Self::Display;
+    fn as_hex<'a>(&'a self) -> Self::Display<'a>;
 
     /// Create a lower-hex-encoded string.
     ///
@@ -59,7 +57,7 @@ pub trait DisplayHex: Copy + sealed::IsRef + sealed::Sealed {
     /// This may be faster than `.display_hex().to_string()` because it uses `reserve_suggestion`.
     #[cfg(feature = "alloc")]
     #[inline]
-    fn to_lower_hex_string(self) -> String { self.to_hex_string(Case::Lower) }
+    fn to_lower_hex_string(&self) -> String { self.to_hex_string(Case::Lower) }
 
     /// Create an upper-hex-encoded string.
     ///
@@ -68,13 +66,13 @@ pub trait DisplayHex: Copy + sealed::IsRef + sealed::Sealed {
     /// This may be faster than `.display_hex().to_string()` because it uses `reserve_suggestion`.
     #[cfg(feature = "alloc")]
     #[inline]
-    fn to_upper_hex_string(self) -> String { self.to_hex_string(Case::Upper) }
+    fn to_upper_hex_string(&self) -> String { self.to_hex_string(Case::Upper) }
 
     /// Create a hex-encoded string.
     ///
     /// This may be faster than `.display_hex().to_string()` because it uses `reserve_suggestion`.
     #[cfg(feature = "alloc")]
-    fn to_hex_string(self, case: Case) -> String {
+    fn to_hex_string(&self, case: Case) -> String {
         let mut string = String::new();
         self.append_hex_to_string(case, &mut string);
         string
@@ -85,7 +83,7 @@ pub trait DisplayHex: Copy + sealed::IsRef + sealed::Sealed {
     /// This may be faster than `write!(string, "{:x}", self.as_hex())` because it uses
     /// `hex_reserve_sugggestion`.
     #[cfg(feature = "alloc")]
-    fn append_hex_to_string(self, case: Case, string: &mut String) {
+    fn append_hex_to_string<'a>(&'a self, case: Case, string: &mut String) {
         use fmt::Write;
 
         string.reserve(self.hex_reserve_suggestion());
@@ -94,7 +92,7 @@ pub trait DisplayHex: Copy + sealed::IsRef + sealed::Sealed {
             Case::Upper => write!(string, "{:X}", self.as_hex()),
         }
         .unwrap_or_else(|_| {
-            let name = core::any::type_name::<Self::Display>();
+            let name = core::any::type_name::<Self::Display<'a>>();
             // We don't expect `std` to ever be buggy, so the bug is most likely in the `Display`
             // impl of `Self::Display`.
             panic!("The implementation of Display for {} returned an error when it shouldn't", name)
@@ -105,7 +103,7 @@ pub trait DisplayHex: Copy + sealed::IsRef + sealed::Sealed {
     ///
     /// If you don't know you can just return 0 and take the perf hit.
     // We prefix the name with `hex_` to avoid potential collision with other methods.
-    fn hex_reserve_suggestion(self) -> usize;
+    fn hex_reserve_suggestion(&self) -> usize;
 }
 
 fn internal_display(bytes: &[u8], f: &mut fmt::Formatter, case: Case) -> fmt::Result {
@@ -206,23 +204,18 @@ fn write_pad_right(
 }
 
 mod sealed {
-    /// Trait marking a shared reference.
-    pub trait IsRef: Copy {}
-
-    impl<T: ?Sized> IsRef for &'_ T {}
-
     /// Used to seal the `DisplayHex` trait.
     pub trait Sealed {}
 
-    impl Sealed for &'_ [u8] {}
+    impl Sealed for [u8] {}
 
     #[cfg(feature = "alloc")]
-    impl Sealed for &'_ alloc::vec::Vec<u8> {}
+    impl Sealed for alloc::vec::Vec<u8> {}
 
     macro_rules! impl_array_sealed {
         ($($len:expr),*) => {
             $(
-                impl<'a> Sealed for &'a [u8; $len] {}
+                impl Sealed for [u8; $len] {}
             )*
         }
     }
@@ -235,14 +228,14 @@ mod sealed {
     );
 }
 
-impl<'a> DisplayHex for &'a [u8] {
-    type Display = DisplayByteSlice<'a>;
+impl DisplayHex for [u8] {
+    type Display<'a> = DisplayByteSlice<'a>;
 
     #[inline]
-    fn as_hex(self) -> Self::Display { DisplayByteSlice { bytes: self } }
+    fn as_hex<'a>(&'a self) -> Self::Display<'a> { DisplayByteSlice { bytes: self } }
 
     #[inline]
-    fn hex_reserve_suggestion(self) -> usize {
+    fn hex_reserve_suggestion(&self) -> usize {
         // Since the string wouldn't fit into address space if this overflows (actually even for
         // smaller amounts) it's better to panic right away. It should also give the optimizer
         // better opportunities.
@@ -251,14 +244,14 @@ impl<'a> DisplayHex for &'a [u8] {
 }
 
 #[cfg(feature = "alloc")]
-impl<'a> DisplayHex for &'a alloc::vec::Vec<u8> {
-    type Display = DisplayByteSlice<'a>;
+impl DisplayHex for alloc::vec::Vec<u8> {
+    type Display<'a> = DisplayByteSlice<'a>;
 
     #[inline]
-    fn as_hex(self) -> Self::Display { DisplayByteSlice { bytes: self } }
+    fn as_hex<'a>(&'a self) -> Self::Display<'a> { DisplayByteSlice { bytes: self } }
 
     #[inline]
-    fn hex_reserve_suggestion(self) -> usize {
+    fn hex_reserve_suggestion(&self) -> usize {
         // Since the string wouldn't fit into address space if this overflows (actually even for
         // smaller amounts) it's better to panic right away. It should also give the optimizer
         // better opportunities.
@@ -349,14 +342,14 @@ impl<const LEN: usize> fmt::UpperHex for DisplayArray<'_, LEN> {
 macro_rules! impl_array_as_hex {
     ($($len:expr),*) => {
         $(
-            impl<'a> DisplayHex for &'a [u8; $len] {
-                type Display = DisplayArray<'a, {$len * 2}>;
+            impl DisplayHex for [u8; $len] {
+                type Display<'a> = DisplayArray<'a, {$len * 2}>;
 
-                fn as_hex(self) -> Self::Display {
+                fn as_hex<'a>(&'a self) -> Self::Display<'a> {
                     DisplayArray::new(self)
                 }
 
-                fn hex_reserve_suggestion(self) -> usize { $len * 2 }
+                fn hex_reserve_suggestion(&self) -> usize { $len * 2 }
             }
         )*
     }
