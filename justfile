@@ -1,30 +1,27 @@
-default:
+alias ulf := update-lock-files
+
+_default:
   @just --list
 
-# Cargo build everything.
-build:
-  cargo build --workspace --all-targets --all-features
+# Install necessary dev tools on system.
+[group('system')]
+tools:
+  @{{justfile_directory()}}/contrib/ensure-maintainer-tools.sh
 
-# Cargo check everything.
-check:
-  cargo check --workspace --all-targets --all-features
+# Install workspace toolchains.
+[group('system')]
+@toolchains: tools
+  RBMT_LOG_LEVEL=quiet cargo rbmt toolchains > /dev/null
 
-# Lint everything.
-lint:
-  cargo +$(cat ./nightly-version) clippy --workspace --all-targets --all-features -- --deny warnings
+# Setup rbmt and run with given args.
+@rbmt *args: toolchains
+  RBMT_LOG_LEVEL=quiet cargo rbmt {{args}}
 
-# Run cargo fmt
-fmt:
-  cargo +$(cat ./nightly-version) fmt --all
+# Format workspace.
+@fmt: (rbmt "fmt")
 
-# Check the formatting
-format:
-  cargo +$(cat ./nightly-version) fmt --all --check
-
-# Generate documentation.
-docsrs *flags:
-  RUSTDOCFLAGS="--cfg docsrs -D warnings -D rustdoc::broken-intra-doc-links" cargo +$(cat ./nightly-version) doc --all-features {{flags}}
+# Check for API changes.
+check-api: (rbmt "api")
 
 # Update the recent and minimal lock files.
-update-lock-files:
-  contrib/update-lock-files.sh
+@update-lock-files: (rbmt "lock")
