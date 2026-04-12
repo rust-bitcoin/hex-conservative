@@ -157,11 +157,6 @@ pub struct InvalidCharError {
     pub(crate) pos: usize,
 }
 
-impl From<Infallible> for InvalidCharError {
-    #[inline]
-    fn from(never: Infallible) -> Self { match never {} }
-}
-
 impl InvalidCharError {
     /// Returns the invalid character byte.
     #[inline]
@@ -193,6 +188,11 @@ impl InvalidCharError {
         self.pos += by_bytes;
         self
     }
+}
+
+impl From<Infallible> for InvalidCharError {
+    #[inline]
+    fn from(never: Infallible) -> Self { match never {} }
 }
 
 /// Note that the implementation displays position as 1-based instead of 0-based to be more
@@ -246,7 +246,10 @@ impl fmt::Display for InvalidCharError {
 }
 
 if_std_error! {{
-    impl StdError for InvalidCharError {}
+    impl StdError for InvalidCharError {
+        #[inline]
+        fn source(&self) -> Option<&(dyn StdError + 'static)> { None }
+    }
 }}
 
 /// Purported hex string had odd length.
@@ -255,15 +258,15 @@ pub struct OddLengthStringError {
     pub(crate) len: usize,
 }
 
-impl From<Infallible> for OddLengthStringError {
-    #[inline]
-    fn from(never: Infallible) -> Self { match never {} }
-}
-
 impl OddLengthStringError {
     /// Returns the odd length of the input string.
     #[inline]
     pub fn length(&self) -> usize { self.len }
+}
+
+impl From<Infallible> for OddLengthStringError {
+    #[inline]
+    fn from(never: Infallible) -> Self { match never {} }
 }
 
 impl fmt::Display for OddLengthStringError {
@@ -278,7 +281,10 @@ impl fmt::Display for OddLengthStringError {
 }
 
 if_std_error! {{
-    impl StdError for OddLengthStringError {}
+    impl StdError for OddLengthStringError {
+        #[inline]
+        fn source(&self) -> Option<&(dyn StdError + 'static)> { None }
+    }
 }}
 
 /// Error returned when hex decoding bytes whose length is known at compile time.
@@ -369,11 +375,6 @@ pub struct InvalidLengthError {
     pub(crate) invalid: usize,
 }
 
-impl From<Infallible> for InvalidLengthError {
-    #[inline]
-    fn from(never: Infallible) -> Self { match never {} }
-}
-
 impl InvalidLengthError {
     /// Returns the expected length.
     ///
@@ -390,6 +391,11 @@ impl InvalidLengthError {
     pub fn invalid_length(&self) -> usize { self.invalid }
 }
 
+impl From<Infallible> for InvalidLengthError {
+    #[inline]
+    fn from(never: Infallible) -> Self { match never {} }
+}
+
 impl fmt::Display for InvalidLengthError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
@@ -403,7 +409,10 @@ impl fmt::Display for InvalidLengthError {
 }
 
 if_std_error! {{
-    impl StdError for InvalidLengthError {}
+    impl StdError for InvalidLengthError {
+        #[inline]
+        fn source(&self) -> Option<&(dyn StdError + 'static)> { None }
+    }
 }}
 
 #[cfg(test)]
