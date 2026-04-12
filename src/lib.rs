@@ -225,7 +225,8 @@ mod table {
     /// Table of hex chars.
     //
     // Correctness invariant: each byte in the table must be ASCII.
-    #[derive(Debug)]
+    #[allow(clippy::derived_hash_with_manual_eq)] // The Eq impl distinguishes the two possible values of Table
+    #[derive(Debug, Hash)]
     pub(crate) struct Table([u8; 16]);
 
     impl Table {
@@ -261,6 +262,13 @@ mod table {
             hex_str
         }
     }
+
+    impl PartialEq for Table {
+        // Table can only be Table::LOWER or Table::UPPER. These differ in any of the bytes from
+        // indices 10-15.
+        fn eq(&self, other: &Self) -> bool { self.0[10] == other.0[10] }
+    }
+    impl Eq for Table {}
 }
 
 #[cfg(test)]

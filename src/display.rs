@@ -221,6 +221,7 @@ impl DisplayHex for [u8] {
 /// Displays byte slice as hex.
 ///
 /// Created by [`<&[u8] as DisplayHex>::as_hex`](DisplayHex::as_hex).
+#[derive(Clone, PartialEq, Eq, Hash)]
 pub struct DisplayByteSlice<'a> {
     // pub because we want to keep lengths in sync
     pub(crate) bytes: &'a [u8],
@@ -493,7 +494,7 @@ where
 /// Given a `T:` [`fmt::Write`], `HexWriter` implements [`std::io::Write`]
 /// and writes the source bytes to its inner `T` as hex characters.
 #[cfg(feature = "std")]
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct HexWriter<T> {
     writer: T,
     table: &'static Table,

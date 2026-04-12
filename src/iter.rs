@@ -21,7 +21,7 @@ use crate::{Case, Table};
 ///
 /// Use [`HexToBytesIter`] if you need an iterator that is generic over the source of hex digit
 /// pairs.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct HexSliceToBytesIter<'a>(HexToBytesIter<HexDigitsIter<'a>>);
 
 impl<'a> HexSliceToBytesIter<'a> {
@@ -68,7 +68,7 @@ impl io::Read for HexSliceToBytesIter<'_> {
 }
 
 /// Iterator yielding bytes decoded from an iterator of pairs of hex digits.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct HexToBytesIter<I>
 where
     I: Iterator<Item = [u8; 2]>,
@@ -246,7 +246,7 @@ where
 /// Generally you shouldn't need to refer to this or bother with it and just use
 /// [`HexToBytesIter::new`] consuming the returned value and use `HexSliceToBytesIter` if you need
 /// to refer to the iterator in your types.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct HexDigitsIter<'a> {
     // Invariant: the length of the chunks is 2.
     // Technically, this is `iter::Map` but we can't use it because fn is anonymous.
@@ -304,7 +304,7 @@ fn hex_chars_to_byte(hi: u8, lo: u8) -> Result<u8, (u8, bool)> {
 }
 
 /// Iterator over bytes which encodes the bytes and yields hex characters.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct BytesToHexIter<I>
 where
     I: Iterator,
