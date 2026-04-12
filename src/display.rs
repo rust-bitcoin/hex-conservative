@@ -39,7 +39,7 @@ use crate::buf_encoder::BufEncoder;
 ///
 /// Types that have a single, obvious text representation being hex should **not** implement this
 /// trait and simply implement `Display` instead.
-pub trait DisplayHex: sealed::Sealed {
+pub trait DisplayHex {
     /// The type providing [`fmt::Display`] implementation.
     ///
     /// This is a wrapper type holding a reference to `Self`.
@@ -203,48 +203,7 @@ fn write_pad_right(
     Ok(())
 }
 
-mod sealed {
-    /// Used to seal the `DisplayHex` trait.
-    pub trait Sealed {}
-
-    impl Sealed for [u8] {}
-
-    #[cfg(feature = "alloc")]
-    impl Sealed for alloc::vec::Vec<u8> {}
-
-    macro_rules! impl_array_sealed {
-        ($($len:expr),*) => {
-            $(
-                impl Sealed for [u8; $len] {}
-            )*
-        }
-    }
-
-    // Same as call to `impl_array_as_hex` below.
-    #[rustfmt::skip]
-    impl_array_sealed!(
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 32, 33, 64, 65,
-        128, 256, 512, 1024, 2048, 4096
-    );
-}
-
 impl DisplayHex for [u8] {
-    type Display<'a> = DisplayByteSlice<'a>;
-
-    #[inline]
-    fn as_hex<'a>(&'a self) -> Self::Display<'a> { DisplayByteSlice { bytes: self } }
-
-    #[inline]
-    fn hex_reserve_suggestion(&self) -> usize {
-        // Since the string wouldn't fit into address space if this overflows (actually even for
-        // smaller amounts) it's better to panic right away. It should also give the optimizer
-        // better opportunities.
-        self.len().checked_mul(2).expect("the string wouldn't fit into address space")
-    }
-}
-
-#[cfg(feature = "alloc")]
-impl DisplayHex for alloc::vec::Vec<u8> {
     type Display<'a> = DisplayByteSlice<'a>;
 
     #[inline]
@@ -293,74 +252,6 @@ impl fmt::UpperHex for DisplayByteSlice<'_> {
     #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { self.display(f, Case::Upper) }
 }
-
-/// Displays byte array as hex.
-///
-/// Created by [`<&[u8; CAP / 2] as DisplayHex>::as_hex`](DisplayHex::as_hex).
-pub struct DisplayArray<'a, const CAP: usize> {
-    array: &'a [u8],
-}
-
-impl<'a, const CAP: usize> DisplayArray<'a, CAP> {
-    /// Creates the wrapper.
-    ///
-    /// # Panics
-    ///
-    /// When the length of array is greater than capacity / 2.
-    #[inline]
-    fn new(array: &'a [u8]) -> Self {
-        assert!(array.len() <= CAP / 2);
-        DisplayArray { array }
-    }
-
-    #[inline]
-    fn display(&self, f: &mut fmt::Formatter, case: Case) -> fmt::Result {
-        internal_display(self.array, f, case)
-    }
-}
-
-impl<const LEN: usize> fmt::Display for DisplayArray<'_, LEN> {
-    #[inline]
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
-}
-
-impl<const LEN: usize> fmt::Debug for DisplayArray<'_, LEN> {
-    #[inline]
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(self, f) }
-}
-
-impl<const LEN: usize> fmt::LowerHex for DisplayArray<'_, LEN> {
-    #[inline]
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { self.display(f, Case::Lower) }
-}
-
-impl<const LEN: usize> fmt::UpperHex for DisplayArray<'_, LEN> {
-    #[inline]
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { self.display(f, Case::Upper) }
-}
-
-macro_rules! impl_array_as_hex {
-    ($($len:expr),*) => {
-        $(
-            impl DisplayHex for [u8; $len] {
-                type Display<'a> = DisplayArray<'a, {$len * 2}>;
-
-                fn as_hex<'a>(&'a self) -> Self::Display<'a> {
-                    DisplayArray::new(self)
-                }
-
-                fn hex_reserve_suggestion(&self) -> usize { $len * 2 }
-            }
-        )*
-    }
-}
-
-// Same as call to `impl_array_sealed` above.
-#[rustfmt::skip]
-impl_array_as_hex!(
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 32, 33, 64, 65,
-    128, 256, 512, 1024, 2048, 4096
-);
 
 /// Format known-length array as hex.
 ///
