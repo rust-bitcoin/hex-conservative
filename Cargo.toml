@@ -10,11 +10,15 @@ keywords = ["encoding", "hex", "hexadecimal"]
 readme = "README.md"
 edition = "2021"
 rust-version = "1.63.0"
-exclude = ["tests", "contrib"]
+exclude = ["api", "tests", "contrib"]
 
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[package.metadata.rbmt.api]
+enabled = true
+features = [["alloc"]]
 
 [workspace]
 members = ["fuzz"]
