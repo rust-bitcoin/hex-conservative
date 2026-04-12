@@ -95,12 +95,14 @@ impl hex_conservative::error::DecodeVariableLengthBytesError
 impl hex_conservative::error::InvalidCharError
 impl hex_conservative::error::InvalidLengthError
 impl hex_conservative::error::OddLengthStringError
+impl<'a, const CAP: usize> core::clone::Clone for hex_conservative::display::DisplayArray<'a, CAP>
 impl<'a, const CAP: usize> core::marker::Freeze for hex_conservative::display::DisplayArray<'a, CAP>
 impl<'a, const CAP: usize> core::marker::Send for hex_conservative::display::DisplayArray<'a, CAP>
 impl<'a, const CAP: usize> core::marker::Sync for hex_conservative::display::DisplayArray<'a, CAP>
 impl<'a, const CAP: usize> core::marker::Unpin for hex_conservative::display::DisplayArray<'a, CAP>
 impl<'a, const CAP: usize> core::panic::unwind_safe::RefUnwindSafe for hex_conservative::display::DisplayArray<'a, CAP>
 impl<'a, const CAP: usize> core::panic::unwind_safe::UnwindSafe for hex_conservative::display::DisplayArray<'a, CAP>
+impl<'a> core::clone::Clone for hex_conservative::display::DisplayByteSlice<'a>
 impl<'a> core::marker::Freeze for hex_conservative::display::DisplayByteSlice<'a>
 impl<'a> core::marker::Send for hex_conservative::display::DisplayByteSlice<'a>
 impl<'a> core::marker::Sync for hex_conservative::display::DisplayByteSlice<'a>
@@ -137,6 +139,8 @@ impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 8]
 impl<'a> hex_conservative::display::DisplayHex for &'a [u8; 9]
 impl<'a> hex_conservative::display::DisplayHex for &'a [u8]
 impl<'a> hex_conservative::display::DisplayHex for &'a alloc::vec::Vec<u8>
+impl<I> core::clone::Clone for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::iterator::Iterator + core::clone::Clone, <I as core::iter::traits::iterator::Iterator>::Item: core::borrow::Borrow<u8>
+impl<I> core::clone::Clone for hex_conservative::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator<Item = [u8; 2]> + core::clone::Clone
 impl<I> core::fmt::Debug for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::iterator::Iterator + core::fmt::Debug, <I as core::iter::traits::iterator::Iterator>::Item: core::borrow::Borrow<u8>
 impl<I> core::fmt::Debug for hex_conservative::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator<Item = [u8; 2]> + core::fmt::Debug
 impl<I> core::iter::traits::double_ended::DoubleEndedIterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::double_ended::DoubleEndedIterator, <I as core::iter::traits::iterator::Iterator>::Item: core::borrow::Borrow<u8>
@@ -162,6 +166,7 @@ impl<I> core::panic::unwind_safe::UnwindSafe for hex_conservative::HexToBytesIte
 impl<I> hex_conservative::BytesToHexIter<I> where I: core::iter::traits::iterator::Iterator, <I as core::iter::traits::iterator::Iterator>::Item: core::borrow::Borrow<u8>
 impl<I> hex_conservative::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator<Item = [u8; 2]> + core::iter::traits::exact_size::ExactSizeIterator
 impl<I> std::io::Read for hex_conservative::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator<Item = [u8; 2]> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::marker::FusedIterator
+impl<T: core::clone::Clone> core::clone::Clone for hex_conservative::display::HexWriter<T>
 impl<T: core::fmt::Debug> core::fmt::Debug for hex_conservative::display::HexWriter<T>
 impl<T> core::marker::Freeze for hex_conservative::display::HexWriter<T> where T: core::marker::Freeze
 impl<T> core::marker::Send for hex_conservative::display::HexWriter<T> where T: core::marker::Send
@@ -171,6 +176,7 @@ impl<T> core::panic::unwind_safe::RefUnwindSafe for hex_conservative::display::H
 impl<T> core::panic::unwind_safe::UnwindSafe for hex_conservative::display::HexWriter<T> where T: core::panic::unwind_safe::UnwindSafe
 impl<T> hex_conservative::display::HexWriter<T>
 impl<T> std::io::Write for hex_conservative::display::HexWriter<T> where T: core::fmt::Write
+impl<const CAP: usize> core::clone::Clone for hex_conservative::buf_encoder::BufEncoder<CAP>
 impl<const CAP: usize> core::default::Default for hex_conservative::buf_encoder::BufEncoder<CAP>
 impl<const CAP: usize> core::fmt::Debug for hex_conservative::buf_encoder::BufEncoder<CAP>
 impl<const CAP: usize> core::marker::Freeze for hex_conservative::buf_encoder::BufEncoder<CAP>
@@ -247,6 +253,7 @@ pub fn &'a [u8]::as_hex(self) -> Self::Display
 pub fn &'a [u8]::hex_reserve_suggestion(self) -> usize
 pub fn &'a alloc::vec::Vec<u8>::as_hex(self) -> Self::Display
 pub fn &'a alloc::vec::Vec<u8>::hex_reserve_suggestion(self) -> usize
+pub fn hex_conservative::BytesToHexIter<I>::clone(&self) -> hex_conservative::BytesToHexIter<I>
 pub fn hex_conservative::BytesToHexIter<I>::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 pub fn hex_conservative::BytesToHexIter<I>::len(&self) -> usize
 pub fn hex_conservative::BytesToHexIter<I>::new(iter: I, case: hex_conservative::Case) -> hex_conservative::BytesToHexIter<I>
@@ -264,6 +271,7 @@ pub fn hex_conservative::DisplayHex::hex_reserve_suggestion(self) -> usize
 pub fn hex_conservative::DisplayHex::to_hex_string(self, case: hex_conservative::Case) -> alloc::string::String
 pub fn hex_conservative::DisplayHex::to_lower_hex_string(self) -> alloc::string::String
 pub fn hex_conservative::DisplayHex::to_upper_hex_string(self) -> alloc::string::String
+pub fn hex_conservative::HexToBytesIter<I>::clone(&self) -> hex_conservative::HexToBytesIter<I>
 pub fn hex_conservative::HexToBytesIter<I>::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 pub fn hex_conservative::HexToBytesIter<I>::from_pairs(iter: I) -> Self
 pub fn hex_conservative::HexToBytesIter<I>::next(&mut self) -> core::option::Option<Self::Item>
@@ -275,6 +283,7 @@ pub fn hex_conservative::HexToBytesIter<I>::size_hint(&self) -> (usize, core::op
 pub fn hex_conservative::HexToBytesIter<hex_conservative::iter::HexDigitsIter<'a>>::new(s: &'a str) -> core::result::Result<Self, hex_conservative::error::OddLengthStringError>
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::as_str(&self) -> &str
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::clear(&mut self)
+pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::clone(&self) -> hex_conservative::buf_encoder::BufEncoder<CAP>
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::default() -> Self
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::is_full(&self) -> bool
@@ -286,13 +295,16 @@ pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::space_remaining(&self) ->
 pub fn hex_conservative::decode_to_array<const N: usize>(hex: &str) -> core::result::Result<[u8; N], hex_conservative::error::DecodeFixedLengthBytesError>
 pub fn hex_conservative::decode_to_vec(hex: &str) -> core::result::Result<alloc::vec::Vec<u8>, hex_conservative::error::DecodeVariableLengthBytesError>
 pub fn hex_conservative::display::DisplayArray<'_, LEN>::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn hex_conservative::display::DisplayArray<'a, CAP>::clone(&self) -> hex_conservative::display::DisplayArray<'a, CAP>
 pub fn hex_conservative::display::DisplayByteSlice<'_>::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn hex_conservative::display::DisplayByteSlice<'a>::clone(&self) -> hex_conservative::display::DisplayByteSlice<'a>
 pub fn hex_conservative::display::DisplayHex::append_hex_to_string(self, case: hex_conservative::Case, string: &mut alloc::string::String)
 pub fn hex_conservative::display::DisplayHex::as_hex(self) -> Self::Display
 pub fn hex_conservative::display::DisplayHex::hex_reserve_suggestion(self) -> usize
 pub fn hex_conservative::display::DisplayHex::to_hex_string(self, case: hex_conservative::Case) -> alloc::string::String
 pub fn hex_conservative::display::DisplayHex::to_lower_hex_string(self) -> alloc::string::String
 pub fn hex_conservative::display::DisplayHex::to_upper_hex_string(self) -> alloc::string::String
+pub fn hex_conservative::display::HexWriter<T>::clone(&self) -> hex_conservative::display::HexWriter<T>
 pub fn hex_conservative::display::HexWriter<T>::flush(&mut self) -> core::result::Result<(), std::io::error::Error>
 pub fn hex_conservative::display::HexWriter<T>::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 pub fn hex_conservative::display::HexWriter<T>::into_inner(self) -> T
