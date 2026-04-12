@@ -10,6 +10,10 @@ pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::put_byte(&mut self, byte:
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::put_bytes<I>(&mut self, bytes: I) where I: core::iter::traits::collect::IntoIterator, <I as core::iter::traits::collect::IntoIterator>::Item: core::borrow::Borrow<u8>
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::put_bytes_min<'a>(&mut self, bytes: &'a [u8]) -> &'a [u8]
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::space_remaining(&self) -> usize
+impl<const CAP: usize, A: core::borrow::Borrow<u8>> core::iter::traits::collect::Extend<A> for hex_conservative::buf_encoder::BufEncoder<CAP>
+pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::extend<T: core::iter::traits::collect::IntoIterator<Item = A>>(&mut self, iter: T)
+impl<const CAP: usize, A: core::borrow::Borrow<u8>> core::iter::traits::collect::FromIterator<A> for hex_conservative::buf_encoder::BufEncoder<CAP>
+pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::from_iter<T: core::iter::traits::collect::IntoIterator<Item = A>>(iter: T) -> Self
 impl<const CAP: usize> core::default::Default for hex_conservative::buf_encoder::BufEncoder<CAP>
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::default() -> Self
 impl<const CAP: usize> core::fmt::Debug for hex_conservative::buf_encoder::BufEncoder<CAP>
