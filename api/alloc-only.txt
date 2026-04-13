@@ -773,11 +773,13 @@ impl<I> core::fmt::Debug for hex_conservative::BytesToHexIter<I> where I: core::
 pub fn hex_conservative::BytesToHexIter<I>::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 impl<I> core::iter::traits::double_ended::DoubleEndedIterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::double_ended::DoubleEndedIterator, <I as core::iter::traits::iterator::Iterator>::Item: core::borrow::Borrow<u8>
 pub fn hex_conservative::BytesToHexIter<I>::next_back(&mut self) -> core::option::Option<char>
+pub fn hex_conservative::BytesToHexIter<I>::nth_back(&mut self, n: usize) -> core::option::Option<char>
 impl<I> core::iter::traits::exact_size::ExactSizeIterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::exact_size::ExactSizeIterator, <I as core::iter::traits::iterator::Iterator>::Item: core::borrow::Borrow<u8>
 pub fn hex_conservative::BytesToHexIter<I>::len(&self) -> usize
 impl<I> core::iter::traits::iterator::Iterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::iterator::Iterator, <I as core::iter::traits::iterator::Iterator>::Item: core::borrow::Borrow<u8>
 pub type hex_conservative::BytesToHexIter<I>::Item = char
 pub fn hex_conservative::BytesToHexIter<I>::next(&mut self) -> core::option::Option<char>
+pub fn hex_conservative::BytesToHexIter<I>::nth(&mut self, n: usize) -> core::option::Option<char>
 pub fn hex_conservative::BytesToHexIter<I>::size_hint(&self) -> (usize, core::option::Option<usize>)
 impl<I> core::iter::traits::marker::FusedIterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::marker::FusedIterator, <I as core::iter::traits::iterator::Iterator>::Item: core::borrow::Borrow<u8>
 impl<I> core::marker::Freeze for hex_conservative::BytesToHexIter<I> where I: core::marker::Freeze

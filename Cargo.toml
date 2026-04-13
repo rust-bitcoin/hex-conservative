@@ -14,6 +14,7 @@ exclude = ["api", "tests", "contrib"]
 
 [workspace]
 members = ["fuzz"]
+exclude = ["benches"]
 
 [features]
 default = ["std"]
