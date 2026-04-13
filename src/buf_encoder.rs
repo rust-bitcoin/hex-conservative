@@ -148,6 +148,18 @@ impl<const CAP: usize> Default for BufEncoder<CAP> {
     fn default() -> Self { Self::new(Case::Lower) }
 }
 
+impl<const CAP: usize, A: Borrow<u8>> FromIterator<A> for BufEncoder<CAP> {
+    fn from_iter<T: IntoIterator<Item = A>>(iter: T) -> Self {
+        let mut encoder = Self::default();
+        encoder.put_bytes(iter);
+        encoder
+    }
+}
+
+impl<const CAP: usize, A: Borrow<u8>> Extend<A> for BufEncoder<CAP> {
+    fn extend<T: IntoIterator<Item = A>>(&mut self, iter: T) { self.put_bytes(iter); }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -262,6 +274,29 @@ mod tests {
         assert_eq!(encoder.as_str(), "aéé");
         assert_eq!(encoder.put_filler('é', 4), 1); // Try to fill more than fits
         assert_eq!(encoder.as_str(), "aééé");
+    }
+
+    #[test]
+    fn from_iterator() {
+        let bytes = [0x00_u8, 0xab, 0xff];
+        let encoder: BufEncoder<6> = bytes.iter().collect(); // ref iter
+        assert_eq!(encoder.as_str(), "00abff");
+
+        let encoder: BufEncoder<6> = bytes.into_iter().collect(); // owned iter
+        assert_eq!(encoder.as_str(), "00abff");
+    }
+
+    #[test]
+    fn extend() {
+        let mut encoder = BufEncoder::<8>::new(Case::Upper);
+        encoder.put_byte(0x00);
+        encoder.extend([0xab_u8, 0xff]);
+        assert_eq!(encoder.as_str(), "00ABFF");
+
+        let mut encoder = BufEncoder::<6>::new(Case::Lower);
+        encoder.put_byte(0x42);
+        encoder.extend([0xab_u8, 0xff]);
+        assert_eq!(encoder.as_str(), "42abff");
     }
 
     #[test]
