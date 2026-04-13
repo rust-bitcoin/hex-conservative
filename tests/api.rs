@@ -101,8 +101,10 @@ fn api_all_non_error_types_have_non_empty_debug() {
     let debug = format!("{:?}", t.d);
     assert!(!debug.is_empty());
     #[cfg(feature = "std")]
-    let debug = format!("{:?}", t.e);
-    assert!(!debug.is_empty());
+    {
+        let debug = format!("{:?}", t.e);
+        assert!(!debug.is_empty());
+    }
     let debug = format!("{:?}", t.f);
     assert!(!debug.is_empty());
     let debug = format!("{:?}", t.g);
