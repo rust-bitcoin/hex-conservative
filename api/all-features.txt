@@ -855,9 +855,51 @@ impl<T> core::borrow::BorrowMut<T> for hex_conservative::BytesToHexIter<I> where
 pub fn hex_conservative::BytesToHexIter<I>::borrow_mut(&mut self) -> &mut T
 impl<T> core::convert::From<T> for hex_conservative::BytesToHexIter<I>
 pub fn hex_conservative::BytesToHexIter<I>::from(t: T) -> T
+pub struct hex_conservative::HexSliceToBytesIter<'a>(_)
+impl<'a> hex_conservative::HexSliceToBytesIter<'a>
+pub fn hex_conservative::HexSliceToBytesIter<'a>::new(s: &'a str) -> core::result::Result<Self, hex_conservative::error::OddLengthStringError>
+impl core::iter::traits::double_ended::DoubleEndedIterator for hex_conservative::HexSliceToBytesIter<'_>
+pub fn hex_conservative::HexSliceToBytesIter<'_>::next_back(&mut self) -> core::option::Option<Self::Item>
+pub fn hex_conservative::HexSliceToBytesIter<'_>::nth_back(&mut self, n: usize) -> core::option::Option<Self::Item>
+impl core::iter::traits::exact_size::ExactSizeIterator for hex_conservative::HexSliceToBytesIter<'_>
+impl core::iter::traits::iterator::Iterator for hex_conservative::HexSliceToBytesIter<'_>
+pub type hex_conservative::HexSliceToBytesIter<'_>::Item = core::result::Result<u8, hex_conservative::error::InvalidCharError>
+pub fn hex_conservative::HexSliceToBytesIter<'_>::next(&mut self) -> core::option::Option<Self::Item>
+pub fn hex_conservative::HexSliceToBytesIter<'_>::nth(&mut self, n: usize) -> core::option::Option<Self::Item>
+pub fn hex_conservative::HexSliceToBytesIter<'_>::size_hint(&self) -> (usize, core::option::Option<usize>)
+impl core::iter::traits::marker::FusedIterator for hex_conservative::HexSliceToBytesIter<'_>
+impl std::io::Read for hex_conservative::HexSliceToBytesIter<'_>
+pub fn hex_conservative::HexSliceToBytesIter<'_>::read(&mut self, buf: &mut [u8]) -> std::io::error::Result<usize>
+impl<'a> core::fmt::Debug for hex_conservative::HexSliceToBytesIter<'a>
+pub fn hex_conservative::HexSliceToBytesIter<'a>::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl<'a> core::marker::Freeze for hex_conservative::HexSliceToBytesIter<'a>
+impl<'a> core::marker::Send for hex_conservative::HexSliceToBytesIter<'a>
+impl<'a> core::marker::Sync for hex_conservative::HexSliceToBytesIter<'a>
+impl<'a> core::marker::Unpin for hex_conservative::HexSliceToBytesIter<'a>
+impl<'a> core::marker::UnsafeUnpin for hex_conservative::HexSliceToBytesIter<'a>
+impl<'a> core::panic::unwind_safe::RefUnwindSafe for hex_conservative::HexSliceToBytesIter<'a>
+impl<'a> core::panic::unwind_safe::UnwindSafe for hex_conservative::HexSliceToBytesIter<'a>
+impl<I> core::iter::traits::collect::IntoIterator for hex_conservative::HexSliceToBytesIter<'a> where I: core::iter::traits::iterator::Iterator
+pub type hex_conservative::HexSliceToBytesIter<'a>::IntoIter = I
+pub type hex_conservative::HexSliceToBytesIter<'a>::Item = <I as core::iter::traits::iterator::Iterator>::Item
+pub fn hex_conservative::HexSliceToBytesIter<'a>::into_iter(self) -> I
+impl<T, U> core::convert::Into<U> for hex_conservative::HexSliceToBytesIter<'a> where U: core::convert::From<T>
+pub fn hex_conservative::HexSliceToBytesIter<'a>::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for hex_conservative::HexSliceToBytesIter<'a> where U: core::convert::Into<T>
+pub type hex_conservative::HexSliceToBytesIter<'a>::Error = core::convert::Infallible
+pub fn hex_conservative::HexSliceToBytesIter<'a>::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for hex_conservative::HexSliceToBytesIter<'a> where U: core::convert::TryFrom<T>
+pub type hex_conservative::HexSliceToBytesIter<'a>::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn hex_conservative::HexSliceToBytesIter<'a>::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> core::any::Any for hex_conservative::HexSliceToBytesIter<'a> where T: 'static + ?core::marker::Sized
+pub fn hex_conservative::HexSliceToBytesIter<'a>::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for hex_conservative::HexSliceToBytesIter<'a> where T: ?core::marker::Sized
+pub fn hex_conservative::HexSliceToBytesIter<'a>::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for hex_conservative::HexSliceToBytesIter<'a> where T: ?core::marker::Sized
+pub fn hex_conservative::HexSliceToBytesIter<'a>::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for hex_conservative::HexSliceToBytesIter<'a>
+pub fn hex_conservative::HexSliceToBytesIter<'a>::from(t: T) -> T
 pub struct hex_conservative::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator<Item = [u8; 2]>
-impl<'a> hex_conservative::HexToBytesIter<hex_conservative::iter::HexDigitsIter<'a>>
-pub fn hex_conservative::HexToBytesIter<hex_conservative::iter::HexDigitsIter<'a>>::new(s: &'a str) -> core::result::Result<Self, hex_conservative::error::OddLengthStringError>
 impl<I> hex_conservative::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator<Item = [u8; 2]> + core::iter::traits::exact_size::ExactSizeIterator
 pub fn hex_conservative::HexToBytesIter<I>::from_pairs(iter: I) -> Self
 impl<I> core::fmt::Debug for hex_conservative::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator<Item = [u8; 2]> + core::fmt::Debug
@@ -1181,4 +1223,3 @@ pub fn &'a alloc::vec::Vec<u8>::as_hex(self) -> Self::Display
 pub fn &'a alloc::vec::Vec<u8>::hex_reserve_suggestion(self) -> usize
 pub fn hex_conservative::decode_to_array<const N: usize>(hex: &str) -> core::result::Result<[u8; N], hex_conservative::error::DecodeFixedLengthBytesError>
 pub fn hex_conservative::decode_to_vec(hex: &str) -> core::result::Result<alloc::vec::Vec<u8>, hex_conservative::error::DecodeVariableLengthBytesError>
-pub type hex_conservative::HexSliceToBytesIter<'a> = hex_conservative::HexToBytesIter<hex_conservative::iter::HexDigitsIter<'a>>

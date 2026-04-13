@@ -14,8 +14,58 @@ use crate::alloc::vec::Vec;
 use crate::error::{InvalidCharError, OddLengthStringError};
 use crate::{Case, Table};
 
-/// Convenience alias for `HexToBytesIter<HexDigitsIter<'a>>`.
-pub type HexSliceToBytesIter<'a> = HexToBytesIter<HexDigitsIter<'a>>;
+/// Iterator over bytes decoded from a hex string slice.
+///
+/// This is an iterator type returned when decoding a `&str` of hex digits. Each pair of hex
+/// characters is decoded into one byte.
+///
+/// Use [`HexToBytesIter`] if you need an iterator that is generic over the source of hex digit
+/// pairs.
+#[derive(Debug)]
+pub struct HexSliceToBytesIter<'a>(HexToBytesIter<HexDigitsIter<'a>>);
+
+impl<'a> HexSliceToBytesIter<'a> {
+    /// Constructs a new [`HexSliceToBytesIter`] from a string slice.
+    ///
+    /// # Errors
+    ///
+    /// If the input string is of odd length.
+    #[inline]
+    pub fn new(s: &'a str) -> Result<Self, OddLengthStringError> {
+        HexToBytesIter::new(s).map(Self)
+    }
+}
+
+impl Iterator for HexSliceToBytesIter<'_> {
+    type Item = Result<u8, InvalidCharError>;
+
+    #[inline]
+    fn next(&mut self) -> Option<Self::Item> { self.0.next() }
+
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) { self.0.size_hint() }
+
+    #[inline]
+    fn nth(&mut self, n: usize) -> Option<Self::Item> { self.0.nth(n) }
+}
+
+impl DoubleEndedIterator for HexSliceToBytesIter<'_> {
+    #[inline]
+    fn next_back(&mut self) -> Option<Self::Item> { self.0.next_back() }
+
+    #[inline]
+    fn nth_back(&mut self, n: usize) -> Option<Self::Item> { self.0.nth_back(n) }
+}
+
+impl ExactSizeIterator for HexSliceToBytesIter<'_> {}
+
+impl FusedIterator for HexSliceToBytesIter<'_> {}
+
+#[cfg(feature = "std")]
+impl io::Read for HexSliceToBytesIter<'_> {
+    #[inline]
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> { self.0.read(buf) }
+}
 
 /// Iterator yielding bytes decoded from an iterator of pairs of hex digits.
 #[derive(Debug)]
@@ -34,7 +84,7 @@ impl<'a> HexToBytesIter<HexDigitsIter<'a>> {
     ///
     /// If the input string is of odd length.
     #[inline]
-    pub fn new(s: &'a str) -> Result<Self, OddLengthStringError> {
+    pub(crate) fn new(s: &'a str) -> Result<Self, OddLengthStringError> {
         if s.len() % 2 != 0 {
             Err(OddLengthStringError { len: s.len() })
         } else {
