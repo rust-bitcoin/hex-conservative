@@ -97,6 +97,7 @@ pub mod prelude {
 
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
+use core::mem::MaybeUninit;
 
 pub(crate) use table::Table;
 
@@ -137,10 +138,20 @@ pub fn decode_to_vec(hex: &str) -> Result<Vec<u8>, DecodeVariableLengthBytesErro
 /// `N * 2`.)
 pub fn decode_to_array<const N: usize>(hex: &str) -> Result<[u8; N], DecodeFixedLengthBytesError> {
     if hex.len() == N * 2 {
-        let mut ret = [0u8; N];
+        // SAFETY: `[MaybeUninit<u8>; N]` has no initialization requirement,
+        // so an uninitialized array of them is sound. This is the standard
+        // `uninit_array` pattern.
+        let mut ret: [MaybeUninit<u8>; N] = unsafe { MaybeUninit::uninit().assume_init() };
+
         // checked above
-        HexToBytesIter::new_unchecked(hex).drain_to_slice(&mut ret)?;
-        Ok(ret)
+        HexToBytesIter::new_unchecked(hex).drain_to_uninit_slice(&mut ret)?;
+
+        // SAFETY: `drain_to_uninit_slice` returning `Ok` means all N bytes
+        // were written. `[MaybeUninit<u8>; N]` and `[u8; N]` have identical
+        // layout, so the transmute is sound.
+        #[allow(clippy::borrow_as_ptr)]
+        #[allow(clippy::ptr_as_ptr)]
+        Ok(unsafe { (&ret as *const _ as *const [u8; N]).read() })
     } else {
         Err(InvalidLengthError { invalid: hex.len(), expected: 2 * N }.into())
     }
@@ -272,5 +283,20 @@ mod tests {
             hex!("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
         assert_eq!(HASH[0], 0x00);
         assert_eq!(HASH[31], 0x6f);
+    }
+
+    // This implicitly test `drain_to_uninit_slice()`.
+    // In `iter::hex_to_bytes_slice_drain` we test `drain_to_slice()`
+    #[test]
+    fn decode_to_vec() {
+        let hex = "deadbeef";
+        let want = [0xde, 0xad, 0xbe, 0xef];
+        let got = crate::decode_to_vec(hex).unwrap();
+        assert_eq!(got, want);
+
+        let hex = "";
+        let want: [u8; 0] = [];
+        let got = crate::decode_to_vec(hex).unwrap();
+        assert_eq!(got, want);
     }
 }
