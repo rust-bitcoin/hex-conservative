@@ -148,7 +148,18 @@ pub fn decode_to_array<const N: usize>(hex: &str) -> Result<[u8; N], DecodeFixed
 
 /// Parses hex strings in const contexts.
 ///
-/// Returns `[u8; N]` arrays. The string must have even length.
+/// This is primarily useful for testing, panics on all error paths.
+///
+/// # Returns
+///
+/// `[u8; N]` array containing the parsed data if valid.
+///
+/// # Panics
+///
+/// Panics on all error paths:
+///
+/// * If input string is not even length.
+/// * If input string contains non-hex characters.
 #[macro_export]
 macro_rules! hex {
     ($hex:expr) => {{
