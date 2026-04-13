@@ -162,7 +162,8 @@ fn write_pad_left(
             let (left, right) = match f.align().unwrap_or(fmt::Alignment::Left) {
                 fmt::Alignment::Left => (0, width - string_len),
                 fmt::Alignment::Right => (width - string_len, 0),
-                fmt::Alignment::Center => ((width - string_len) / 2, (width - string_len + 1) / 2),
+                fmt::Alignment::Center =>
+                    ((width - string_len) / 2, (width - string_len).div_ceil(2)),
             };
             // Avoid division by zero and optimize for common case.
             if left > 0 {
@@ -591,7 +592,7 @@ where
     let mut encoder = BufEncoder::<N>::new(case);
     let encoded = match f.precision() {
         Some(p) if p < N => {
-            let n = (p + 1) / 2;
+            let n = p.div_ceil(2);
             encoder.put_bytes(bytes.into_iter().take(n));
             &encoder.as_str()[..p]
         }
