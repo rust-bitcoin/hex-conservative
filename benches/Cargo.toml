@@ -1,0 +1,17 @@
+ [package]
+ name = "hex-conservative-benches"
+ version = "0.1.0"
+ license = "CC0-1.0"
+ description = "Criterion benchmarks for hex-conservative"
+ edition = "2021"
+ rust-version = "1.81"
+
+ [dependencies]
+ criterion = "0.7"
+ hex-conservative = { path = "..", default-features = false, features = ["std"] }
+
+ [[bench]]
+ name = "iter"
+ path = "hex/iter.rs"
+ harness = false
+ 
