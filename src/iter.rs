@@ -388,6 +388,20 @@ mod tests {
 
     use super::*;
 
+    fn nth_slow<I: Iterator>(iter: &mut I, n: usize) -> Option<I::Item> {
+        for _ in 0..n {
+            iter.next()?;
+        }
+        iter.next()
+    }
+
+    fn nth_back_slow<I: DoubleEndedIterator>(iter: &mut I, n: usize) -> Option<I::Item> {
+        for _ in 0..n {
+            iter.next_back()?;
+        }
+        iter.next_back()
+    }
+
     #[test]
     fn encode_byte() {
         assert_eq!(Table::LOWER.byte_to_chars(0x00), ['0', '0']);
@@ -606,6 +620,94 @@ mod tests {
         }
         for (i, c) in BytesToHexIter::new(bytes.iter(), Case::Upper).rev().enumerate() {
             assert_eq!(c, upper_want.chars().nth(i).unwrap());
+        }
+    }
+
+    #[test]
+    fn encode_iter_nth() {
+        let bytes = [0xde, 0xad, 0xbe, 0xef];
+
+        for n in 0..=bytes.len() * 2 + 1 {
+            let mut got = BytesToHexIter::new(bytes.iter(), Case::Lower);
+            let mut want = BytesToHexIter::new(bytes.iter(), Case::Lower);
+
+            assert_eq!(got.nth(n), nth_slow(&mut want, n));
+            assert_eq!(got.len(), want.len());
+            assert!(got.eq(want));
+        }
+    }
+
+    #[test]
+    fn encode_iter_nth_after_next_back() {
+        let bytes = [0xde, 0xad, 0xbe, 0xef];
+
+        for n in 0..=bytes.len() * 2 {
+            let mut got = BytesToHexIter::new(bytes.iter(), Case::Lower);
+            let mut want = BytesToHexIter::new(bytes.iter(), Case::Lower);
+
+            assert_eq!(got.next_back(), want.next_back());
+            assert_eq!(got.nth(n), nth_slow(&mut want, n));
+            assert_eq!(got.len(), want.len());
+            assert!(got.eq(want));
+        }
+    }
+
+    #[test]
+    fn encode_iter_nth_after_next() {
+        let bytes = [0xde, 0xad, 0xbe, 0xef];
+
+        for n in 0..=bytes.len() * 2 {
+            let mut got = BytesToHexIter::new(bytes.iter(), Case::Lower);
+            let mut want = BytesToHexIter::new(bytes.iter(), Case::Lower);
+
+            assert_eq!(got.next(), want.next());
+            assert_eq!(got.nth(n), nth_slow(&mut want, n));
+            assert_eq!(got.len(), want.len());
+            assert!(got.eq(want));
+        }
+    }
+
+    #[test]
+    fn encode_iter_nth_back() {
+        let bytes = [0xde, 0xad, 0xbe, 0xef];
+
+        for n in 0..=bytes.len() * 2 + 1 {
+            let mut got = BytesToHexIter::new(bytes.iter(), Case::Lower);
+            let mut want = BytesToHexIter::new(bytes.iter(), Case::Lower);
+
+            assert_eq!(got.nth_back(n), nth_back_slow(&mut want, n));
+            assert_eq!(got.len(), want.len());
+            assert!(got.eq(want));
+        }
+    }
+
+    #[test]
+    fn encode_iter_nth_back_after_next() {
+        let bytes = [0xde, 0xad, 0xbe, 0xef];
+
+        for n in 0..=bytes.len() * 2 {
+            let mut got = BytesToHexIter::new(bytes.iter(), Case::Lower);
+            let mut want = BytesToHexIter::new(bytes.iter(), Case::Lower);
+
+            assert_eq!(got.next(), want.next());
+            assert_eq!(got.nth_back(n), nth_back_slow(&mut want, n));
+            assert_eq!(got.len(), want.len());
+            assert!(got.eq(want));
+        }
+    }
+
+    #[test]
+    fn encode_iter_nth_back_after_next_back() {
+        let bytes = [0xde, 0xad, 0xbe, 0xef];
+
+        for n in 0..=bytes.len() * 2 {
+            let mut got = BytesToHexIter::new(bytes.iter(), Case::Lower);
+            let mut want = BytesToHexIter::new(bytes.iter(), Case::Lower);
+
+            assert_eq!(got.next_back(), want.next_back());
+            assert_eq!(got.nth_back(n), nth_back_slow(&mut want, n));
+            assert_eq!(got.len(), want.len());
+            assert!(got.eq(want));
         }
     }
 
