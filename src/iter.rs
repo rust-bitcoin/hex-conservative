@@ -310,6 +310,22 @@ where
             None => (min * 2, max.map(|max| max * 2)),
         }
     }
+
+    #[inline]
+    fn nth(&mut self, n: usize) -> Option<char> {
+        let had_low = self.low.is_some();
+        if let Some(c) = self.low.take() {
+            if n == 0 {
+                return Some(c);
+            }
+        }
+
+        let n = n - usize::from(had_low);
+        let [high, low] = self.table.byte_to_chars(*self.iter.nth(n / 2)?.borrow());
+        self.low = if n % 2 == 0 { Some(low) } else { None };
+
+        Some(if n % 2 == 0 { high } else { low })
+    }
 }
 
 impl<I> DoubleEndedIterator for BytesToHexIter<I>
@@ -331,6 +347,22 @@ where
             }),
         }
     }
+
+    #[inline]
+    fn nth_back(&mut self, n: usize) -> Option<char> {
+        let had_low = self.low.is_some();
+        if let Some(c) = self.low.take() {
+            if n == 0 {
+                return Some(c);
+            }
+        }
+
+        let n = n - usize::from(had_low);
+        let [high, low] = self.table.byte_to_chars(*self.iter.nth_back(n / 2)?.borrow());
+        self.low = if n % 2 == 0 { Some(low) } else { None };
+
+        Some(if n % 2 == 0 { high } else { low })
+    }
 }
 
 impl<I> ExactSizeIterator for BytesToHexIter<I>
@@ -339,7 +371,7 @@ where
     I::Item: Borrow<u8>,
 {
     #[inline]
-    fn len(&self) -> usize { self.iter.len() * 2 }
+    fn len(&self) -> usize { self.iter.len() * 2 + usize::from(self.low.is_some()) }
 }
 
 impl<I> FusedIterator for BytesToHexIter<I>
