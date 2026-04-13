@@ -9,7 +9,7 @@ categories = ["encoding"]
 keywords = ["encoding", "hex", "hexadecimal"]
 readme = "README.md"
 edition = "2021"
-rust-version = "1.63.0"
+rust-version = "1.74.0"
 exclude = ["api", "tests", "contrib"]
 
 [workspace]
