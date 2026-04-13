@@ -389,6 +389,7 @@ pub fn hex_conservative::error::DecodeFixedLengthBytesError::from(e: hex_conserv
 impl core::convert::From<hex_conservative::error::InvalidCharError> for hex_conservative::error::DecodeVariableLengthBytesError
 pub fn hex_conservative::error::DecodeVariableLengthBytesError::from(e: hex_conservative::error::InvalidCharError) -> Self
 impl core::error::Error for hex_conservative::error::InvalidCharError
+pub fn hex_conservative::error::InvalidCharError::source(&self) -> core::option::Option<&(dyn core::error::Error + 'static)>
 impl core::fmt::Debug for hex_conservative::error::InvalidCharError
 pub fn hex_conservative::error::InvalidCharError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 impl core::fmt::Display for hex_conservative::error::InvalidCharError
@@ -439,6 +440,7 @@ pub fn hex_conservative::error::InvalidLengthError::from(never: core::convert::I
 impl core::convert::From<hex_conservative::error::InvalidLengthError> for hex_conservative::error::DecodeFixedLengthBytesError
 pub fn hex_conservative::error::DecodeFixedLengthBytesError::from(e: hex_conservative::error::InvalidLengthError) -> Self
 impl core::error::Error for hex_conservative::error::InvalidLengthError
+pub fn hex_conservative::error::InvalidLengthError::source(&self) -> core::option::Option<&(dyn core::error::Error + 'static)>
 impl core::fmt::Debug for hex_conservative::error::InvalidLengthError
 pub fn hex_conservative::error::InvalidLengthError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 impl core::fmt::Display for hex_conservative::error::InvalidLengthError
@@ -488,6 +490,7 @@ pub fn hex_conservative::error::OddLengthStringError::from(never: core::convert:
 impl core::convert::From<hex_conservative::error::OddLengthStringError> for hex_conservative::error::DecodeVariableLengthBytesError
 pub fn hex_conservative::error::DecodeVariableLengthBytesError::from(e: hex_conservative::error::OddLengthStringError) -> Self
 impl core::error::Error for hex_conservative::error::OddLengthStringError
+pub fn hex_conservative::error::OddLengthStringError::source(&self) -> core::option::Option<&(dyn core::error::Error + 'static)>
 impl core::fmt::Debug for hex_conservative::error::OddLengthStringError
 pub fn hex_conservative::error::OddLengthStringError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 impl core::fmt::Display for hex_conservative::error::OddLengthStringError
@@ -908,6 +911,7 @@ pub fn hex_conservative::error::DecodeFixedLengthBytesError::from(e: hex_conserv
 impl core::convert::From<hex_conservative::error::InvalidCharError> for hex_conservative::error::DecodeVariableLengthBytesError
 pub fn hex_conservative::error::DecodeVariableLengthBytesError::from(e: hex_conservative::error::InvalidCharError) -> Self
 impl core::error::Error for hex_conservative::error::InvalidCharError
+pub fn hex_conservative::error::InvalidCharError::source(&self) -> core::option::Option<&(dyn core::error::Error + 'static)>
 impl core::fmt::Debug for hex_conservative::error::InvalidCharError
 pub fn hex_conservative::error::InvalidCharError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 impl core::fmt::Display for hex_conservative::error::InvalidCharError
@@ -958,6 +962,7 @@ pub fn hex_conservative::error::InvalidLengthError::from(never: core::convert::I
 impl core::convert::From<hex_conservative::error::InvalidLengthError> for hex_conservative::error::DecodeFixedLengthBytesError
 pub fn hex_conservative::error::DecodeFixedLengthBytesError::from(e: hex_conservative::error::InvalidLengthError) -> Self
 impl core::error::Error for hex_conservative::error::InvalidLengthError
+pub fn hex_conservative::error::InvalidLengthError::source(&self) -> core::option::Option<&(dyn core::error::Error + 'static)>
 impl core::fmt::Debug for hex_conservative::error::InvalidLengthError
 pub fn hex_conservative::error::InvalidLengthError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 impl core::fmt::Display for hex_conservative::error::InvalidLengthError
@@ -1007,6 +1012,7 @@ pub fn hex_conservative::error::OddLengthStringError::from(never: core::convert:
 impl core::convert::From<hex_conservative::error::OddLengthStringError> for hex_conservative::error::DecodeVariableLengthBytesError
 pub fn hex_conservative::error::DecodeVariableLengthBytesError::from(e: hex_conservative::error::OddLengthStringError) -> Self
 impl core::error::Error for hex_conservative::error::OddLengthStringError
+pub fn hex_conservative::error::OddLengthStringError::source(&self) -> core::option::Option<&(dyn core::error::Error + 'static)>
 impl core::fmt::Debug for hex_conservative::error::OddLengthStringError
 pub fn hex_conservative::error::OddLengthStringError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 impl core::fmt::Display for hex_conservative::error::OddLengthStringError
