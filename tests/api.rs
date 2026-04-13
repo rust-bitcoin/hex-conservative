@@ -16,8 +16,8 @@ use core::{fmt, slice};
 // These imports test "typical" usage by user code.
 use hex_conservative::{
     buf_encoder, display, BytesToHexIter, Case, DecodeFixedLengthBytesError,
-    DecodeVariableLengthBytesError, DisplayHex as _, InvalidCharError, InvalidLengthError,
-    OddLengthStringError,
+    DecodeVariableLengthBytesError, DisplayHex as _, HexSliceToBytesIter, InvalidCharError,
+    InvalidLengthError, OddLengthStringError,
 };
 
 /// A struct that includes all public non-error enums.
@@ -50,6 +50,8 @@ where
     d: display::DisplayByteSlice<'a>,
     #[cfg(feature = "std")]
     e: display::HexWriter<T>,
+    f: Case,
+    g: HexSliceToBytesIter<'a>,
     _marker: PhantomData<T>, // For when `std` is not enabled.
 }
 
@@ -64,6 +66,8 @@ impl Structs<'_, slice::Iter<'_, u8>, String> {
             d: BYTES[..].as_hex(),
             #[cfg(feature = "std")]
             e: display::HexWriter::new(String::new(), Case::Lower),
+            f: Case::Lower,
+            g: HexSliceToBytesIter::new("deadbeef").unwrap(),
             _marker: PhantomData,
         }
     }
@@ -98,6 +102,10 @@ fn api_all_non_error_types_have_non_empty_debug() {
     assert!(!debug.is_empty());
     #[cfg(feature = "std")]
     let debug = format!("{:?}", t.e);
+    assert!(!debug.is_empty());
+    let debug = format!("{:?}", t.f);
+    assert!(!debug.is_empty());
+    let debug = format!("{:?}", t.g);
     assert!(!debug.is_empty());
 }
 
