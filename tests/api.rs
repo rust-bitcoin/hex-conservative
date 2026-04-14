@@ -16,8 +16,8 @@ use core::{fmt, slice};
 // These imports test "typical" usage by user code.
 use hex_conservative::{
     buf_encoder, display, BytesToHexIter, Case, DecodeFixedLengthBytesError,
-    DecodeVariableLengthBytesError, DisplayHex as _, HexSliceToBytesIter, InvalidCharError,
-    InvalidLengthError, OddLengthStringError,
+    DecodeVariableLengthBytesError, DisplayHex as _, HexSliceToBytesIter, HexToBytesIter,
+    InvalidCharError, InvalidLengthError, OddLengthStringError,
 };
 
 /// A struct that includes all public non-error enums.
@@ -35,14 +35,17 @@ impl Enums {
 // Some arbitrary data to use.
 const HEX: &str = "deadbeef";
 const BYTES: [u8; 8] = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07];
+// ASCII hex digit pairs for `HEX`.
+const DIGIT_PAIRS: [[u8; 2]; 4] = [[b'd', b'e'], [b'a', b'd'], [b'b', b'e'], [b'e', b'f']];
 const CAP: usize = 16; // BYTES.len() * 2
 
 /// A struct that includes all public non-error structs.
 #[derive(Debug)] // All public types implement Debug (C-DEBUG).
-struct Structs<'a, I, T>
+struct Structs<'a, I, J, T>
 where
     I: Iterator,
     I::Item: Borrow<u8>,
+    J: Iterator<Item = [u8; 2]> + ExactSizeIterator,
 {
     a: BytesToHexIter<I>,
     b: buf_encoder::BufEncoder<CAP>,
@@ -51,11 +54,12 @@ where
     #[cfg(feature = "std")]
     e: display::HexWriter<T>,
     f: Case,
-    g: HexSliceToBytesIter<'a>,
+    g: HexToBytesIter<J>,
+    h: HexSliceToBytesIter<'a>,
     _marker: PhantomData<T>, // For when `std` is not enabled.
 }
 
-impl Structs<'_, slice::Iter<'_, u8>, String> {
+impl Structs<'_, slice::Iter<'_, u8>, core::iter::Copied<slice::Iter<'_, [u8; 2]>>, String> {
     /// Constructs an arbitrary instance.
     fn new() -> Self {
         let iter = BYTES.iter();
@@ -67,7 +71,8 @@ impl Structs<'_, slice::Iter<'_, u8>, String> {
             #[cfg(feature = "std")]
             e: display::HexWriter::new(String::new(), Case::Lower),
             f: Case::Lower,
-            g: HexSliceToBytesIter::new("deadbeef").unwrap(),
+            g: HexToBytesIter::from_pairs(DIGIT_PAIRS.iter().copied()),
+            h: HexSliceToBytesIter::new(HEX).unwrap(),
             _marker: PhantomData,
         }
     }
@@ -101,11 +106,15 @@ fn api_all_non_error_types_have_non_empty_debug() {
     let debug = format!("{:?}", t.d);
     assert!(!debug.is_empty());
     #[cfg(feature = "std")]
-    let debug = format!("{:?}", t.e);
-    assert!(!debug.is_empty());
+    {
+        let debug = format!("{:?}", t.e);
+        assert!(!debug.is_empty());
+    }
     let debug = format!("{:?}", t.f);
     assert!(!debug.is_empty());
     let debug = format!("{:?}", t.g);
+    assert!(!debug.is_empty());
+    let debug = format!("{:?}", t.h);
     assert!(!debug.is_empty());
 }
 
@@ -117,8 +126,12 @@ fn all_types_implement_send_sync() {
     //  Types are `Send` and `Sync` where possible (C-SEND-SYNC).
     assert_send::<Enums>();
     assert_sync::<Enums>();
-    assert_send::<Structs<'_, slice::Iter<'_, u8>, String>>();
-    assert_sync::<Structs<'_, slice::Iter<'_, u8>, String>>();
+    assert_send::<
+        Structs<'_, slice::Iter<'_, u8>, core::iter::Copied<slice::Iter<'_, [u8; 2]>>, String>,
+    >();
+    assert_sync::<
+        Structs<'_, slice::Iter<'_, u8>, core::iter::Copied<slice::Iter<'_, [u8; 2]>>, String>,
+    >();
 
     // Error types should implement the Send and Sync traits (C-GOOD-ERR).
     assert_send::<Errors>();
