@@ -73,11 +73,11 @@ impl Structs<'_, slice::Iter<'_, u8>, String> {
 // These derives are the policy of `rust-bitcoin` not Rust API guidelines.
 #[derive(Debug, Clone, PartialEq, Eq)] // All public types implement Debug (C-DEBUG).
 struct Errors {
-    c: DecodeFixedLengthBytesError,
-    d: DecodeVariableLengthBytesError,
-    e: InvalidCharError,
-    f: InvalidLengthError,
-    g: OddLengthStringError,
+    a: DecodeFixedLengthBytesError,
+    b: DecodeVariableLengthBytesError,
+    c: InvalidCharError,
+    d: InvalidLengthError,
+    e: OddLengthStringError,
 }
 
 // `Debug` representation is never empty (C-DEBUG-NONEMPTY).
