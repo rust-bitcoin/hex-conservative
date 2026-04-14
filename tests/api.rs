@@ -116,3 +116,12 @@ fn all_types_implement_send_sync() {
     assert_send::<Errors>();
     assert_sync::<Errors>();
 }
+
+// There is a single trait and it is not dyn-compatible.
+#[test]
+fn dyn_compatible() {
+    // If this builds then traits are dyn compatible.
+    struct Traits {
+        // a: Box<dyn hex_conservative::DisplayHex>,
+    }
+}
