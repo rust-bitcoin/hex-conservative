@@ -74,7 +74,8 @@ where
     I: Iterator<Item = [u8; 2]>,
 {
     iter: I,
-    original_len: usize,
+    /// Number of (high, low) char pairs consumed from the front.
+    front_pos: usize,
 }
 
 impl<'a> HexToBytesIter<HexDigitsIter<'a>> {
@@ -149,7 +150,7 @@ where
 {
     /// Constructs a custom hex decoding iterator from another iterator.
     #[inline]
-    pub fn from_pairs(iter: I) -> Self { Self { original_len: iter.len(), iter } }
+    pub fn from_pairs(iter: I) -> Self { Self { front_pos: 0, iter } }
 }
 
 impl<I> Iterator for HexToBytesIter<I>
@@ -159,17 +160,7 @@ where
     type Item = Result<u8, InvalidCharError>;
 
     #[inline]
-    fn next(&mut self) -> Option<Self::Item> {
-        let [hi, lo] = self.iter.next()?;
-        Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| InvalidCharError {
-            invalid: c,
-            pos: if is_high {
-                (self.original_len - self.iter.len() - 1) * 2
-            } else {
-                (self.original_len - self.iter.len() - 1) * 2 + 1
-            },
-        }))
-    }
+    fn next(&mut self) -> Option<Self::Item> { self.nth(0) }
 
     #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) { self.iter.size_hint() }
@@ -177,13 +168,11 @@ where
     #[inline]
     fn nth(&mut self, n: usize) -> Option<Self::Item> {
         let [hi, lo] = self.iter.nth(n)?;
+        let pos = self.front_pos.saturating_add(n).saturating_mul(2);
+        self.front_pos = self.front_pos.saturating_add(n).saturating_add(1);
         Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| InvalidCharError {
             invalid: c,
-            pos: if is_high {
-                (self.original_len - self.iter.len() - 1) * 2
-            } else {
-                (self.original_len - self.iter.len() - 1) * 2 + 1
-            },
+            pos: if is_high { pos } else { pos.saturating_add(1) },
         }))
     }
 }
@@ -193,20 +182,15 @@ where
     I: Iterator<Item = [u8; 2]> + DoubleEndedIterator + ExactSizeIterator,
 {
     #[inline]
-    fn next_back(&mut self) -> Option<Self::Item> {
-        let [hi, lo] = self.iter.next_back()?;
-        Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| InvalidCharError {
-            invalid: c,
-            pos: if is_high { self.iter.len() * 2 } else { self.iter.len() * 2 + 1 },
-        }))
-    }
+    fn next_back(&mut self) -> Option<Self::Item> { self.nth_back(0) }
 
     #[inline]
     fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
         let [hi, lo] = self.iter.nth_back(n)?;
+        let pos = (self.front_pos + self.iter.len()).saturating_mul(2);
         Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| InvalidCharError {
             invalid: c,
-            pos: if is_high { self.iter.len() * 2 } else { self.iter.len() * 2 + 1 },
+            pos: if is_high { pos } else { pos.saturating_add(1) },
         }))
     }
 }
@@ -643,6 +627,23 @@ mod tests {
         let hex = "deadbeeg";
         let iter = HexToBytesIter::new_unchecked(hex);
         assert_eq!(iter.drain_to_vec().unwrap_err(), InvalidCharError { invalid: b'g', pos: 7 });
+    }
+
+    #[test]
+    fn decode_error_pos_after_next_back() {
+        let mut iter = HexToBytesIter::new("geadbeef").unwrap();
+        iter.next_back().unwrap().unwrap();
+        assert_eq!(iter.next().unwrap().unwrap_err(), InvalidCharError { invalid: b'g', pos: 0 },);
+    }
+
+    #[test]
+    fn decode_error_pos_after_next() {
+        let mut iter = HexToBytesIter::new("deadbeGf").unwrap();
+        iter.next().unwrap().unwrap();
+        assert_eq!(
+            iter.next_back().unwrap().unwrap_err(),
+            InvalidCharError { invalid: b'G', pos: 6 },
+        );
     }
 
     #[test]
