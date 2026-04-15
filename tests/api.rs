@@ -82,11 +82,11 @@ impl Structs<'_, slice::Iter<'_, u8>, core::iter::Copied<slice::Iter<'_, [u8; 2]
 // These derives are the policy of `rust-bitcoin` not Rust API guidelines.
 #[derive(Debug, Clone, PartialEq, Eq)] // All public types implement Debug (C-DEBUG).
 struct Errors {
-    c: DecodeFixedLengthBytesError,
-    d: DecodeVariableLengthBytesError,
-    e: InvalidCharError,
-    f: InvalidLengthError,
-    g: OddLengthStringError,
+    a: DecodeFixedLengthBytesError,
+    b: DecodeVariableLengthBytesError,
+    c: InvalidCharError,
+    d: InvalidLengthError,
+    e: OddLengthStringError,
 }
 
 // `Debug` representation is never empty (C-DEBUG-NONEMPTY).
@@ -136,4 +136,13 @@ fn all_types_implement_send_sync() {
     // Error types should implement the Send and Sync traits (C-GOOD-ERR).
     assert_send::<Errors>();
     assert_sync::<Errors>();
+}
+
+// There is a single trait and it is not dyn-compatible.
+#[test]
+fn dyn_compatible() {
+    // If this builds then traits are dyn compatible.
+    struct Traits {
+        // a: Box<dyn hex_conservative::DisplayHex>,
+    }
 }
