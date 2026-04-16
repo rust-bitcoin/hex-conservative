@@ -49,13 +49,12 @@ where
 {
     a: BytesToHexIter<I>,
     b: buf_encoder::BufEncoder<CAP>,
-    c: display::DisplayArray<'a, CAP>,
-    d: display::DisplayByteSlice<'a>,
+    c: display::DisplayByteSlice<'a>,
     #[cfg(feature = "std")]
-    e: display::HexWriter<T>,
-    f: Case,
-    g: HexToBytesIter<J>,
-    h: HexSliceToBytesIter<'a>,
+    d: display::HexWriter<T>,
+    e: Case,
+    f: HexToBytesIter<J>,
+    g: HexSliceToBytesIter<'a>,
     _marker: PhantomData<T>, // For when `std` is not enabled.
 }
 
@@ -66,13 +65,12 @@ impl Structs<'_, slice::Iter<'_, u8>, core::iter::Copied<slice::Iter<'_, [u8; 2]
         Self {
             a: BytesToHexIter::new(iter, Case::Lower),
             b: buf_encoder::BufEncoder::new(Case::Lower),
-            c: BYTES.as_hex(),
-            d: BYTES[..].as_hex(),
+            c: BYTES[..].as_hex(),
             #[cfg(feature = "std")]
-            e: display::HexWriter::new(String::new(), Case::Lower),
-            f: Case::Lower,
-            g: HexToBytesIter::from_pairs(DIGIT_PAIRS.iter().copied()),
-            h: HexSliceToBytesIter::new(HEX).unwrap(),
+            d: display::HexWriter::new(String::new(), Case::Lower),
+            e: Case::Lower,
+            f: HexToBytesIter::from_pairs(DIGIT_PAIRS.iter().copied()),
+            g: HexSliceToBytesIter::new(HEX).unwrap(),
             _marker: PhantomData,
         }
     }
@@ -103,18 +101,16 @@ fn api_all_non_error_types_have_non_empty_debug() {
     assert!(!debug.is_empty());
     let debug = format!("{:?}", t.c);
     assert!(!debug.is_empty());
-    let debug = format!("{:?}", t.d);
-    assert!(!debug.is_empty());
     #[cfg(feature = "std")]
     {
-        let debug = format!("{:?}", t.e);
+        let debug = format!("{:?}", t.d);
         assert!(!debug.is_empty());
     }
+    let debug = format!("{:?}", t.e);
+    assert!(!debug.is_empty());
     let debug = format!("{:?}", t.f);
     assert!(!debug.is_empty());
     let debug = format!("{:?}", t.g);
-    assert!(!debug.is_empty());
-    let debug = format!("{:?}", t.h);
     assert!(!debug.is_empty());
 }
 
