@@ -12,7 +12,7 @@ use std::io;
 #[cfg(feature = "alloc")]
 use crate::alloc::vec::Vec;
 use crate::error::{InvalidCharError, OddLengthStringError};
-use crate::{Case, Table};
+use crate::{Case, Char, Table};
 
 /// Iterator over bytes decoded from a hex string slice.
 ///
@@ -287,7 +287,28 @@ fn hex_chars_to_byte(hi: u8, lo: u8) -> Result<u8, (u8, bool)> {
     Ok(ret as u8)
 }
 
-/// Iterator over bytes which encodes the bytes and yields hex characters.
+/// Iterator over bytes which encodes the bytes and yields `[Char; 2]` pairs of hex characters.
+///
+/// Each call to [`Iterator::next`] consumes one byte and returns the two hex digits that encode
+/// it as `[high_nibble, low_nibble]`.
+///
+/// If you want to yield a stream of [`Char`] only, call [`flatten`].
+///
+/// # Examples
+///
+/// ```
+/// # #[cfg(feature = "alloc")]
+/// # {
+/// use hex_conservative::{BytesToHexIter, Case};
+///
+/// let bytes = [0xde, 0xad, 0xbe, 0xef].into_iter();
+/// let hex_string: String =
+///     BytesToHexIter::new(bytes, Case::Lower).flatten().map(char::from).collect();
+/// assert_eq!(hex_string, "deadbeef");
+/// # }
+///```
+///
+/// [`flatten`]: Iterator::flatten
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct BytesToHexIter<I>
 where
@@ -296,8 +317,6 @@ where
 {
     /// The iterator whose next byte will be encoded to yield hex characters.
     iter: I,
-    /// The low character of the pair (high, low) of hex characters encoded per byte.
-    low: Option<char>,
     /// The byte-to-hex conversion table.
     table: &'static Table,
 }
@@ -307,11 +326,9 @@ where
     I: Iterator,
     I::Item: Borrow<u8>,
 {
-    /// Constructs a `BytesToHexIter` that will yield hex characters in the given case from a byte
-    /// iterator.
-    pub fn new(iter: I, case: Case) -> BytesToHexIter<I> {
-        Self { iter, low: None, table: case.table() }
-    }
+    /// Constructs a `BytesToHexIter` that will yield hex character pairs in the given case from a
+    /// byte iterator.
+    pub fn new(iter: I, case: Case) -> BytesToHexIter<I> { Self { iter, table: case.table() } }
 }
 
 impl<I> Iterator for BytesToHexIter<I>
@@ -319,46 +336,19 @@ where
     I: Iterator,
     I::Item: Borrow<u8>,
 {
-    type Item = char;
+    type Item = [Char; 2];
 
     #[inline]
-    fn next(&mut self) -> Option<char> {
-        match self.low {
-            Some(c) => {
-                self.low = None;
-                Some(c)
-            }
-            None => self.iter.next().map(|b| {
-                let [high, low] = self.table.byte_to_chars(*b.borrow());
-                self.low = Some(low);
-                high
-            }),
-        }
+    fn next(&mut self) -> Option<[Char; 2]> {
+        self.iter.next().map(|b| self.table.byte_to_hex_chars(*b.borrow()))
     }
 
     #[inline]
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        let (min, max) = self.iter.size_hint();
-        match self.low {
-            Some(_) => (min * 2 + 1, max.map(|max| max * 2 + 1)),
-            None => (min * 2, max.map(|max| max * 2)),
-        }
-    }
+    fn size_hint(&self) -> (usize, Option<usize>) { self.iter.size_hint() }
 
     #[inline]
-    fn nth(&mut self, n: usize) -> Option<char> {
-        let had_low = self.low.is_some();
-        if let Some(c) = self.low.take() {
-            if n == 0 {
-                return Some(c);
-            }
-        }
-
-        let n = n - usize::from(had_low);
-        let [high, low] = self.table.byte_to_chars(*self.iter.nth(n / 2)?.borrow());
-        self.low = if n % 2 == 0 { Some(low) } else { None };
-
-        Some(if n % 2 == 0 { high } else { low })
+    fn nth(&mut self, n: usize) -> Option<[Char; 2]> {
+        self.iter.nth(n).map(|b| self.table.byte_to_hex_chars(*b.borrow()))
     }
 }
 
@@ -368,34 +358,13 @@ where
     I::Item: Borrow<u8>,
 {
     #[inline]
-    fn next_back(&mut self) -> Option<char> {
-        match self.low {
-            Some(c) => {
-                self.low = None;
-                Some(c)
-            }
-            None => self.iter.next_back().map(|b| {
-                let [high, low] = self.table.byte_to_chars(*b.borrow());
-                self.low = Some(low);
-                high
-            }),
-        }
+    fn next_back(&mut self) -> Option<[Char; 2]> {
+        self.iter.next_back().map(|b| self.table.byte_to_hex_chars(*b.borrow()))
     }
 
     #[inline]
-    fn nth_back(&mut self, n: usize) -> Option<char> {
-        let had_low = self.low.is_some();
-        if let Some(c) = self.low.take() {
-            if n == 0 {
-                return Some(c);
-            }
-        }
-
-        let n = n - usize::from(had_low);
-        let [high, low] = self.table.byte_to_chars(*self.iter.nth_back(n / 2)?.borrow());
-        self.low = if n % 2 == 0 { Some(low) } else { None };
-
-        Some(if n % 2 == 0 { high } else { low })
+    fn nth_back(&mut self, n: usize) -> Option<[Char; 2]> {
+        self.iter.nth_back(n).map(|b| self.table.byte_to_hex_chars(*b.borrow()))
     }
 }
 
@@ -405,7 +374,7 @@ where
     I::Item: Borrow<u8>,
 {
     #[inline]
-    fn len(&self) -> usize { self.iter.len() * 2 + usize::from(self.low.is_some()) }
+    fn len(&self) -> usize { self.iter.len() }
 }
 
 impl<I> FusedIterator for BytesToHexIter<I>
@@ -646,39 +615,65 @@ mod tests {
         );
     }
 
+    #[cfg(feature = "alloc")]
     #[test]
     fn encode_iter() {
         let bytes = [0xde, 0xad, 0xbe, 0xef];
         let lower_want = "deadbeef";
         let upper_want = "DEADBEEF";
 
-        for (i, c) in BytesToHexIter::new(bytes.iter(), Case::Lower).enumerate() {
-            assert_eq!(c, lower_want.chars().nth(i).unwrap());
-        }
-        for (i, c) in BytesToHexIter::new(bytes.iter(), Case::Upper).enumerate() {
-            assert_eq!(c, upper_want.chars().nth(i).unwrap());
-        }
+        let lower_got: String =
+            BytesToHexIter::new(bytes.iter(), Case::Lower).flatten().map(char::from).collect();
+        assert_eq!(lower_got, lower_want);
+        let upper_got: String =
+            BytesToHexIter::new(bytes.iter(), Case::Upper).flatten().map(char::from).collect();
+        assert_eq!(upper_got, upper_want);
     }
 
+    #[cfg(feature = "alloc")]
     #[test]
     fn encode_iter_backwards() {
         let bytes = [0xde, 0xad, 0xbe, 0xef];
+        // .rev().flatten() yields pairs in reverse byte order but each pair remains [high, low].
         let lower_want = "efbeadde";
         let upper_want = "EFBEADDE";
 
-        for (i, c) in BytesToHexIter::new(bytes.iter(), Case::Lower).rev().enumerate() {
-            assert_eq!(c, lower_want.chars().nth(i).unwrap());
-        }
-        for (i, c) in BytesToHexIter::new(bytes.iter(), Case::Upper).rev().enumerate() {
-            assert_eq!(c, upper_want.chars().nth(i).unwrap());
-        }
+        let lower_got: String = BytesToHexIter::new(bytes.iter(), Case::Lower)
+            .rev()
+            .flatten()
+            .map(char::from)
+            .collect();
+        assert_eq!(lower_got, lower_want);
+        let upper_got: String = BytesToHexIter::new(bytes.iter(), Case::Upper)
+            .rev()
+            .flatten()
+            .map(char::from)
+            .collect();
+        assert_eq!(upper_got, upper_want);
+
+        // .flatten().rev() yields pairs in reverse byte order and each pair becomes [low, high].
+        let lower_want = "feebdaed";
+        let upper_want = "FEEBDAED";
+
+        let lower_got: String = BytesToHexIter::new(bytes.iter(), Case::Lower)
+            .flatten()
+            .rev()
+            .map(char::from)
+            .collect();
+        assert_eq!(lower_got, lower_want);
+        let upper_got: String = BytesToHexIter::new(bytes.iter(), Case::Upper)
+            .flatten()
+            .rev()
+            .map(char::from)
+            .collect();
+        assert_eq!(upper_got, upper_want);
     }
 
     #[test]
     fn encode_iter_nth() {
         let bytes = [0xde, 0xad, 0xbe, 0xef];
 
-        for n in 0..=bytes.len() * 2 + 1 {
+        for n in 0..=bytes.len() + 1 {
             let mut got = BytesToHexIter::new(bytes.iter(), Case::Lower);
             let mut want = BytesToHexIter::new(bytes.iter(), Case::Lower);
 
@@ -692,7 +687,7 @@ mod tests {
     fn encode_iter_nth_after_next_back() {
         let bytes = [0xde, 0xad, 0xbe, 0xef];
 
-        for n in 0..=bytes.len() * 2 {
+        for n in 0..=bytes.len() {
             let mut got = BytesToHexIter::new(bytes.iter(), Case::Lower);
             let mut want = BytesToHexIter::new(bytes.iter(), Case::Lower);
 
@@ -707,7 +702,7 @@ mod tests {
     fn encode_iter_nth_after_next() {
         let bytes = [0xde, 0xad, 0xbe, 0xef];
 
-        for n in 0..=bytes.len() * 2 {
+        for n in 0..=bytes.len() {
             let mut got = BytesToHexIter::new(bytes.iter(), Case::Lower);
             let mut want = BytesToHexIter::new(bytes.iter(), Case::Lower);
 
@@ -722,7 +717,7 @@ mod tests {
     fn encode_iter_nth_back() {
         let bytes = [0xde, 0xad, 0xbe, 0xef];
 
-        for n in 0..=bytes.len() * 2 + 1 {
+        for n in 0..=bytes.len() + 1 {
             let mut got = BytesToHexIter::new(bytes.iter(), Case::Lower);
             let mut want = BytesToHexIter::new(bytes.iter(), Case::Lower);
 
@@ -736,7 +731,7 @@ mod tests {
     fn encode_iter_nth_back_after_next() {
         let bytes = [0xde, 0xad, 0xbe, 0xef];
 
-        for n in 0..=bytes.len() * 2 {
+        for n in 0..=bytes.len() {
             let mut got = BytesToHexIter::new(bytes.iter(), Case::Lower);
             let mut want = BytesToHexIter::new(bytes.iter(), Case::Lower);
 
@@ -751,7 +746,7 @@ mod tests {
     fn encode_iter_nth_back_after_next_back() {
         let bytes = [0xde, 0xad, 0xbe, 0xef];
 
-        for n in 0..=bytes.len() * 2 {
+        for n in 0..=bytes.len() {
             let mut got = BytesToHexIter::new(bytes.iter(), Case::Lower);
             let mut want = BytesToHexIter::new(bytes.iter(), Case::Lower);
 
@@ -768,10 +763,12 @@ mod tests {
         let lower_want = "deadbeefcafebabe";
         let upper_want = "DEADBEEFCAFEBABE";
         let lower_bytes_iter = HexToBytesIter::new(lower_want).unwrap().map(|res| res.unwrap());
-        let lower_got = BytesToHexIter::new(lower_bytes_iter, Case::Lower).collect::<String>();
+        let lower_got: String =
+            BytesToHexIter::new(lower_bytes_iter, Case::Lower).flatten().map(char::from).collect();
         assert_eq!(lower_got, lower_want);
         let upper_bytes_iter = HexToBytesIter::new(upper_want).unwrap().map(|res| res.unwrap());
-        let upper_got = BytesToHexIter::new(upper_bytes_iter, Case::Upper).collect::<String>();
+        let upper_got: String =
+            BytesToHexIter::new(upper_bytes_iter, Case::Upper).flatten().map(char::from).collect();
         assert_eq!(upper_got, upper_want);
     }
 
@@ -782,13 +779,19 @@ mod tests {
         let upper_want = "DEADBEEFCAFEBABE";
         let lower_bytes_iter =
             HexToBytesIter::new(lower_want).unwrap().rev().map(|res| res.unwrap());
-        let lower_got =
-            BytesToHexIter::new(lower_bytes_iter, Case::Lower).rev().collect::<String>();
+        let lower_got: String = BytesToHexIter::new(lower_bytes_iter, Case::Lower)
+            .rev()
+            .flatten()
+            .map(char::from)
+            .collect();
         assert_eq!(lower_got, lower_want);
         let upper_bytes_iter =
             HexToBytesIter::new(upper_want).unwrap().rev().map(|res| res.unwrap());
-        let upper_got =
-            BytesToHexIter::new(upper_bytes_iter, Case::Upper).rev().collect::<String>();
+        let upper_got: String = BytesToHexIter::new(upper_bytes_iter, Case::Upper)
+            .rev()
+            .flatten()
+            .map(char::from)
+            .collect();
         assert_eq!(upper_got, upper_want);
     }
 
