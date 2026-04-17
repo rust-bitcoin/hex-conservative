@@ -220,23 +220,94 @@ impl Case {
     }
 }
 
+/// A valid hex character: one of `[0-9a-fA-F]`.
+//
+// The `repr(u8)` guarantees that representation matches the ASCII byte value of the character,
+// making transmute between `Char` and `u8` safe whenever the byte is a valid hex digit.
+#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[repr(u8)]
+pub enum Char {
+    /// `'0'`
+    Zero = b'0',
+    /// `'1'`
+    One = b'1',
+    /// `'2'`
+    Two = b'2',
+    /// `'3'`
+    Three = b'3',
+    /// `'4'`
+    Four = b'4',
+    /// `'5'`
+    Five = b'5',
+    /// `'6'`
+    Six = b'6',
+    /// `'7'`
+    Seven = b'7',
+    /// `'8'`
+    Eight = b'8',
+    /// `'9'`
+    Nine = b'9',
+    /// `'a'`
+    LowerA = b'a',
+    /// `'b'`
+    LowerB = b'b',
+    /// `'c'`
+    LowerC = b'c',
+    /// `'d'`
+    LowerD = b'd',
+    /// `'e'`
+    LowerE = b'e',
+    /// `'f'`
+    LowerF = b'f',
+    /// `'A'`
+    UpperA = b'A',
+    /// `'B'`
+    UpperB = b'B',
+    /// `'C'`
+    UpperC = b'C',
+    /// `'D'`
+    UpperD = b'D',
+    /// `'E'`
+    UpperE = b'E',
+    /// `'F'`
+    UpperF = b'F',
+}
+
+impl From<Char> for char {
+    #[inline]
+    fn from(c: Char) -> char { char::from(c as u8) }
+}
+
+impl From<Char> for u8 {
+    #[inline]
+    fn from(c: Char) -> u8 { c as u8 }
+}
+
 /// Correctness boundary for `Table`.
 mod table {
+    use super::Char;
+
     /// Table of hex chars.
     //
     // Correctness invariant: each byte in the table must be ASCII.
     #[allow(clippy::derived_hash_with_manual_eq)] // The Eq impl distinguishes the two possible values of Table
     #[derive(Debug, Hash)]
-    pub(crate) struct Table([u8; 16]);
+    pub(crate) struct Table([Char; 16]);
 
     impl Table {
+        #[rustfmt::skip] // rustfmt wants to make these one per line.
         pub(crate) const LOWER: Self = Table([
-            b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'a', b'b', b'c', b'd',
-            b'e', b'f',
+            Char::Zero, Char::One, Char::Two, Char::Three,
+            Char::Four, Char::Five, Char::Six, Char::Seven,
+            Char::Eight, Char::Nine, Char::LowerA, Char::LowerB,
+            Char::LowerC, Char::LowerD, Char::LowerE, Char::LowerF,
         ]);
+        #[rustfmt::skip] // rustfmt wants to make these one per line.
         pub(crate) const UPPER: Self = Table([
-            b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'A', b'B', b'C', b'D',
-            b'E', b'F',
+            Char::Zero, Char::One, Char::Two, Char::Three,
+            Char::Four, Char::Five, Char::Six, Char::Seven,
+            Char::Eight, Char::Nine, Char::UpperA, Char::UpperB,
+            Char::UpperC, Char::UpperD, Char::UpperE, Char::UpperF,
         ]);
 
         /// Encodes single byte as two ASCII chars using the given table.
@@ -244,9 +315,7 @@ mod table {
         /// The function guarantees only returning values from the provided table.
         #[inline]
         pub(crate) fn byte_to_chars(&self, byte: u8) -> [char; 2] {
-            let left = self.0[usize::from(byte >> 4)];
-            let right = self.0[usize::from(byte & 0x0F)];
-            [char::from(left), char::from(right)]
+            self.byte_to_hex_chars(byte).map(char::from)
         }
 
         /// Writes the single byte as two ASCII chars in the provided buffer, and returns a `&str`
@@ -255,16 +324,26 @@ mod table {
         /// The function guarantees only returning values from the provided table.
         #[inline]
         pub(crate) fn byte_to_str<'a>(&self, dest: &'a mut [u8; 2], byte: u8) -> &'a str {
-            dest[0] = self.0[usize::from(byte >> 4)];
-            dest[1] = self.0[usize::from(byte & 0x0F)];
+            dest[0] = self.0[usize::from(byte >> 4)].into();
+            dest[1] = self.0[usize::from(byte & 0x0F)].into();
             // SAFETY: Table inner array contains only valid ascii
             let hex_str = unsafe { core::str::from_utf8_unchecked(dest) };
             hex_str
         }
+
+        /// Encodes a single byte as two [`Char`] values using the given table.
+        ///
+        /// The function guarantees only returning values from the provided table.
+        #[inline]
+        pub(crate) fn byte_to_hex_chars(&self, byte: u8) -> [Char; 2] {
+            let left = self.0[usize::from(byte >> 4)];
+            let right = self.0[usize::from(byte & 0x0F)];
+            [left, right]
+        }
     }
 
     impl PartialEq for Table {
-        // Table can only be Table::LOWER or Table::UPPER. These differ in any of the bytes from
+        // Table can only be Table::LOWER or Table::UPPER. These differ in any of the Chars from
         // indices 10-15.
         fn eq(&self, other: &Self) -> bool { self.0[10] == other.0[10] }
     }
