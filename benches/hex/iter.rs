@@ -4,14 +4,16 @@ use std::hint::black_box;
 use std::time::Duration;
 
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
-use hex_conservative::{BytesToHexIter, Case};
+use hex_conservative::{BytesToHexIter, Case, Char};
 
 fn nth_positions(size: usize) -> [usize; 5] {
-    let total = size * 2;
-    [size / 8, size / 2, size, size + size / 2, total - 1]
+    [size / 8, size / 4, size / 2, size * 3 / 4, size - 1]
 }
 
-fn slow_nth(iter: &mut BytesToHexIter<core::slice::Iter<'_, u8>>, n: usize) -> Option<char> {
+fn slow_nth(
+    iter: &mut BytesToHexIter<core::slice::Iter<'_, u8>>,
+    n: usize,
+) -> Option<[Char; 2]> {
     for _ in 0..n {
         iter.next()?;
     }
@@ -21,7 +23,7 @@ fn slow_nth(iter: &mut BytesToHexIter<core::slice::Iter<'_, u8>>, n: usize) -> O
 fn slow_nth_back(
     iter: &mut BytesToHexIter<core::slice::Iter<'_, u8>>,
     n: usize,
-) -> Option<char> {
+) -> Option<[Char; 2]> {
     for _ in 0..n {
         iter.next_back()?;
     }
@@ -41,7 +43,8 @@ fn bench_bytes_to_hex_nth(c: &mut Criterion) {
                 let mut sum = 0u32;
                 for &n in &positions {
                     let mut iter = BytesToHexIter::new(black_box(bytes.as_slice()).iter(), Case::Lower);
-                    sum += u32::from(iter.nth(black_box(n)).unwrap());
+                    let [hi, lo] = iter.nth(black_box(n)).unwrap();
+                    sum += u32::from(u8::from(hi)) + u32::from(u8::from(lo));
                 }
                 black_box(sum)
             });
@@ -52,7 +55,8 @@ fn bench_bytes_to_hex_nth(c: &mut Criterion) {
                 let mut sum = 0u32;
                 for &n in &positions {
                     let mut iter = BytesToHexIter::new(black_box(bytes.as_slice()).iter(), Case::Lower);
-                    sum += u32::from(slow_nth(&mut iter, black_box(n)).unwrap());
+                    let [hi, lo] = slow_nth(&mut iter, black_box(n)).unwrap();
+                    sum += u32::from(u8::from(hi)) + u32::from(u8::from(lo));
                 }
                 black_box(sum)
             });
@@ -75,7 +79,8 @@ fn bench_bytes_to_hex_nth_back(c: &mut Criterion) {
                 let mut sum = 0u32;
                 for &n in &positions {
                     let mut iter = BytesToHexIter::new(black_box(bytes.as_slice()).iter(), Case::Lower);
-                    sum += u32::from(iter.nth_back(black_box(n)).unwrap());
+                    let [hi, lo] = iter.nth_back(black_box(n)).unwrap();
+                    sum += u32::from(u8::from(hi)) + u32::from(u8::from(lo));
                 }
                 black_box(sum)
             });
@@ -86,7 +91,8 @@ fn bench_bytes_to_hex_nth_back(c: &mut Criterion) {
                 let mut sum = 0u32;
                 for &n in &positions {
                     let mut iter = BytesToHexIter::new(black_box(bytes.as_slice()).iter(), Case::Lower);
-                    sum += u32::from(slow_nth_back(&mut iter, black_box(n)).unwrap());
+                    let [hi, lo] = slow_nth_back(&mut iter, black_box(n)).unwrap();
+                    sum += u32::from(u8::from(hi)) + u32::from(u8::from(lo));
                 }
                 black_box(sum)
             });

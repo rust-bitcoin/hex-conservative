@@ -488,6 +488,77 @@ impl<T> core::clone::CloneToUninit for hex_conservative::Case where T: core::clo
 pub unsafe fn hex_conservative::Case::clone_to_uninit(&self, dest: *mut u8)
 impl<T> core::convert::From<T> for hex_conservative::Case
 pub fn hex_conservative::Case::from(t: T) -> T
+#[repr(u8)] pub enum hex_conservative::Char
+pub hex_conservative::Char::Eight = 56
+pub hex_conservative::Char::Five = 53
+pub hex_conservative::Char::Four = 52
+pub hex_conservative::Char::LowerA = 97
+pub hex_conservative::Char::LowerB = 98
+pub hex_conservative::Char::LowerC = 99
+pub hex_conservative::Char::LowerD = 100
+pub hex_conservative::Char::LowerE = 101
+pub hex_conservative::Char::LowerF = 102
+pub hex_conservative::Char::Nine = 57
+pub hex_conservative::Char::One = 49
+pub hex_conservative::Char::Seven = 55
+pub hex_conservative::Char::Six = 54
+pub hex_conservative::Char::Three = 51
+pub hex_conservative::Char::Two = 50
+pub hex_conservative::Char::UpperA = 65
+pub hex_conservative::Char::UpperB = 66
+pub hex_conservative::Char::UpperC = 67
+pub hex_conservative::Char::UpperD = 68
+pub hex_conservative::Char::UpperE = 69
+pub hex_conservative::Char::UpperF = 70
+pub hex_conservative::Char::Zero = 48
+impl core::clone::Clone for hex_conservative::Char
+pub fn hex_conservative::Char::clone(&self) -> hex_conservative::Char
+impl core::cmp::Eq for hex_conservative::Char
+impl core::cmp::Ord for hex_conservative::Char
+pub fn hex_conservative::Char::cmp(&self, other: &hex_conservative::Char) -> core::cmp::Ordering
+impl core::cmp::PartialEq for hex_conservative::Char
+pub fn hex_conservative::Char::eq(&self, other: &hex_conservative::Char) -> bool
+impl core::cmp::PartialOrd for hex_conservative::Char
+pub fn hex_conservative::Char::partial_cmp(&self, other: &hex_conservative::Char) -> core::option::Option<core::cmp::Ordering>
+impl core::convert::From<hex_conservative::Char> for char
+pub fn char::from(c: hex_conservative::Char) -> char
+impl core::convert::From<hex_conservative::Char> for u8
+pub fn u8::from(c: hex_conservative::Char) -> u8
+impl core::fmt::Debug for hex_conservative::Char
+pub fn hex_conservative::Char::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::hash::Hash for hex_conservative::Char
+pub fn hex_conservative::Char::hash<__H: core::hash::Hasher>(&self, state: &mut __H)
+impl core::marker::Copy for hex_conservative::Char
+impl core::marker::StructuralPartialEq for hex_conservative::Char
+impl core::marker::Freeze for hex_conservative::Char
+impl core::marker::Send for hex_conservative::Char
+impl core::marker::Sync for hex_conservative::Char
+impl core::marker::Unpin for hex_conservative::Char
+impl core::marker::UnsafeUnpin for hex_conservative::Char
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative::Char
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative::Char
+impl<T, U> core::convert::Into<U> for hex_conservative::Char where U: core::convert::From<T>
+pub fn hex_conservative::Char::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for hex_conservative::Char where U: core::convert::Into<T>
+pub type hex_conservative::Char::Error = core::convert::Infallible
+pub fn hex_conservative::Char::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for hex_conservative::Char where U: core::convert::TryFrom<T>
+pub type hex_conservative::Char::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn hex_conservative::Char::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for hex_conservative::Char where T: core::clone::Clone
+pub type hex_conservative::Char::Owned = T
+pub fn hex_conservative::Char::clone_into(&self, target: &mut T)
+pub fn hex_conservative::Char::to_owned(&self) -> T
+impl<T> core::any::Any for hex_conservative::Char where T: 'static + ?core::marker::Sized
+pub fn hex_conservative::Char::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for hex_conservative::Char where T: ?core::marker::Sized
+pub fn hex_conservative::Char::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for hex_conservative::Char where T: ?core::marker::Sized
+pub fn hex_conservative::Char::borrow_mut(&mut self) -> &mut T
+impl<T> core::clone::CloneToUninit for hex_conservative::Char where T: core::clone::Clone
+pub unsafe fn hex_conservative::Char::clone_to_uninit(&self, dest: *mut u8)
+impl<T> core::convert::From<T> for hex_conservative::Char
+pub fn hex_conservative::Char::from(t: T) -> T
 pub enum hex_conservative::DecodeFixedLengthBytesError
 pub hex_conservative::DecodeFixedLengthBytesError::InvalidChar(hex_conservative::error::InvalidCharError)
 pub hex_conservative::DecodeFixedLengthBytesError::InvalidLength(hex_conservative::error::InvalidLengthError)
@@ -609,14 +680,14 @@ pub fn hex_conservative::BytesToHexIter<I>::fmt(&self, f: &mut core::fmt::Format
 impl<I> core::hash::Hash for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::iterator::Iterator + core::hash::Hash, <I as core::iter::traits::iterator::Iterator>::Item: core::borrow::Borrow<u8>
 pub fn hex_conservative::BytesToHexIter<I>::hash<__H: core::hash::Hasher>(&self, state: &mut __H)
 impl<I> core::iter::traits::double_ended::DoubleEndedIterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::double_ended::DoubleEndedIterator, <I as core::iter::traits::iterator::Iterator>::Item: core::borrow::Borrow<u8>
-pub fn hex_conservative::BytesToHexIter<I>::next_back(&mut self) -> core::option::Option<char>
-pub fn hex_conservative::BytesToHexIter<I>::nth_back(&mut self, n: usize) -> core::option::Option<char>
+pub fn hex_conservative::BytesToHexIter<I>::next_back(&mut self) -> core::option::Option<[hex_conservative::Char; 2]>
+pub fn hex_conservative::BytesToHexIter<I>::nth_back(&mut self, n: usize) -> core::option::Option<[hex_conservative::Char; 2]>
 impl<I> core::iter::traits::exact_size::ExactSizeIterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::exact_size::ExactSizeIterator, <I as core::iter::traits::iterator::Iterator>::Item: core::borrow::Borrow<u8>
 pub fn hex_conservative::BytesToHexIter<I>::len(&self) -> usize
 impl<I> core::iter::traits::iterator::Iterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::iterator::Iterator, <I as core::iter::traits::iterator::Iterator>::Item: core::borrow::Borrow<u8>
-pub type hex_conservative::BytesToHexIter<I>::Item = char
-pub fn hex_conservative::BytesToHexIter<I>::next(&mut self) -> core::option::Option<char>
-pub fn hex_conservative::BytesToHexIter<I>::nth(&mut self, n: usize) -> core::option::Option<char>
+pub type hex_conservative::BytesToHexIter<I>::Item = [hex_conservative::Char; 2]
+pub fn hex_conservative::BytesToHexIter<I>::next(&mut self) -> core::option::Option<[hex_conservative::Char; 2]>
+pub fn hex_conservative::BytesToHexIter<I>::nth(&mut self, n: usize) -> core::option::Option<[hex_conservative::Char; 2]>
 pub fn hex_conservative::BytesToHexIter<I>::size_hint(&self) -> (usize, core::option::Option<usize>)
 impl<I> core::iter::traits::marker::FusedIterator for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::marker::FusedIterator, <I as core::iter::traits::iterator::Iterator>::Item: core::borrow::Borrow<u8>
 impl<I> core::marker::StructuralPartialEq for hex_conservative::BytesToHexIter<I> where I: core::iter::traits::iterator::Iterator, <I as core::iter::traits::iterator::Iterator>::Item: core::borrow::Borrow<u8>
