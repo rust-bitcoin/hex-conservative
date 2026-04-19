@@ -4,6 +4,7 @@ version = "0.3.0"
 authors = ["Martin Habovštiak <martin.habovstiak@gmail.com>", "Andrew Poelstra <apoelstra@wpsoftware.net>"]
 license = "CC0-1.0"
 repository = "https://github.com/rust-bitcoin/hex-conservative"
+homepage = "https://rust-bitcoin.org"
 description = "A hex encoding and decoding crate with a conservative MSRV and dependency policy."
 categories = ["encoding"]
 keywords = ["encoding", "hex", "hexadecimal"]
