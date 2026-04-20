@@ -30,6 +30,20 @@ impl<'a> HexSliceToBytesIter<'a> {
     /// # Errors
     ///
     /// If the input string is of odd length.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # #[cfg(feature = "std")] {
+    /// # use hex_conservative::HexSliceToBytesIter;
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// let bytes: Vec<u8> = HexSliceToBytesIter::new("deadbeef")?
+    ///     .collect::<Result<_, _>>()?;
+    /// assert_eq!(bytes, [0xde, 0xad, 0xbe, 0xef]);
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
     #[inline]
     pub fn new(s: &'a str) -> Result<Self, OddLengthStringError> {
         HexToBytesIter::new(s).map(Self)
@@ -149,6 +163,22 @@ where
     I: Iterator<Item = [u8; 2]> + ExactSizeIterator,
 {
     /// Constructs a custom hex decoding iterator from another iterator.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # #[cfg(feature = "std")] {
+    /// # use hex_conservative::HexToBytesIter;
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// let hex_digits: Vec<u8> = b"deadbeef".iter().copied().collect();
+    /// let pairs = hex_digits.chunks_exact(2).map(|c| [c[0], c[1]]);
+    /// let decoded: Vec<u8> = HexToBytesIter::from_pairs(pairs)
+    ///     .collect::<Result<_, _>>()?;
+    /// assert_eq!(decoded, [0xde, 0xad, 0xbe, 0xef]);
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
     #[inline]
     pub fn from_pairs(iter: I) -> Self { Self { front_pos: 0, iter } }
 }
