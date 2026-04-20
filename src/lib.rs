@@ -59,7 +59,7 @@ pub mod _export {
 }
 
 pub mod error;
-pub mod iter;
+mod iter;
 
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
