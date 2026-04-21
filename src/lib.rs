@@ -225,7 +225,7 @@ impl Case {
 //
 // The `repr(u8)` guarantees that representation matches the ASCII byte value of the character,
 // making transmute between `Char` and `u8` sound whenever the byte is a valid hex digit.
-#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(u8)]
 pub enum Char {
     /// `'0'`
@@ -308,6 +308,17 @@ impl fmt::Display for Char {
     }
 }
 
+impl fmt::Debug for Char {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // the Debug impl of char puts quotes around it so we do it as well for consistency.
+        let buf = [b'\'', u8::from(*self), b'\''];
+        // SOUNDNESS: every single byte is guaranteed to be ASCII.
+        let buf = unsafe { core::str::from_utf8_unchecked(&buf) };
+        // Yes, Display is correct here since Debug would put "" around it and that would be
+        // incorrect.
+        fmt::Display::fmt(buf, f)
+    }
+}
 
 impl From<Char> for char {
     #[inline]
@@ -433,5 +444,19 @@ mod tests {
         assert_eq!(format!("{: >3}", Char::UpperB), "  B");
         assert_eq!(format!("{: <3}", Char::UpperB), "B  ");
         assert_eq!(format!("{: ^3}", Char::UpperB), " B ");
+    }
+
+    #[test]
+    fn char_debug() {
+        use super::Char;
+
+        assert_eq!(format!("{:?}", Char::Zero), format!("{:?}", '0'));
+        assert_eq!(format!("{:?}", Char::LowerB), format!("{:?}", 'b'));
+        assert_eq!(format!("{:?}", Char::UpperB), format!("{:?}", 'B'));
+        // We don't test alignment against `char` because it's not supported by `char` which is
+        // considered a bug - see https://github.com/rust-lang/rust/issues/30164
+        assert_eq!(format!("{: >5?}", Char::UpperB), "  'B'");
+        assert_eq!(format!("{: <5?}", Char::UpperB), "'B'  ");
+        assert_eq!(format!("{: ^5?}", Char::UpperB), " 'B' ");
     }
 }
