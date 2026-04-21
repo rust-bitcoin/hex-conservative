@@ -223,7 +223,7 @@ impl Case {
 /// A valid hex character: one of `[0-9a-fA-F]`.
 //
 // The `repr(u8)` guarantees that representation matches the ASCII byte value of the character,
-// making transmute between `Char` and `u8` safe whenever the byte is a valid hex digit.
+// making transmute between `Char` and `u8` sound whenever the byte is a valid hex digit.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(u8)]
 pub enum Char {
