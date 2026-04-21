@@ -511,6 +511,9 @@ pub hex_conservative::Char::UpperD = 68
 pub hex_conservative::Char::UpperE = 69
 pub hex_conservative::Char::UpperF = 70
 pub hex_conservative::Char::Zero = 48
+impl hex_conservative::Char
+pub fn hex_conservative::Char::slice_as_bytes(slice: &[Self]) -> &[u8]
+pub fn hex_conservative::Char::slice_as_str(slice: &[Self]) -> &str
 impl core::clone::Clone for hex_conservative::Char
 pub fn hex_conservative::Char::clone(&self) -> hex_conservative::Char
 impl core::cmp::Eq for hex_conservative::Char

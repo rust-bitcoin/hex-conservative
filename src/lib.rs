@@ -273,6 +273,31 @@ pub enum Char {
     UpperF = b'F',
 }
 
+impl Char {
+    /// Casts a slice of `Char`s to `&str`.
+    ///
+    /// This conversion is zero-cost.
+    #[inline]
+    pub fn slice_as_str(slice: &[Self]) -> &str {
+        let bytes = Self::slice_as_bytes(slice);
+        // Guaranteed becuase it's all ASCII.
+        unsafe { core::str::from_utf8_unchecked(bytes) }
+    }
+
+    /// Casts a slice of `Char`s to `&[u8]`.
+    ///
+    /// This conversion is zero-cost.
+    #[inline]
+    pub fn slice_as_bytes(slice: &[Self]) -> &[u8] {
+        let ptr = slice.as_ptr().cast();
+        let len = slice.len();
+        // SOUNDNESS: `Self` is repr(u8)
+        // Because all chars are ASCII a slice of chars is also guaranteed to be valid slice of
+        // bytes.
+        unsafe { core::slice::from_raw_parts(ptr, len) }
+    }
+}
+
 impl From<Char> for char {
     #[inline]
     fn from(c: Char) -> char { char::from(c as u8) }
@@ -370,5 +395,19 @@ mod tests {
             hex!("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
         assert_eq!(HASH[0], 0x00);
         assert_eq!(HASH[31], 0x6f);
+    }
+
+    #[test]
+    fn char_slice_casts() {
+        use super::Char;
+
+        const BEEF: &[Char] = &[Char::LowerB, Char::LowerE, Char::LowerE, Char::LowerF];
+
+        assert_eq!(Char::slice_as_bytes(&[]), &[]);
+        assert_eq!(Char::slice_as_bytes(&BEEF[..1]), b"b");
+        assert_eq!(Char::slice_as_bytes(BEEF), b"beef");
+        assert_eq!(Char::slice_as_str(&[]), "");
+        assert_eq!(Char::slice_as_str(&BEEF[..1]), "b");
+        assert_eq!(Char::slice_as_str(BEEF), "beef");
     }
 }
