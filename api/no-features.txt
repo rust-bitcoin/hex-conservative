@@ -421,6 +421,8 @@ impl core::convert::From<hex_conservative::Char> for u8
 pub fn u8::from(c: hex_conservative::Char) -> u8
 impl core::fmt::Debug for hex_conservative::Char
 pub fn hex_conservative::Char::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for hex_conservative::Char
+pub fn hex_conservative::Char::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 impl core::hash::Hash for hex_conservative::Char
 pub fn hex_conservative::Char::hash<__H: core::hash::Hasher>(&self, state: &mut __H)
 impl core::marker::Copy for hex_conservative::Char

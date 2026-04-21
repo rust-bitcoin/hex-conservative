@@ -95,6 +95,7 @@ pub mod prelude {
     pub use crate::display::DisplayHex;
 }
 
+use core::fmt;
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
 
@@ -298,6 +299,16 @@ impl Char {
     }
 }
 
+impl fmt::Display for Char {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // This should be the most efficient way of formatting because it avoids encoding `char`
+        // and it fully supports all formatting options.
+        let slice = core::slice::from_ref(self);
+        fmt::Display::fmt(Self::slice_as_str(slice), f)
+    }
+}
+
+
 impl From<Char> for char {
     #[inline]
     fn from(c: Char) -> char { char::from(c as u8) }
@@ -409,5 +420,18 @@ mod tests {
         assert_eq!(Char::slice_as_str(&[]), "");
         assert_eq!(Char::slice_as_str(&BEEF[..1]), "b");
         assert_eq!(Char::slice_as_str(BEEF), "beef");
+    }
+
+    #[test]
+    fn char_display() {
+        use alloc::string::ToString;
+        use super::Char;
+
+        assert_eq!(Char::Zero.to_string(), "0");
+        assert_eq!(Char::LowerB.to_string(), "b");
+        assert_eq!(Char::UpperB.to_string(), "B");
+        assert_eq!(format!("{: >3}", Char::UpperB), "  B");
+        assert_eq!(format!("{: <3}", Char::UpperB), "B  ");
+        assert_eq!(format!("{: ^3}", Char::UpperB), " B ");
     }
 }
