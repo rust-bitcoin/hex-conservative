@@ -95,9 +95,9 @@ pub mod prelude {
     pub use crate::display::DisplayHex;
 }
 
-use core::fmt;
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
+use core::fmt;
 
 pub(crate) use table::Table;
 
@@ -436,6 +436,7 @@ mod tests {
     #[test]
     fn char_display() {
         use alloc::string::ToString;
+
         use super::Char;
 
         assert_eq!(Char::Zero.to_string(), "0");
