@@ -97,6 +97,7 @@ pub mod prelude {
 
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
+use core::fmt;
 
 pub(crate) use table::Table;
 
@@ -223,8 +224,8 @@ impl Case {
 /// A valid hex character: one of `[0-9a-fA-F]`.
 //
 // The `repr(u8)` guarantees that representation matches the ASCII byte value of the character,
-// making transmute between `Char` and `u8` safe whenever the byte is a valid hex digit.
-#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+// making transmute between `Char` and `u8` sound whenever the byte is a valid hex digit.
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(u8)]
 pub enum Char {
     /// `'0'`
@@ -271,6 +272,52 @@ pub enum Char {
     UpperE = b'E',
     /// `'F'`
     UpperF = b'F',
+}
+
+impl Char {
+    /// Casts a slice of `Char`s to `&str`.
+    ///
+    /// This conversion is zero-cost.
+    #[inline]
+    pub fn slice_as_str(slice: &[Self]) -> &str {
+        let bytes = Self::slice_as_bytes(slice);
+        // Guaranteed becuase it's all ASCII.
+        unsafe { core::str::from_utf8_unchecked(bytes) }
+    }
+
+    /// Casts a slice of `Char`s to `&[u8]`.
+    ///
+    /// This conversion is zero-cost.
+    #[inline]
+    pub fn slice_as_bytes(slice: &[Self]) -> &[u8] {
+        let ptr = slice.as_ptr().cast();
+        let len = slice.len();
+        // SOUNDNESS: `Self` is repr(u8)
+        // Because all chars are ASCII a slice of chars is also guaranteed to be valid slice of
+        // bytes.
+        unsafe { core::slice::from_raw_parts(ptr, len) }
+    }
+}
+
+impl fmt::Display for Char {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // This should be the most efficient way of formatting because it avoids encoding `char`
+        // and it fully supports all formatting options.
+        let slice = core::slice::from_ref(self);
+        fmt::Display::fmt(Self::slice_as_str(slice), f)
+    }
+}
+
+impl fmt::Debug for Char {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // the Debug impl of char puts quotes around it so we do it as well for consistency.
+        let buf = [b'\'', u8::from(*self), b'\''];
+        // SOUNDNESS: every single byte is guaranteed to be ASCII.
+        let buf = unsafe { core::str::from_utf8_unchecked(&buf) };
+        // Yes, Display is correct here since Debug would put "" around it and that would be
+        // incorrect.
+        fmt::Display::fmt(buf, f)
+    }
 }
 
 impl From<Char> for char {
@@ -370,5 +417,47 @@ mod tests {
             hex!("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
         assert_eq!(HASH[0], 0x00);
         assert_eq!(HASH[31], 0x6f);
+    }
+
+    #[test]
+    fn char_slice_casts() {
+        use super::Char;
+
+        const BEEF: &[Char] = &[Char::LowerB, Char::LowerE, Char::LowerE, Char::LowerF];
+
+        assert_eq!(Char::slice_as_bytes(&[]), &[]);
+        assert_eq!(Char::slice_as_bytes(&BEEF[..1]), b"b");
+        assert_eq!(Char::slice_as_bytes(BEEF), b"beef");
+        assert_eq!(Char::slice_as_str(&[]), "");
+        assert_eq!(Char::slice_as_str(&BEEF[..1]), "b");
+        assert_eq!(Char::slice_as_str(BEEF), "beef");
+    }
+
+    #[test]
+    fn char_display() {
+        use alloc::string::ToString;
+
+        use super::Char;
+
+        assert_eq!(Char::Zero.to_string(), "0");
+        assert_eq!(Char::LowerB.to_string(), "b");
+        assert_eq!(Char::UpperB.to_string(), "B");
+        assert_eq!(format!("{: >3}", Char::UpperB), "  B");
+        assert_eq!(format!("{: <3}", Char::UpperB), "B  ");
+        assert_eq!(format!("{: ^3}", Char::UpperB), " B ");
+    }
+
+    #[test]
+    fn char_debug() {
+        use super::Char;
+
+        assert_eq!(format!("{:?}", Char::Zero), format!("{:?}", '0'));
+        assert_eq!(format!("{:?}", Char::LowerB), format!("{:?}", 'b'));
+        assert_eq!(format!("{:?}", Char::UpperB), format!("{:?}", 'B'));
+        // We don't test alignment against `char` because it's not supported by `char` which is
+        // considered a bug - see https://github.com/rust-lang/rust/issues/30164
+        assert_eq!(format!("{: >5?}", Char::UpperB), "  'B'");
+        assert_eq!(format!("{: <5?}", Char::UpperB), "'B'  ");
+        assert_eq!(format!("{: ^5?}", Char::UpperB), " 'B' ");
     }
 }

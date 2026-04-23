@@ -403,6 +403,9 @@ pub hex_conservative::Char::UpperD = 68
 pub hex_conservative::Char::UpperE = 69
 pub hex_conservative::Char::UpperF = 70
 pub hex_conservative::Char::Zero = 48
+impl hex_conservative::Char
+pub fn hex_conservative::Char::slice_as_bytes(slice: &[Self]) -> &[u8]
+pub fn hex_conservative::Char::slice_as_str(slice: &[Self]) -> &str
 impl core::clone::Clone for hex_conservative::Char
 pub fn hex_conservative::Char::clone(&self) -> hex_conservative::Char
 impl core::cmp::Eq for hex_conservative::Char
@@ -417,6 +420,8 @@ pub fn char::from(c: hex_conservative::Char) -> char
 impl core::convert::From<hex_conservative::Char> for u8
 pub fn u8::from(c: hex_conservative::Char) -> u8
 impl core::fmt::Debug for hex_conservative::Char
+pub fn hex_conservative::Char::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for hex_conservative::Char
 pub fn hex_conservative::Char::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 impl core::hash::Hash for hex_conservative::Char
 pub fn hex_conservative::Char::hash<__H: core::hash::Hasher>(&self, state: &mut __H)
