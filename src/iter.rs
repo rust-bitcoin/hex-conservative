@@ -5,6 +5,7 @@
 use core::borrow::Borrow;
 use core::convert::TryInto;
 use core::iter::FusedIterator;
+use core::mem::MaybeUninit;
 use core::str;
 #[cfg(feature = "std")]
 use std::io;
@@ -112,14 +113,39 @@ impl<'a> HexToBytesIter<HexDigitsIter<'a>> {
         Self::from_pairs(HexDigitsIter::new_unchecked(s.as_bytes()))
     }
 
-    /// Writes all the bytes yielded by this `HexToBytesIter` to the provided slice.
+    /// Writes all the bytes yielded by this `HexToBytesIter` to the provided uninitialized slice.
     ///
-    /// Stops writing if this `HexToBytesIter` yields an `InvalidCharError`.
+    /// Stops writing if this `HexToBytesIter` yields an `InvalidCharError`. On error, bytes
+    /// written before the error remain initialized in `buf`, but the caller cannot rely on
+    /// any particular prefix being initialized and must not treat `buf` as `&[u8]`.
     ///
     /// # Panics
     ///
     /// Panics if the length of this `HexToBytesIter` is not equal to the length of the provided
     /// slice.
+    pub(crate) fn drain_to_uninit_slice(
+        self,
+        buf: &mut [MaybeUninit<u8>],
+    ) -> Result<(), InvalidCharError> {
+        // IF YOU CHANGE THIS FUNCTION DO THE ONE BELOW TOO.
+        assert_eq!(self.len(), buf.len());
+        let mut ptr = buf.as_mut_ptr().cast::<u8>();
+        for byte in self {
+            // SAFETY: for loop iterates `len` times, and `buf` has length `len`.
+            // Writing through a `*mut u8` derived from `*mut MaybeUninit<u8>` is sound
+            // because the two have identical layout and `MaybeUninit<u8>` imposes no
+            // validity requirement on the bytes being overwritten.
+            unsafe {
+                core::ptr::write(ptr, byte?);
+                ptr = ptr.add(1);
+            }
+        }
+        Ok(())
+    }
+
+    // Exactly the same as the function above except without the `MaybeUinit` stuff. Used to test
+    // the function above.
+    #[cfg(test)]
     pub(crate) fn drain_to_slice(self, buf: &mut [u8]) -> Result<(), InvalidCharError> {
         assert_eq!(self.len(), buf.len());
         let mut ptr = buf.as_mut_ptr();
