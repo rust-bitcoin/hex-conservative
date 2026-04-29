@@ -14,4 +14,9 @@
  name = "iter"
  path = "hex/iter.rs"
  harness = false
+
+ [[bench]]
+ name = "decode"
+ path = "hex/decode.rs"
+ harness = false
  
