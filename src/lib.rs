@@ -275,6 +275,36 @@ pub enum Char {
 }
 
 impl Char {
+    /// Returns the nibble value (0–15) of this hex character.
+    #[inline]
+    pub(crate) fn decode_nibble(b: u8) -> Option<u8> {
+        // Each valid hex byte maps to its nibble value; 0xFF marks invalid entries.
+        // Char variant discriminants equal their ASCII byte values, so they index directly.
+        #[rustfmt::skip]
+        static TABLE: [u8; 256] = {
+            let mut t = [0xFF_u8; 256];
+            // Each Char variant is a u8. So all `as usize` casts are safe.
+            t[Char::Zero  as usize] = 0;  t[Char::One   as usize] = 1;
+            t[Char::Two   as usize] = 2;  t[Char::Three as usize] = 3;
+            t[Char::Four  as usize] = 4;  t[Char::Five  as usize] = 5;
+            t[Char::Six   as usize] = 6;  t[Char::Seven as usize] = 7;
+            t[Char::Eight as usize] = 8;  t[Char::Nine  as usize] = 9;
+            t[Char::LowerA as usize] = 10; t[Char::UpperA as usize] = 10;
+            t[Char::LowerB as usize] = 11; t[Char::UpperB as usize] = 11;
+            t[Char::LowerC as usize] = 12; t[Char::UpperC as usize] = 12;
+            t[Char::LowerD as usize] = 13; t[Char::UpperD as usize] = 13;
+            t[Char::LowerE as usize] = 14; t[Char::UpperE as usize] = 14;
+            t[Char::LowerF as usize] = 15; t[Char::UpperF as usize] = 15;
+            t
+        };
+        let n = TABLE[usize::from(b)];
+        if n == 0xFF {
+            None
+        } else {
+            Some(n)
+        }
+    }
+
     /// Casts a slice of `Char`s to `&str`.
     ///
     /// This conversion is zero-cost.
