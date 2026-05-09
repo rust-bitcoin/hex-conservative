@@ -254,7 +254,11 @@ impl fmt::UpperHex for DisplayByteSlice<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { self.display(f, Case::Upper) }
 }
 
-/// Format known-length array as hex.
+/// Efficiently formats a sequence of bytes as a hexadecimal string with compile-time-known length.
+///
+/// Whenever the length of a sequence of bytes (usually an array, but it could be any iterator)
+/// is known at compile time, it is more efficient to use this macro because various length checks
+/// and loops are elided. The buffer is just filled once and then emitted to the formatter.
 ///
 /// This supports all formatting options of formatter and may be faster than calling `as_hex()` on
 /// an arbitrary `&[u8]`. Note that the implementation intentionally keeps leading zeros even when
@@ -272,10 +276,42 @@ impl fmt::UpperHex for DisplayByteSlice<'_> {
 /// * `$bytes` - bytes to be encoded, most likely a reference to an array.
 /// * `$case` - value of type [`Case`] determining whether to format as lower or upper case.
 ///
+/// ## Returns
+///
+/// Returns [`core::fmt::Result`].
+///
 /// ## Panics
 ///
-/// This macro panics if `$len` is not equal to `$bytes.len()`. It also fails to compile if `$len`
-/// is more than half of `usize::MAX`.
+/// This macro panics if `$len` is not equal to `$bytes.len()`
+///
+/// ## Static Assertions
+///
+/// The use of a macro instead of a function allows for compile-time length validation. This macro
+/// fails to compile if `$len` is more than half of `usize::MAX`. This prevents runtime panics or
+/// logic errors when formatting fixed-size primitives like Bitcoin hashes or public keys.
+///
+/// ## Examples
+///
+/// ```rust
+/// use hex_conservative::{fmt_hex_exact, Case};
+/// use std::fmt;
+///
+/// struct MyHash([u8; 32]);
+///
+/// impl fmt::LowerHex for MyHash {
+///     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+///         // Explicitly use Lower case for {:x}
+///         fmt_hex_exact!(f, 32, &self.0, Case::Lower)
+///     }
+/// }
+///
+/// impl fmt::UpperHex for MyHash {
+///     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+///         // Explicitly use Upper case for {:X}
+///         fmt_hex_exact!(f, 32, &self.0, Case::Upper)
+///     }
+/// }
+/// ```
 #[macro_export]
 macro_rules! fmt_hex_exact {
     ($formatter:expr, $len:expr, $bytes:expr, $case:expr) => {{
