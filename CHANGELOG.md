@@ -1,3 +1,7 @@
+# 1.2.0 - 2026-05-22
+
+- Add `fmt_hex_exact_lower` and `fmt_hex_exact_upper` macros [#247](https://github.com/rust-bitcoin/hex-conservative/pull/247)
+
 # 1.1.0 - 2026-05-04
 
 `v1.0` of this crate only has the decoding side (and the decoding iterator is private).
