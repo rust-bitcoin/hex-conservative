@@ -8,5 +8,5 @@ exclude_re = [
     "write_pad_left", # Timeout
     "write_pad_right", # Mutant changes `* 1` to `/ 1` which has no effect
     "hex_reserve_suggestion", # Mutant changes the suggested number bytes to reserve when creating a `String` to 0 or 1. This has a possible performance impact but is not a correctness issue.
-    "fmt_hex_exact_fn", # Mutant changes a `/ 2` to `* 2` in the number of elements in the iterator. Only the required number of elements are returned so the mutant has no functional change to test.
+    "fmt_hex_max_fn", # Mutant changes a `/ 2` to `* 2` in the number of elements in the iterator. Only the required number of elements are returned so the mutant has no functional change to test.
 ]

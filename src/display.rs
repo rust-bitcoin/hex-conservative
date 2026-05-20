@@ -282,7 +282,7 @@ impl fmt::UpperHex for DisplayByteSlice<'_> {
 ///
 /// ## Panics
 ///
-/// This macro panics if `$len` is not equal to `$bytes.len()`
+/// This macro panics if the length of the encoded item is larger than `$len`.
 ///
 /// ## Static Assertions
 ///
@@ -293,7 +293,7 @@ impl fmt::UpperHex for DisplayByteSlice<'_> {
 /// ## Examples
 ///
 /// ```rust
-/// use hex_conservative::{fmt_hex_exact, Case};
+/// use hex_conservative::{fmt_hex_max, Case};
 /// use std::fmt;
 ///
 /// struct MyHash([u8; 32]);
@@ -301,28 +301,71 @@ impl fmt::UpperHex for DisplayByteSlice<'_> {
 /// impl fmt::LowerHex for MyHash {
 ///     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 ///         // Explicitly use Lower case for {:x}
-///         fmt_hex_exact!(f, 32, &self.0, Case::Lower)
+///         fmt_hex_max!(f, 32, &self.0, Case::Lower)
 ///     }
 /// }
 ///
 /// impl fmt::UpperHex for MyHash {
 ///     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 ///         // Explicitly use Upper case for {:X}
-///         fmt_hex_exact!(f, 32, &self.0, Case::Upper)
+///         fmt_hex_max!(f, 32, &self.0, Case::Upper)
 ///     }
 /// }
 /// ```
 #[macro_export]
-macro_rules! fmt_hex_exact {
+macro_rules! fmt_hex_max {
     ($formatter:expr, $len:expr, $bytes:expr, $case:expr) => {{
         // statically check $len
         #[allow(deprecated)]
         const _: () = [()][($len > usize::MAX / 2) as usize];
+        assert!(
+            $bytes.len() <= $len,
+            "length of the encoded item ({}) is larger than {}",
+            $bytes.len(),
+            $len
+        );
+        $crate::display::fmt_hex_max_fn::<_, { $len * 2 }>($formatter, $bytes, $case)
+    }};
+}
+pub use fmt_hex_max;
+
+/// Formats bytes as hex with runtime and compile-time length checks.
+///
+/// ## Panics
+///
+/// This macro panics if `$len` is not equal to `$bytes.len()`
+///
+/// See [`fmt_hex_max`] for details.
+#[macro_export]
+macro_rules! fmt_hex_exact {
+    ($formatter:expr, $len:expr, $bytes:expr, $case:expr) => {{
         assert_eq!($bytes.len(), $len);
-        $crate::display::fmt_hex_exact_fn::<_, { $len * 2 }>($formatter, $bytes, $case)
+        $crate::fmt_hex_max!($formatter, $len, $bytes, $case)
     }};
 }
 pub use fmt_hex_exact;
+
+/// Formats bytes as hex in lower case.
+///
+/// See [`fmt_hex_max!`] for details.
+#[macro_export]
+macro_rules! fmt_hex_lower {
+    ($formatter:expr, $len:expr, $bytes:expr) => {
+        $crate::fmt_hex_max!($formatter, $len, $bytes, $crate::Case::Lower)
+    };
+}
+pub use fmt_hex_lower;
+
+/// Formats bytes as hex in upper case.
+///
+/// See [`fmt_hex_max!`] for details.
+#[macro_export]
+macro_rules! fmt_hex_upper {
+    ($formatter:expr, $len:expr, $bytes:expr) => {
+        $crate::fmt_hex_max!($formatter, $len, $bytes, $crate::Case::Upper)
+    };
+}
+pub use fmt_hex_upper;
 
 /// Adds `core::fmt` trait implementations to type `$ty`.
 ///
@@ -486,7 +529,7 @@ macro_rules! impl_fmt_traits {
 }
 pub use impl_fmt_traits;
 
-// Implementation detail of `write_hex_exact` macro to de-duplicate the code
+// Implementation detail of `fmt_hex_max` macro to de-duplicate the code
 //
 // Whether hex is an integer or a string is debatable, we cater a little bit to each.
 // - We support users adding `0x` prefix using "{:#}" (treating hex like an integer).
@@ -495,7 +538,7 @@ pub use impl_fmt_traits;
 // This assumes `bytes.len() * 2 == N`.
 #[doc(hidden)]
 #[inline]
-pub fn fmt_hex_exact_fn<I, const N: usize>(
+pub fn fmt_hex_max_fn<I, const N: usize>(
     f: &mut fmt::Formatter,
     bytes: I,
     case: Case,
@@ -640,6 +683,30 @@ mod tests {
             assert_eq!(format!("{:.10}", dummy), "2a".repeat(5));
             assert_eq!(format!("{:.11}", dummy), "2a".repeat(5) + "2");
             assert_eq!(format!("{:.65}", dummy), "2a".repeat(32));
+        }
+
+        struct TestHexUpperLower<'a>(&'a [u8], bool);
+
+        impl fmt::Display for TestHexUpperLower<'_> {
+            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                if self.1 {
+                    fmt_hex_upper!(f, 3, self.0)
+                } else {
+                    fmt_hex_lower!(f, 3, self.0)
+                }
+            }
+        }
+
+        #[test]
+        fn fmt_hex_lower_macro() {
+            let bytes = [0x1a, 0x2b, 0x3c];
+            assert_eq!(format!("{}", TestHexUpperLower(&bytes, false)), "1a2b3c");
+        }
+
+        #[test]
+        fn fmt_hex_upper_macro() {
+            let bytes = [0x1a, 0x2b, 0x3c];
+            assert_eq!(format!("{}", TestHexUpperLower(&bytes, true)), "1A2B3C");
         }
 
         macro_rules! define_dummy {

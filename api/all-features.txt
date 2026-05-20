@@ -57,6 +57,9 @@ impl<T> core::convert::From<T> for hex_conservative::buf_encoder::BufEncoder<CAP
 pub fn hex_conservative::buf_encoder::BufEncoder<CAP>::from(t: T) -> T
 pub mod hex_conservative::display
 pub macro hex_conservative::display::fmt_hex_exact!
+pub macro hex_conservative::display::fmt_hex_lower!
+pub macro hex_conservative::display::fmt_hex_max!
+pub macro hex_conservative::display::fmt_hex_upper!
 pub macro hex_conservative::display::impl_fmt_traits!
 pub struct hex_conservative::display::DisplayByteSlice<'a>
 impl core::fmt::Debug for hex_conservative::display::DisplayByteSlice<'_>
@@ -441,6 +444,9 @@ pub type [u8]::Display<'a> = hex_conservative::display::DisplayByteSlice<'a>
 pub fn [u8]::as_hex<'a>(&'a self) -> Self::Display
 pub fn [u8]::hex_reserve_suggestion(&self) -> usize
 pub macro hex_conservative::fmt_hex_exact!
+pub macro hex_conservative::fmt_hex_lower!
+pub macro hex_conservative::fmt_hex_max!
+pub macro hex_conservative::fmt_hex_upper!
 pub macro hex_conservative::hex!
 pub macro hex_conservative::impl_fmt_traits!
 pub enum hex_conservative::Case
