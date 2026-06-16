@@ -123,7 +123,10 @@ fn internal_display(bytes: &[u8], f: &mut fmt::Formatter, case: Case) -> fmt::Re
     }
     match f.precision() {
         Some(max) if bytes.len() > max / 2 => {
-            write!(f, "{}", bytes[..(max / 2)].as_hex())?;
+            match case {
+                Case::Lower => write!(f, "{:x}", bytes[..(max / 2)].as_hex())?,
+                Case::Upper => write!(f, "{:X}", bytes[..(max / 2)].as_hex())?,
+            }
             if max % 2 == 1 {
                 f.write_char(case.table().byte_to_chars(bytes[max / 2])[0])?;
             }
@@ -917,6 +920,45 @@ mod tests {
             let lower = "aabbccdd";
             assert_eq!(bytes.to_upper_hex_string(), upper);
             assert_eq!(bytes.to_lower_hex_string(), lower);
+        }
+
+        #[test]
+        fn upper_hex_precision_preserves_case() {
+            let bytes: [u8; 4] = [0xab, 0xcd, 0xef, 0x12];
+            let slice: &[u8] = &bytes;
+            assert_eq!(format!("{:.4X}", slice.as_hex()), "ABCD");
+            assert_eq!(format!("{:.5X}", slice.as_hex()), "ABCDE");
+        }
+
+        #[test]
+        fn lower_hex_precision_works_correctly_with_lowecase() {
+            let bytes: [u8; 4] = [0xab, 0xcd, 0xef, 0x12];
+            let slice: &[u8] = &bytes;
+            assert_eq!(format!("{:.4x}", slice.as_hex()), "abcd");
+            assert_eq!(format!("{:.5x}", slice.as_hex()), "abcde");
+        }
+
+        #[test]
+        fn hex_precision_extreme_boundaries() {
+            let bytes: [u8; 2] = [0xaa, 0xbb];
+            let slice: &[u8] = &bytes;
+
+            // zero precision
+            assert_eq!(format!("{:.0X}", slice.as_hex()), "");
+            assert_eq!(format!("{:.0x}", slice.as_hex()), "");
+
+            // 1-nibble precision (odd, edge case)
+            assert_eq!(format!("{:.1X}", slice.as_hex()), "A");
+            assert_eq!(format!("{:.1x}", slice.as_hex()), "a");
+        }
+
+        #[test]
+        fn hex_precision_greater_than_length() {
+            let bytes: [u8; 2] = [0xab, 0xcd];
+            let slice: &[u8] = &bytes;
+
+            assert_eq!(format!("{:.10X}", slice.as_hex()), "ABCD");
+            assert_eq!(format!("{:.10x}", slice.as_hex()), "abcd");
         }
     }
 
