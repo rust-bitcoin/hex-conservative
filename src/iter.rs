@@ -82,6 +82,9 @@ impl io::Read for HexSliceToBytesIter<'_> {
 }
 
 /// Iterator yielding bytes decoded from an iterator of pairs of hex digits.
+///
+/// This type is intentionally low-level. It operates on an iterator of character pairs, each
+/// represented as a `[u8; 2]`. If you already have a `&str`, use [`HexSliceToBytesIter`] instead.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct HexToBytesIter<I>
 where
