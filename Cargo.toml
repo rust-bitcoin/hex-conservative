@@ -26,7 +26,6 @@ alloc = []
 
 [dependencies]
 arrayvec = { version = "0.7.2", default-features = false }
-core2 = { version = "0.3.2", default-features = false, optional = true }
 serde = { version = "1.0", default-features = false, optional = true }
 
 

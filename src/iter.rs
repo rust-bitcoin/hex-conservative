@@ -8,9 +8,6 @@ use core::str;
 #[cfg(feature = "std")]
 use std::io;
 
-#[cfg(all(feature = "core2", not(feature = "std")))]
-use core2::io;
-
 use crate::error::{InvalidCharError, OddLengthStringError};
 
 /// Convenience alias for `HexToBytesIter<HexDigitsIter<'a>>`.
@@ -87,7 +84,7 @@ impl<T: Iterator<Item = [u8; 2]> + ExactSizeIterator> ExactSizeIterator for HexT
 
 impl<T: Iterator<Item = [u8; 2]> + FusedIterator> FusedIterator for HexToBytesIter<T> {}
 
-#[cfg(any(feature = "std", feature = "core2"))]
+#[cfg(feature = "std")]
 impl<T: Iterator<Item = [u8; 2]> + FusedIterator> io::Read for HexToBytesIter<T> {
     #[inline]
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
