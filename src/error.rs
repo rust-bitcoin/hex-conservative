@@ -160,7 +160,8 @@ pub struct InvalidCharError {
 impl InvalidCharError {
     /// Returns the invalid character byte.
     #[inline]
-    pub(crate) fn invalid_char(&self) -> u8 { self.invalid }
+    #[deprecated(since = "TBD", note = "not suitable for use with UTF-8 strings")]
+    pub fn invalid_char(&self) -> u8 { self.invalid }
     /// Returns the position of the invalid character byte.
     #[inline]
     pub fn pos(&self) -> usize { self.pos }
@@ -368,11 +369,12 @@ impl From<InvalidLengthError> for DecodeFixedLengthBytesError {
 
 /// Tried to parse fixed-length hash from a string with the wrong length.
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[non_exhaustive]
 pub struct InvalidLengthError {
     /// The expected length.
-    pub(crate) expected: usize,
+    pub expected: usize,
     /// The invalid length.
-    pub(crate) invalid: usize,
+    pub invalid: usize,
 }
 
 impl InvalidLengthError {

@@ -278,6 +278,7 @@ impl<T> core::convert::From<T> for hex_conservative::error::DecodeVariableLength
 pub fn hex_conservative::error::DecodeVariableLengthBytesError::from(t: T) -> T
 pub struct hex_conservative::error::InvalidCharError
 impl hex_conservative::error::InvalidCharError
+pub fn hex_conservative::error::InvalidCharError::invalid_char(&self) -> u8
 pub fn hex_conservative::error::InvalidCharError::offset(self, by_bytes: usize) -> Self
 pub fn hex_conservative::error::InvalidCharError::pos(&self) -> usize
 impl core::clone::Clone for hex_conservative::error::InvalidCharError
@@ -329,7 +330,9 @@ impl<T> core::clone::CloneToUninit for hex_conservative::error::InvalidCharError
 pub unsafe fn hex_conservative::error::InvalidCharError::clone_to_uninit(&self, dest: *mut u8)
 impl<T> core::convert::From<T> for hex_conservative::error::InvalidCharError
 pub fn hex_conservative::error::InvalidCharError::from(t: T) -> T
-pub struct hex_conservative::error::InvalidLengthError
+#[non_exhaustive] pub struct hex_conservative::error::InvalidLengthError
+pub hex_conservative::error::InvalidLengthError::expected: usize
+pub hex_conservative::error::InvalidLengthError::invalid: usize
 impl hex_conservative::error::InvalidLengthError
 pub fn hex_conservative::error::InvalidLengthError::expected_length(&self) -> usize
 pub fn hex_conservative::error::InvalidLengthError::invalid_length(&self) -> usize
@@ -849,6 +852,7 @@ impl<T> core::convert::From<T> for hex_conservative::HexToBytesIter<I>
 pub fn hex_conservative::HexToBytesIter<I>::from(t: T) -> T
 pub struct hex_conservative::InvalidCharError
 impl hex_conservative::error::InvalidCharError
+pub fn hex_conservative::error::InvalidCharError::invalid_char(&self) -> u8
 pub fn hex_conservative::error::InvalidCharError::offset(self, by_bytes: usize) -> Self
 pub fn hex_conservative::error::InvalidCharError::pos(&self) -> usize
 impl core::clone::Clone for hex_conservative::error::InvalidCharError
@@ -900,7 +904,9 @@ impl<T> core::clone::CloneToUninit for hex_conservative::error::InvalidCharError
 pub unsafe fn hex_conservative::error::InvalidCharError::clone_to_uninit(&self, dest: *mut u8)
 impl<T> core::convert::From<T> for hex_conservative::error::InvalidCharError
 pub fn hex_conservative::error::InvalidCharError::from(t: T) -> T
-pub struct hex_conservative::InvalidLengthError
+#[non_exhaustive] pub struct hex_conservative::InvalidLengthError
+pub hex_conservative::InvalidLengthError::expected: usize
+pub hex_conservative::InvalidLengthError::invalid: usize
 impl hex_conservative::error::InvalidLengthError
 pub fn hex_conservative::error::InvalidLengthError::expected_length(&self) -> usize
 pub fn hex_conservative::error::InvalidLengthError::invalid_length(&self) -> usize
