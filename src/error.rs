@@ -75,16 +75,19 @@ impl From<OddLengthStringError> for HexToBytesError {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct InvalidCharError {
     pub(crate) invalid: u8,
+    pub(crate) pos: usize,
 }
 
 impl InvalidCharError {
     /// Returns the invalid character byte.
     pub fn invalid_char(&self) -> u8 { self.invalid }
+    /// Returns the position of the invalid character byte.
+    pub fn pos(&self) -> usize { self.pos }
 }
 
 impl fmt::Display for InvalidCharError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "invalid hex char {}", self.invalid)
+        write!(f, "invalid hex char {} at pos {}", self.invalid, self.pos)
     }
 }
 
