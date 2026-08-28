@@ -11,6 +11,7 @@ keywords = ["encoding", "hex", "hexadecimal"]
 readme = "README.md"
 edition = "2018"
 exclude = ["tests", "contrib"]
+rust-version = "1.56.1"
 
 [package.metadata.docs.rs]
 all-features = true

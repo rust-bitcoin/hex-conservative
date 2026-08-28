@@ -1,4 +1,3 @@
 # .gitignore for hex-conservative repository.
 
-Cargo.lock
 target
