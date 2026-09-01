@@ -15,6 +15,16 @@ if cargo --version | grep nightly >/dev/null; then
 fi
 
 if cargo --version | grep ${MSRV}; then
+    # `Cargo.lock` is committed and gets generated using a modern toolchain, so
+    # it can contain multiple dependencies simultaneously too new for the MSRV
+    # toolchain to even parse (e.g. ones using the `dep:` optional-dependency
+    # syntax). `cargo update -p x --precise y` treats every package other than
+    # `x` as frozen at its current (unparsable) version, so pinning them one at
+    # a time deadlocks. First bulk-update all of them together, without
+    # `--precise`, so the resolver is free to settle on versions the MSRV
+    # toolchain can at least parse; only then pin each one precisely.
+    cargo update -p memchr -p honggfuzz -p semver -p memmap2 -p syn -p serde_derive -p serde -p quote -p proc-macro2 -p unicode-ident -p ryu -p itoa -p serde_json
+
     cargo update -p serde_json --precise 1.0.48
     cargo update -p itoa --precise 0.4.3
 
@@ -25,6 +35,12 @@ if cargo --version | grep ${MSRV}; then
     cargo update -p memchr --precise 2.5.0
     cargo update -p ryu --precise 1.0.0
     cargo update -p unicode-ident --precise 1.0.0
+    # honggfuzz >= 0.5.56 requires edition 2021 (fuzz/ dev workspace member)
+    cargo update -p honggfuzz --precise 0.5.55
+    # semver >= 1.0.24 uses the `dep:` optional-dependency syntax
+    cargo update -p semver --precise 1.0.23
+    # memmap2 >= 0.9.11 requires rustc 1.65; honggfuzz 0.5.55 needs memmap2 0.5.x anyway
+    cargo update -p memmap2 --precise 0.5.10
 fi
 
 # Make all cargo invocations verbose
