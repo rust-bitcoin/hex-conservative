@@ -117,15 +117,8 @@ mod table {
     pub(crate) struct Table([u8; 16]);
 
     impl Table {
-        pub(crate) const LOWER: Self = Table([
-            b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'a', b'b', b'c', b'd',
-            b'e', b'f',
-        ]);
-        pub(crate) const UPPER: Self = Table([
-            b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'A', b'B', b'C', b'D',
-            b'E', b'F',
-        ]);
-
+        pub(crate) const LOWER: Self = Table(*b"0123456789abcdef");
+        pub(crate) const UPPER: Self = Table(*b"0123456789ABCDEF");
         /// Encodes single byte as two ASCII chars using the given table.
         ///
         /// The function guarantees only returning values from the provided table.
