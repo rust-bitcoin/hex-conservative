@@ -1,3 +1,9 @@
+# 0.2.3 - 2026-09-01
+
+- Commit a lock file (`Cargo.lock`) and explicitly use MSRV
+  `rust-version` in manifest [#259](https://github.com/rust-bitcoin/hex-conservative/pull/259)
+- Backport serde deserializton bug fix [#202](https://github.com/rust-bitcoin/hex-conservative/pull/202)
+
 # 0.2.2 - 2025-11-25
 
 - remove `doc_auto_cfg` from src/lib.rs due to breaking compiler change
