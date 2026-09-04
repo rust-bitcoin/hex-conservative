@@ -1,3 +1,9 @@
+# 1.3.0 - 2026-09-04
+
+- Mention `HexSliceToBytesIter` in `HexToBytesIter` docs [#252](https://github.com/rust-bitcoin/hex-conservative/pull/252)
+- Patch sub-errors to make them backwards compatible [#257](https://github.com/rust-bitcoin/hex-conservative/pull/257)
+- Preserve case and padding on truncated hex formatting [#250](https://github.com/rust-bitcoin/hex-conservative/pull/250)
+
 # 1.2.0 - 2026-05-22
 
 - Add `fmt_hex_exact_lower` and `fmt_hex_exact_upper` macros [#247](https://github.com/rust-bitcoin/hex-conservative/pull/247)
