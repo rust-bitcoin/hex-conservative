@@ -561,7 +561,7 @@ where
         Some(p) if p < N => {
             let n = p.div_ceil(2);
             encoder.put_bytes(bytes.into_iter().take(n));
-            &encoder.as_str()[..p]
+            encoder.as_str().get(..p).unwrap_or(encoder.as_str())
         }
         _ => {
             encoder.put_bytes(bytes);
