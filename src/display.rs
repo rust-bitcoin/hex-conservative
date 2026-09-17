@@ -688,6 +688,21 @@ mod tests {
             assert_eq!(format!("{:.65}", dummy), "2a".repeat(32));
         }
 
+        #[test]
+        fn fmt_hex_max_short_bytes_with_precision() {
+            // `fmt_hex_max!` documents that `$bytes.len() <= $len` is acceptable. Ensure that
+            // if you have $bytes.len() strictly less than $len, and you attempt to use a
+            // precision value between the two lengths, nothing bad happens.
+            struct Short([u8; 2]);
+            impl fmt::Display for Short {
+                fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                    fmt_hex_max!(f, 4, &self.0, Case::Lower)
+                }
+            }
+            let s = format!("{:.5}", Short([0x12, 0x34]));
+            assert_eq!(s, "1234");
+        }
+
         struct TestHexUpperLower<'a>(&'a [u8], bool);
 
         impl fmt::Display for TestHexUpperLower<'_> {
