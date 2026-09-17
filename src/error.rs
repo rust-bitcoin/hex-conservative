@@ -160,7 +160,7 @@ pub struct InvalidCharError {
 impl InvalidCharError {
     /// Returns the invalid character byte.
     #[inline]
-    #[deprecated(since = "TBD", note = "not suitable for use with UTF-8 strings")]
+    #[deprecated(since = "1.3.0", note = "not suitable for use with UTF-8 strings")]
     pub fn invalid_char(&self) -> u8 { self.invalid }
     /// Returns the position of the invalid character byte.
     #[inline]
