@@ -89,10 +89,10 @@ impl<const CAP: usize> BufEncoder<CAP> {
         I: Iterator,
         I::Item: Borrow<u8>,
     {
-        // May give the compiler better optimization opportunity
-        if let Some(max) = bytes.size_hint().1 {
-            assert!(max <= self.space_remaining());
-        }
+        // May give the compiler better optimization opportunity. For example, on `TrustedLen`
+        // iterators such as slice iterators, this serves as an up-front range check that will
+        // let the compiler elide the range checks in `put_byte`.
+        assert!(bytes.size_hint().0 <= self.space_remaining());
         for byte in bytes {
             self.put_byte(*byte.borrow());
         }
