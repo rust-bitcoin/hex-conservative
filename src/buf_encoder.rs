@@ -345,4 +345,15 @@ mod tests {
             encoder.clear();
         }
     }
+
+    #[test]
+    fn put_bytes_accepts_overestimated_size_hint_when_items_fit() {
+        let mut encoder = BufEncoder::<2>::new(Case::Lower);
+        // Creates an iterator whose size_hint max is strictly greater than its actual size.
+        let bytes = [0xab_u8, 0xcd].into_iter().filter(|byte| *byte == 0xab);
+
+        encoder.put_bytes(bytes);
+
+        assert_eq!(encoder.as_str(), "ab");
+    }
 }
