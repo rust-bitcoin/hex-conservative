@@ -1,3 +1,7 @@
+# 1.3.1 - 2026-09-17
+
+- Set the deprecation notice form TBD to `1.3.0`.
+
 # 1.3.0 - 2026-09-04
 
 - Mention `HexSliceToBytesIter` in `HexToBytesIter` docs [#252](https://github.com/rust-bitcoin/hex-conservative/pull/252)
