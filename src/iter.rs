@@ -313,9 +313,33 @@ impl core::iter::FusedIterator for HexDigitsIter<'_> {}
 ///
 /// Returns the valid byte or the invalid input byte and a bool indicating error for `hi` or `lo`.
 fn hex_chars_to_byte(hi: u8, lo: u8) -> Result<u8, (u8, bool)> {
-    let hih = Char::decode_nibble(hi).ok_or((hi, true))?;
-    let loh = Char::decode_nibble(lo).ok_or((lo, false))?;
+    let hih = decode_nibble(hi).ok_or((hi, true))?;
+    let loh = decode_nibble(lo).ok_or((lo, false))?;
     Ok((hih << 4) | loh)
+}
+
+#[inline]
+fn decode_nibble(b: u8) -> Option<u8> {
+    const INVALID: u8 = 0xFF;
+    static TABLE: [u8; 256] = {
+        let mut table = [INVALID; 256];
+        let mut i = 0;
+        while i < 10 {
+            table[b'0' as usize + i] = i as u8;
+            i += 1;
+        }
+        let mut i = 0;
+        while i < 6 {
+            table[b'a' as usize + i] = 10 + i as u8;
+            table[b'A' as usize + i] = 10 + i as u8;
+            i += 1;
+        }
+        table
+    };
+    match TABLE[usize::from(b)] {
+        INVALID => None,
+        nibble => Some(nibble),
+    }
 }
 
 /// Iterator over bytes which encodes the bytes and yields `[Char; 2]` pairs of hex characters.
