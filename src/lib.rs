@@ -59,6 +59,12 @@
 //! old and also that ships in Debian stable. We may bump our MSRV in a minor version, but we have
 //! no plans to.
 //!
+//! The decoding side of this crate (the hex to bytes iterators, `decode_to_vec`,
+//! [`decode_to_array`] and the [`error`] types) lives in the `hex-conservative-decoding` crate,
+//! which has an MSRV of Rust `1.60.0`. This crate re-exports all of it, so most users don't need
+//! to depend on `hex-conservative-decoding` directly. If you need decoding on a compiler older
+//! than our MSRV, depend only on `hex-conservative-decoding` instead of this crate.
+//!
 //! Note though that the dependencies may have looser policy. This is not considered breaking/wrong
 //! - you would just need to pin them in `Cargo.lock` (not `.toml`).
 
@@ -86,8 +92,10 @@ pub mod _export {
 
 pub mod buf_encoder;
 pub mod display;
-pub mod error;
 mod iter;
+
+#[doc(inline)]
+pub use hex_conservative_decoding::error;
 
 /// Re-exports of the common crate traits.
 pub mod prelude {
@@ -95,8 +103,6 @@ pub mod prelude {
     pub use crate::display::DisplayHex;
 }
 
-#[cfg(feature = "alloc")]
-use alloc::vec::Vec;
 use core::fmt;
 
 pub(crate) use table::Table;
@@ -105,47 +111,18 @@ pub(crate) use table::Table;
 #[doc(inline)]
 pub use self::{
     display::DisplayHex,
-    iter::{BytesToHexIter, HexToBytesIter, HexSliceToBytesIter},
+    iter::BytesToHexIter,
 };
+#[cfg(feature = "alloc")]
+#[doc(inline)]
+pub use hex_conservative_decoding::decode_to_vec;
 #[doc(no_inline)]
-pub use self::error::{
+pub use hex_conservative_decoding::error::{
     DecodeFixedLengthBytesError, DecodeVariableLengthBytesError, InvalidCharError,
     InvalidLengthError, OddLengthStringError,
 };
-
-/// Decodes a hex string with variable length.
-///
-/// The length of the returned `Vec` is determined by the length of the input, meaning all even
-/// lengths of the input string are allowed. If you know the required length at compile time using
-/// [`decode_to_array`] is most likely a better choice.
-///
-/// # Errors
-///
-/// Returns an error if `hex` contains invalid characters or doesn't have even length.
-#[cfg(feature = "alloc")]
-pub fn decode_to_vec(hex: &str) -> Result<Vec<u8>, DecodeVariableLengthBytesError> {
-    Ok(HexToBytesIter::new(hex)?.drain_to_vec()?)
-}
-
-/// Decodes a hex string with an expected length known at compile time.
-///
-/// If you don't know the required length at compile time you need to use [`decode_to_vec`]
-/// instead.
-///
-/// # Errors
-///
-/// Returns an error if `hex` contains invalid characters or has incorrect length. (Should be
-/// `N * 2`.)
-pub fn decode_to_array<const N: usize>(hex: &str) -> Result<[u8; N], DecodeFixedLengthBytesError> {
-    if hex.len() == N * 2 {
-        let mut ret = [0u8; N];
-        // checked above
-        HexToBytesIter::new_unchecked(hex).drain_to_slice(&mut ret)?;
-        Ok(ret)
-    } else {
-        Err(InvalidLengthError { invalid: hex.len(), expected: 2 * N }.into())
-    }
-}
+#[doc(inline)]
+pub use hex_conservative_decoding::{decode_to_array, HexSliceToBytesIter, HexToBytesIter};
 
 /// Parses hex strings in const contexts.
 ///
