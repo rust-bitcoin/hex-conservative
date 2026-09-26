@@ -9,20 +9,27 @@ name: Continuous integration
 
 jobs:
   Test:
-    name: Test - ${{ matrix.toolchain }} toolchain, ${{ matrix.dep }} deps
+    name: Test ${{ matrix.workspace }} - ${{ matrix.toolchain }} toolchain, ${{ matrix.dep }} deps
     runs-on: ubuntu-24.04
     permissions:
       contents: read
     strategy:
       fail-fast: false
       matrix:
+        workspace: [".", decoding]
         toolchain: [stable, nightly, msrv]
         dep: [minimal, recent]
+    defaults:
+      run:
+        working-directory: ${{ matrix.workspace }}
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           persist-credentials: false
       - uses: rust-bitcoin/rust-bitcoin-maintainer-tools/.github/actions/setup-rbmt@af3c2868415b17eedc808da6d0589e10b7482660
+      - name: "Install decoding workspace toolchains"
+        if: matrix.workspace != '.'
+        run: cargo rbmt toolchains
       - name: "Run tests"
         run: cargo rbmt test --toolchain ${{ matrix.toolchain }} --lock-file ${{ matrix.dep }}
 
@@ -33,7 +40,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        workspace: [".", decoding]
         task: [api, lint, docs, docsrs, "fmt --check"]
+    defaults:
+      run:
+        working-directory: ${{ matrix.workspace }}
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
@@ -74,6 +85,9 @@ jobs:
         run: rustup target add i686-unknown-linux-gnu
       - name: "Run test on i686"
         run: cargo test --target i686-unknown-linux-gnu
+      - name: "Run decoding test on i686"
+        working-directory: decoding
+        run: cargo test --target i686-unknown-linux-gnu
 
   Cross:
     name: Cross test - stable toolchain
@@ -91,6 +105,9 @@ jobs:
       - name: "Install cross"
         run: cargo install cross --locked
       - name: "Run cross test"
+        run: cross test --target s390x-unknown-linux-gnu
+      - name: "Run decoding cross test"
+        working-directory: decoding
         run: cross test --target s390x-unknown-linux-gnu
 
   Compile:
