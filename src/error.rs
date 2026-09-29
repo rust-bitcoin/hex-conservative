@@ -584,4 +584,17 @@ mod tests {
         assert_eq!(format!("{:x}", v.as_hex()), want_lower);
         assert_eq!(format!("{:X}", v.as_hex()), want_upper);
     }
+
+    #[test]
+    fn invalid_char_max_position_formats_without_panicking() {
+        let DecodeVariableLengthBytesError::InvalidChar(error) =
+            decode_to_vec("G0").unwrap_err().offset(usize::MAX)
+        else {
+            panic!("expected an invalid character")
+        };
+
+        let rendered = std::panic::catch_unwind(|| format!("{}", error))
+            .expect("formatting an error position must not panic");
+        assert!(!rendered.contains("0th"), "one-based positions must not wrap to zero: {rendered}");
+    }
 }
