@@ -211,12 +211,24 @@ impl fmt::Display for InvalidCharError {
             fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result { self.0(f) }
         }
 
+        const USIZE_MAX_PLUS_ONE: &str = {
+            match core::mem::size_of::<usize>() {
+                8 => "18446744073709551616th",
+                4 => "4294967296th",
+                2 => "65536th",
+                // Downstream users: feel free to file a bug if you have a system on which
+                // you see this string.
+                _ => "(`usize::MAX` + 1)th",
+            }
+        };
+
         // The lifetime is not extended in MSRV, so we need this.
         let which;
         let which: &dyn fmt::Display = match self.pos() {
             0 => &"1st",
             1 => &"2nd",
             2 => &"3rd",
+            usize::MAX => &USIZE_MAX_PLUS_ONE,
             pos => {
                 which = Format(move |f| write!(f, "{}th", pos + 1));
                 &which
@@ -571,5 +583,18 @@ mod tests {
         let v = decode_to_vec(s).expect("valid hex");
         assert_eq!(format!("{:x}", v.as_hex()), want_lower);
         assert_eq!(format!("{:X}", v.as_hex()), want_upper);
+    }
+
+    #[test]
+    fn invalid_char_max_position_formats_without_panicking() {
+        let DecodeVariableLengthBytesError::InvalidChar(error) =
+            decode_to_vec("G0").unwrap_err().offset(usize::MAX)
+        else {
+            panic!("expected an invalid character")
+        };
+
+        let rendered = std::panic::catch_unwind(|| format!("{}", error))
+            .expect("formatting an error position must not panic");
+        assert!(!rendered.contains("0th"), "one-based positions must not wrap to zero: {rendered}");
     }
 }
