@@ -321,13 +321,17 @@ macro_rules! fmt_hex_max {
         // statically check $len
         #[allow(deprecated)]
         const _: () = [()][($len > usize::MAX / 2) as usize];
-        assert!(
-            $bytes.len() <= $len,
-            "length of the encoded item ({}) is larger than {}",
-            $bytes.len(),
-            $len
-        );
-        $crate::display::fmt_hex_max_fn::<_, { $len * 2 }>($formatter, $bytes, $case)
+        match $bytes {
+            bytes => {
+                assert!(
+                    bytes.len() <= $len,
+                    "length of the encoded item ({}) is larger than {}",
+                    bytes.len(),
+                    $len
+                );
+                $crate::display::fmt_hex_max_fn::<_, { $len * 2 }>($formatter, bytes, $case)
+            }
+        }
     }};
 }
 pub use fmt_hex_max;
@@ -342,8 +346,12 @@ pub use fmt_hex_max;
 #[macro_export]
 macro_rules! fmt_hex_exact {
     ($formatter:expr, $len:expr, $bytes:expr, $case:expr) => {{
-        assert_eq!($bytes.len(), $len);
-        $crate::fmt_hex_max!($formatter, $len, $bytes, $case)
+        match $bytes {
+            bytes => {
+                assert_eq!(bytes.len(), $len);
+                $crate::fmt_hex_max!($formatter, $len, bytes, $case)
+            }
+        }
     }};
 }
 pub use fmt_hex_exact;
