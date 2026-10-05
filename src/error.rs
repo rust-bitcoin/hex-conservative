@@ -573,10 +573,10 @@ mod tests {
 
     #[test]
     fn invalid_char_max_position_formats_without_panicking() {
-        let DecodeVariableLengthBytesError::InvalidChar(error) =
-            decode_to_vec("G0").unwrap_err().offset(usize::MAX)
-        else {
-            panic!("expected an invalid character")
+        let error = match decode_to_vec("G0").unwrap_err().offset(usize::MAX) {
+            DecodeVariableLengthBytesError::InvalidChar(error) => error,
+            DecodeVariableLengthBytesError::OddLengthString(_) =>
+                panic!("expected an invalid character"),
         };
 
         let rendered = std::panic::catch_unwind(|| format!("{}", error))
