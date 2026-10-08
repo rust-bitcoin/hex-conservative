@@ -4,7 +4,6 @@
 
 use core::convert::TryInto;
 use core::iter::FusedIterator;
-use core::str;
 #[cfg(feature = "std")]
 use std::io;
 
