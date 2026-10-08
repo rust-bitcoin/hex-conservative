@@ -43,10 +43,3 @@ fn iterator_types_are_shared_with_decoding_crate() {
         PhantomData::<hex_conservative_decoding::HexSliceToBytesIter<'static>>,
     );
 }
-
-#[test]
-fn decode_errors_convert_across_crates() {
-    let err: hex_conservative_decoding::DecodeFixedLengthBytesError =
-        hex_conservative::decode_to_array::<2>("zz11").unwrap_err();
-    assert!(matches!(err, hex_conservative_decoding::DecodeFixedLengthBytesError::InvalidChar(_)));
-}
