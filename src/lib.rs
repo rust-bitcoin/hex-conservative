@@ -59,6 +59,12 @@
 //! old and also that ships in Debian stable. We may bump our MSRV in a minor version, but we have
 //! no plans to.
 //!
+//! The decoding side of this crate (the hex to bytes iterators, `decode_to_vec`,
+//! [`decode_to_array`] and the [`error`] types) lives in the `hex-conservative-decoding` crate,
+//! which has an MSRV of Rust `1.60.0`. This crate re-exports all of it, so most users don't need
+//! to depend on `hex-conservative-decoding` directly. If you need decoding on a compiler older
+//! than our MSRV, depend only on `hex-conservative-decoding` instead of this crate.
+//!
 //! Note though that the dependencies may have looser policy. This is not considered breaking/wrong
 //! - you would just need to pin them in `Cargo.lock` (not `.toml`).
 
@@ -86,8 +92,10 @@ pub mod _export {
 
 pub mod buf_encoder;
 pub mod display;
-pub mod error;
 mod iter;
+
+#[doc(inline)]
+pub use hex_conservative_decoding::error;
 
 /// Re-exports of the common crate traits.
 pub mod prelude {
@@ -95,8 +103,6 @@ pub mod prelude {
     pub use crate::display::DisplayHex;
 }
 
-#[cfg(feature = "alloc")]
-use alloc::vec::Vec;
 use core::fmt;
 
 pub(crate) use table::Table;
@@ -105,47 +111,18 @@ pub(crate) use table::Table;
 #[doc(inline)]
 pub use self::{
     display::DisplayHex,
-    iter::{BytesToHexIter, HexToBytesIter, HexSliceToBytesIter},
+    iter::BytesToHexIter,
 };
+#[cfg(feature = "alloc")]
+#[doc(inline)]
+pub use hex_conservative_decoding::decode_to_vec;
 #[doc(no_inline)]
-pub use self::error::{
+pub use hex_conservative_decoding::error::{
     DecodeFixedLengthBytesError, DecodeVariableLengthBytesError, InvalidCharError,
     InvalidLengthError, OddLengthStringError,
 };
-
-/// Decodes a hex string with variable length.
-///
-/// The length of the returned `Vec` is determined by the length of the input, meaning all even
-/// lengths of the input string are allowed. If you know the required length at compile time using
-/// [`decode_to_array`] is most likely a better choice.
-///
-/// # Errors
-///
-/// Returns an error if `hex` contains invalid characters or doesn't have even length.
-#[cfg(feature = "alloc")]
-pub fn decode_to_vec(hex: &str) -> Result<Vec<u8>, DecodeVariableLengthBytesError> {
-    Ok(HexToBytesIter::new(hex)?.drain_to_vec()?)
-}
-
-/// Decodes a hex string with an expected length known at compile time.
-///
-/// If you don't know the required length at compile time you need to use [`decode_to_vec`]
-/// instead.
-///
-/// # Errors
-///
-/// Returns an error if `hex` contains invalid characters or has incorrect length. (Should be
-/// `N * 2`.)
-pub fn decode_to_array<const N: usize>(hex: &str) -> Result<[u8; N], DecodeFixedLengthBytesError> {
-    if hex.len() == N * 2 {
-        let mut ret = [0u8; N];
-        // checked above
-        HexToBytesIter::new_unchecked(hex).drain_to_slice(&mut ret)?;
-        Ok(ret)
-    } else {
-        Err(InvalidLengthError { invalid: hex.len(), expected: 2 * N }.into())
-    }
-}
+#[doc(inline)]
+pub use hex_conservative_decoding::{decode_to_array, HexSliceToBytesIter, HexToBytesIter};
 
 /// Parses hex strings in const contexts.
 ///
@@ -275,36 +252,6 @@ pub enum Char {
 }
 
 impl Char {
-    /// Returns the nibble value (0–15) of this hex character.
-    #[inline]
-    pub(crate) fn decode_nibble(b: u8) -> Option<u8> {
-        // Each valid hex byte maps to its nibble value; 0xFF marks invalid entries.
-        // Char variant discriminants equal their ASCII byte values, so they index directly.
-        #[rustfmt::skip]
-        static TABLE: [u8; 256] = {
-            let mut t = [0xFF_u8; 256];
-            // Each Char variant is a u8. So all `as usize` casts are safe.
-            t[Char::Zero  as usize] = 0;  t[Char::One   as usize] = 1;
-            t[Char::Two   as usize] = 2;  t[Char::Three as usize] = 3;
-            t[Char::Four  as usize] = 4;  t[Char::Five  as usize] = 5;
-            t[Char::Six   as usize] = 6;  t[Char::Seven as usize] = 7;
-            t[Char::Eight as usize] = 8;  t[Char::Nine  as usize] = 9;
-            t[Char::LowerA as usize] = 10; t[Char::UpperA as usize] = 10;
-            t[Char::LowerB as usize] = 11; t[Char::UpperB as usize] = 11;
-            t[Char::LowerC as usize] = 12; t[Char::UpperC as usize] = 12;
-            t[Char::LowerD as usize] = 13; t[Char::UpperD as usize] = 13;
-            t[Char::LowerE as usize] = 14; t[Char::UpperE as usize] = 14;
-            t[Char::LowerF as usize] = 15; t[Char::UpperF as usize] = 15;
-            t
-        };
-        let n = TABLE[usize::from(b)];
-        if n == 0xFF {
-            None
-        } else {
-            Some(n)
-        }
-    }
-
     /// Casts a slice of `Char`s to `&str`.
     ///
     /// This conversion is zero-cost.
@@ -447,6 +394,19 @@ mod tests {
             hex!("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
         assert_eq!(HASH[0], 0x00);
         assert_eq!(HASH[31], 0x6f);
+    }
+
+    #[test]
+    fn mixed_case() {
+        use crate::display::DisplayHex as _;
+
+        let s = "DEADbeef0123";
+        let want_lower = "deadbeef0123";
+        let want_upper = "DEADBEEF0123";
+
+        let v = crate::decode_to_vec(s).expect("valid hex");
+        assert_eq!(format!("{:x}", v.as_hex()), want_lower);
+        assert_eq!(format!("{:X}", v.as_hex()), want_upper);
     }
 
     #[test]

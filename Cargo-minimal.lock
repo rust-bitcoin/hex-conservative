@@ -13,6 +13,13 @@ name = "hex-conservative"
 version = "1.3.0"
 dependencies = [
  "arrayvec",
+ "hex-conservative-decoding",
+]
+
+[[package]]
+name = "hex-conservative-decoding"
+version = "1.0.0"
+dependencies = [
  "if_rust_version",
 ]
 

@@ -47,6 +47,8 @@ git diff-index --check --cached $against -- || exit 1
 
 # Check that code lints cleanly.
 cargo clippy --all-features -- -D warnings || exit 1
+cargo clippy --manifest-path decoding/Cargo.toml --all-features -- -D warnings || exit 1
 
 # Check that there are no formatting issues.
 cargo +nightly fmt --check || exit 1
+cargo +nightly fmt --manifest-path decoding/Cargo.toml --check || exit 1
