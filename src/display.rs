@@ -321,6 +321,8 @@ macro_rules! fmt_hex_max {
         // statically check $len
         #[allow(deprecated)]
         const _: () = [()][($len > usize::MAX / 2) as usize];
+        // `match` evaluates `$bytes` exactly once and, unlike `let`, keeps any temporaries
+        // the expression borrows from alive for the whole block.
         match $bytes {
             bytes => {
                 assert!(
@@ -346,6 +348,7 @@ pub use fmt_hex_max;
 #[macro_export]
 macro_rules! fmt_hex_exact {
     ($formatter:expr, $len:expr, $bytes:expr, $case:expr) => {{
+        // See `fmt_hex_max!` for details.
         match $bytes {
             bytes => {
                 assert_eq!(bytes.len(), $len);
