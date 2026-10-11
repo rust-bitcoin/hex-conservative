@@ -321,6 +321,8 @@ macro_rules! fmt_hex_max {
         // statically check $len
         #[allow(deprecated)]
         const _: () = [()][($len > usize::MAX / 2) as usize];
+        // `match` evaluates `$bytes` exactly once and, unlike `let`, keeps any temporaries
+        // the expression borrows from alive for the whole block.
         match $bytes {
             bytes => {
                 assert!(
@@ -346,6 +348,7 @@ pub use fmt_hex_max;
 #[macro_export]
 macro_rules! fmt_hex_exact {
     ($formatter:expr, $len:expr, $bytes:expr, $case:expr) => {{
+        // See `fmt_hex_max!` for details.
         match $bytes {
             bytes => {
                 assert_eq!(bytes.len(), $len);
@@ -709,6 +712,83 @@ mod tests {
             }
             let s = format!("{:.5}", Short([0x12, 0x34]));
             assert_eq!(s, "1234");
+        }
+
+        #[test]
+        fn fmt_hex_macros_evaluate_bytes_once() {
+            use core::cell::Cell;
+
+            use crate::alloc::string::ToString;
+
+            struct Counted {
+                hits: Cell<usize>,
+                data: [u8; 4],
+            }
+
+            impl Counted {
+                fn new() -> Self { Counted { hits: Cell::new(0), data: [0x12, 0x34, 0x56, 0x78] } }
+
+                fn bytes(&self) -> &[u8; 4] {
+                    self.hits.set(self.hits.get() + 1);
+                    &self.data
+                }
+            }
+
+            struct Exact(Counted);
+            struct Max(Counted);
+
+            impl fmt::Display for Exact {
+                fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                    fmt_hex_exact!(f, 4, self.0.bytes(), Case::Lower)
+                }
+            }
+
+            impl fmt::Display for Max {
+                fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                    fmt_hex_max!(f, 4, self.0.bytes(), Case::Lower)
+                }
+            }
+
+            let exact = Exact(Counted::new());
+            assert_eq!(exact.to_string(), "12345678");
+            assert_eq!(exact.0.hits.get(), 1);
+
+            let max = Max(Counted::new());
+            assert_eq!(max.to_string(), "12345678");
+            assert_eq!(max.0.hits.get(), 1);
+        }
+
+        #[test]
+        fn fmt_hex_macros_keep_temporaries_alive() {
+            use crate::alloc::string::ToString;
+
+            struct Exact([u8; 4]);
+            struct Max([u8; 4]);
+
+            impl fmt::Display for Exact {
+                fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                    fmt_hex_exact!(
+                        f,
+                        4,
+                        self.0.iter().rev().copied().collect::<Vec<u8>>().as_slice(),
+                        Case::Lower
+                    )
+                }
+            }
+
+            impl fmt::Display for Max {
+                fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                    fmt_hex_max!(
+                        f,
+                        4,
+                        self.0.iter().rev().copied().collect::<Vec<u8>>().as_slice(),
+                        Case::Lower
+                    )
+                }
+            }
+
+            assert_eq!(Exact([0x12, 0x34, 0x56, 0x78]).to_string(), "78563412");
+            assert_eq!(Max([0x12, 0x34, 0x56, 0x78]).to_string(), "78563412");
         }
 
         struct TestHexUpperLower<'a>(&'a [u8], bool);
