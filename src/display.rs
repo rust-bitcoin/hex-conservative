@@ -793,6 +793,24 @@ mod tests {
             assert_eq!(Max([0x12, 0x34, 0x56, 0x78]).to_string(), "78563412");
         }
 
+        #[test]
+        fn fmt_hex_max_short_values_keep_fixed_width() {
+            struct Field<'a>(&'a [u8]);
+
+            impl fmt::Display for Field<'_> {
+                fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                    fmt_hex_max!(f, 2, self.0, Case::Lower)
+                }
+            }
+
+            let split = format!("{:0>4}{:0>4}", Field(&[0x01]), Field(&[0x23]));
+            let joined = format!("{:0>4}{:0>4}", Field(&[0x01, 0x23]), Field(&[]));
+
+            assert_eq!(split, "00010023");
+            assert_eq!(joined, "01230000");
+            assert_ne!(split, joined);
+        }
+
         struct TestHexUpperLower<'a>(&'a [u8], bool);
 
         impl fmt::Display for TestHexUpperLower<'_> {
