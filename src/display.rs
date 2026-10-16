@@ -325,13 +325,14 @@ macro_rules! fmt_hex_max {
         // the expression borrows from alive for the whole block.
         match $bytes {
             bytes => {
+                let len = bytes.len();
                 assert!(
-                    bytes.len() <= $len,
+                    len <= $len,
                     "length of the encoded item ({}) is larger than {}",
-                    bytes.len(),
+                    len,
                     $len
                 );
-                $crate::display::fmt_hex_max_fn::<_, { $len * 2 }>($formatter, bytes, $case)
+                $crate::display::fmt_hex_max_fn::<_, { $len * 2 }>($formatter, bytes, len, $case)
             }
         }
     }};
@@ -555,6 +556,7 @@ pub use impl_fmt_traits;
 pub fn fmt_hex_max_fn<I, const N: usize>(
     f: &mut fmt::Formatter,
     bytes: I,
+    bytes_len: usize,
     case: Case,
 ) -> fmt::Result
 where
@@ -562,7 +564,7 @@ where
     I::Item: Borrow<u8>,
 {
     let mut padding_encoder = BufEncoder::<1024>::new(case);
-    let pad_right = write_pad_left(f, N / 2, &mut padding_encoder)?;
+    let pad_right = write_pad_left(f, bytes_len, &mut padding_encoder)?;
 
     if f.alternate() {
         f.write_str("0x")?;
