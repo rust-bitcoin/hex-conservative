@@ -325,13 +325,14 @@ macro_rules! fmt_hex_max {
         // the expression borrows from alive for the whole block.
         match $bytes {
             bytes => {
+                let len = bytes.len();
                 assert!(
-                    bytes.len() <= $len,
+                    len <= $len,
                     "length of the encoded item ({}) is larger than {}",
-                    bytes.len(),
+                    len,
                     $len
                 );
-                $crate::display::fmt_hex_max_fn::<_, { $len * 2 }>($formatter, bytes, $case)
+                $crate::display::fmt_hex_max_fn::<_, { $len * 2 }>($formatter, bytes, len, $case)
             }
         }
     }};
@@ -555,6 +556,7 @@ pub use impl_fmt_traits;
 pub fn fmt_hex_max_fn<I, const N: usize>(
     f: &mut fmt::Formatter,
     bytes: I,
+    bytes_len: usize,
     case: Case,
 ) -> fmt::Result
 where
@@ -562,7 +564,7 @@ where
     I::Item: Borrow<u8>,
 {
     let mut padding_encoder = BufEncoder::<1024>::new(case);
-    let pad_right = write_pad_left(f, N / 2, &mut padding_encoder)?;
+    let pad_right = write_pad_left(f, bytes_len, &mut padding_encoder)?;
 
     if f.alternate() {
         f.write_str("0x")?;
@@ -789,6 +791,24 @@ mod tests {
 
             assert_eq!(Exact([0x12, 0x34, 0x56, 0x78]).to_string(), "78563412");
             assert_eq!(Max([0x12, 0x34, 0x56, 0x78]).to_string(), "78563412");
+        }
+
+        #[test]
+        fn fmt_hex_max_short_values_keep_fixed_width() {
+            struct Field<'a>(&'a [u8]);
+
+            impl fmt::Display for Field<'_> {
+                fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                    fmt_hex_max!(f, 2, self.0, Case::Lower)
+                }
+            }
+
+            let split = format!("{:0>4}{:0>4}", Field(&[0x01]), Field(&[0x23]));
+            let joined = format!("{:0>4}{:0>4}", Field(&[0x01, 0x23]), Field(&[]));
+
+            assert_eq!(split, "00010023");
+            assert_eq!(joined, "01230000");
+            assert_ne!(split, joined);
         }
 
         struct TestHexUpperLower<'a>(&'a [u8], bool);
