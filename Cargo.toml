@@ -14,21 +14,21 @@ exclude = ["api", "tests", "contrib"]
 
 [workspace]
 members = ["fuzz"]
-exclude = ["benches"]
+exclude = ["benches", "decoding"]
 
 [features]
 default = ["std"]
-std = ["alloc"]
-alloc = []
+std = ["alloc", "hex-conservative-decoding/std"]
+alloc = ["hex-conservative-decoding/alloc"]
 # Enables detection of newer rust versions to provide additional features
 # Turning it on may pull in dependencies that run build scripts and prolong compile time.
 # This feature will do nothing once our MSRV supports version detection natively and will
 # be removed using semver trick
-newer-rust-version = ["dep:if_rust_version"]
+newer-rust-version = ["hex-conservative-decoding/newer-rust-version"]
 
 [dependencies]
 arrayvec = { version = "0.7.2", default-features = false }
-if_rust_version = { version = "1.0.0", optional = true }
+hex-conservative-decoding = { version = "1.0.0", path = "decoding", default-features = false }
 
 [[example]]
 name = "hexy"
@@ -49,9 +49,6 @@ exact_features = [
     ["alloc", "newer-rust-version"],
     ["std", "newer-rust-version"],
 ]
-
-[lints.rust]
-unexpected_cfgs = { level = "deny", check-cfg = ['cfg(rust_version, values(">= 1.81.0"))'] }
 
 [workspace.metadata.rbmt.toolchains]
 nightly = "nightly-2026-03-27"

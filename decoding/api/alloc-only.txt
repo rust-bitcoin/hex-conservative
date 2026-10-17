@@ -1,0 +1,620 @@
+pub mod hex_conservative_decoding
+pub mod hex_conservative_decoding::error
+pub enum hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub hex_conservative_decoding::error::DecodeFixedLengthBytesError::InvalidChar(hex_conservative_decoding::error::InvalidCharError)
+pub hex_conservative_decoding::error::DecodeFixedLengthBytesError::InvalidLength(hex_conservative_decoding::error::InvalidLengthError)
+impl hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::offset(self, by_bytes: usize) -> Self
+impl core::clone::Clone for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::clone(&self) -> hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl core::cmp::Eq for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl core::cmp::PartialEq for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::eq(&self, other: &hex_conservative_decoding::error::DecodeFixedLengthBytesError) -> bool
+impl core::convert::From<core::convert::Infallible> for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::from(never: core::convert::Infallible) -> Self
+impl core::convert::From<hex_conservative_decoding::error::InvalidCharError> for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::from(e: hex_conservative_decoding::error::InvalidCharError) -> Self
+impl core::convert::From<hex_conservative_decoding::error::InvalidLengthError> for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::from(e: hex_conservative_decoding::error::InvalidLengthError) -> Self
+impl core::fmt::Debug for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::StructuralPartialEq for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl core::marker::Freeze for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl core::marker::Send for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl core::marker::Sync for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl core::marker::Unpin for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl core::marker::UnsafeUnpin for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl<T, U> core::convert::Into<U> for hex_conservative_decoding::error::DecodeFixedLengthBytesError where U: core::convert::From<T>
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for hex_conservative_decoding::error::DecodeFixedLengthBytesError where U: core::convert::Into<T>
+pub type hex_conservative_decoding::error::DecodeFixedLengthBytesError::Error = core::convert::Infallible
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for hex_conservative_decoding::error::DecodeFixedLengthBytesError where U: core::convert::TryFrom<T>
+pub type hex_conservative_decoding::error::DecodeFixedLengthBytesError::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for hex_conservative_decoding::error::DecodeFixedLengthBytesError where T: core::clone::Clone
+pub type hex_conservative_decoding::error::DecodeFixedLengthBytesError::Owned = T
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::clone_into(&self, target: &mut T)
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::to_owned(&self) -> T
+impl<T> alloc::string::ToString for hex_conservative_decoding::error::DecodeFixedLengthBytesError where T: core::fmt::Display + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for hex_conservative_decoding::error::DecodeFixedLengthBytesError where T: 'static + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for hex_conservative_decoding::error::DecodeFixedLengthBytesError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for hex_conservative_decoding::error::DecodeFixedLengthBytesError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::borrow_mut(&mut self) -> &mut T
+impl<T> core::clone::CloneToUninit for hex_conservative_decoding::error::DecodeFixedLengthBytesError where T: core::clone::Clone
+pub unsafe fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::clone_to_uninit(&self, dest: *mut u8)
+impl<T> core::convert::From<T> for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::from(t: T) -> T
+pub enum hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub hex_conservative_decoding::error::DecodeVariableLengthBytesError::InvalidChar(hex_conservative_decoding::error::InvalidCharError)
+pub hex_conservative_decoding::error::DecodeVariableLengthBytesError::OddLengthString(hex_conservative_decoding::error::OddLengthStringError)
+impl hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::offset(self, by_bytes: usize) -> Self
+impl core::clone::Clone for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::clone(&self) -> hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl core::cmp::Eq for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl core::cmp::PartialEq for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::eq(&self, other: &hex_conservative_decoding::error::DecodeVariableLengthBytesError) -> bool
+impl core::convert::From<core::convert::Infallible> for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::from(never: core::convert::Infallible) -> Self
+impl core::convert::From<hex_conservative_decoding::error::InvalidCharError> for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::from(e: hex_conservative_decoding::error::InvalidCharError) -> Self
+impl core::convert::From<hex_conservative_decoding::error::OddLengthStringError> for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::from(e: hex_conservative_decoding::error::OddLengthStringError) -> Self
+impl core::fmt::Debug for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::StructuralPartialEq for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl core::marker::Freeze for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl core::marker::Send for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl core::marker::Sync for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl core::marker::Unpin for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl core::marker::UnsafeUnpin for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl<T, U> core::convert::Into<U> for hex_conservative_decoding::error::DecodeVariableLengthBytesError where U: core::convert::From<T>
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for hex_conservative_decoding::error::DecodeVariableLengthBytesError where U: core::convert::Into<T>
+pub type hex_conservative_decoding::error::DecodeVariableLengthBytesError::Error = core::convert::Infallible
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for hex_conservative_decoding::error::DecodeVariableLengthBytesError where U: core::convert::TryFrom<T>
+pub type hex_conservative_decoding::error::DecodeVariableLengthBytesError::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for hex_conservative_decoding::error::DecodeVariableLengthBytesError where T: core::clone::Clone
+pub type hex_conservative_decoding::error::DecodeVariableLengthBytesError::Owned = T
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::clone_into(&self, target: &mut T)
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::to_owned(&self) -> T
+impl<T> alloc::string::ToString for hex_conservative_decoding::error::DecodeVariableLengthBytesError where T: core::fmt::Display + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for hex_conservative_decoding::error::DecodeVariableLengthBytesError where T: 'static + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for hex_conservative_decoding::error::DecodeVariableLengthBytesError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for hex_conservative_decoding::error::DecodeVariableLengthBytesError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::borrow_mut(&mut self) -> &mut T
+impl<T> core::clone::CloneToUninit for hex_conservative_decoding::error::DecodeVariableLengthBytesError where T: core::clone::Clone
+pub unsafe fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::clone_to_uninit(&self, dest: *mut u8)
+impl<T> core::convert::From<T> for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::from(t: T) -> T
+pub struct hex_conservative_decoding::error::InvalidCharError
+impl hex_conservative_decoding::error::InvalidCharError
+pub fn hex_conservative_decoding::error::InvalidCharError::invalid_char(&self) -> u8
+pub fn hex_conservative_decoding::error::InvalidCharError::offset(self, by_bytes: usize) -> Self
+pub fn hex_conservative_decoding::error::InvalidCharError::pos(&self) -> usize
+impl core::clone::Clone for hex_conservative_decoding::error::InvalidCharError
+pub fn hex_conservative_decoding::error::InvalidCharError::clone(&self) -> hex_conservative_decoding::error::InvalidCharError
+impl core::cmp::Eq for hex_conservative_decoding::error::InvalidCharError
+impl core::cmp::PartialEq for hex_conservative_decoding::error::InvalidCharError
+pub fn hex_conservative_decoding::error::InvalidCharError::eq(&self, other: &hex_conservative_decoding::error::InvalidCharError) -> bool
+impl core::convert::From<core::convert::Infallible> for hex_conservative_decoding::error::InvalidCharError
+pub fn hex_conservative_decoding::error::InvalidCharError::from(never: core::convert::Infallible) -> Self
+impl core::convert::From<hex_conservative_decoding::error::InvalidCharError> for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::from(e: hex_conservative_decoding::error::InvalidCharError) -> Self
+impl core::convert::From<hex_conservative_decoding::error::InvalidCharError> for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::from(e: hex_conservative_decoding::error::InvalidCharError) -> Self
+impl core::fmt::Debug for hex_conservative_decoding::error::InvalidCharError
+pub fn hex_conservative_decoding::error::InvalidCharError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for hex_conservative_decoding::error::InvalidCharError
+pub fn hex_conservative_decoding::error::InvalidCharError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::StructuralPartialEq for hex_conservative_decoding::error::InvalidCharError
+impl core::marker::Freeze for hex_conservative_decoding::error::InvalidCharError
+impl core::marker::Send for hex_conservative_decoding::error::InvalidCharError
+impl core::marker::Sync for hex_conservative_decoding::error::InvalidCharError
+impl core::marker::Unpin for hex_conservative_decoding::error::InvalidCharError
+impl core::marker::UnsafeUnpin for hex_conservative_decoding::error::InvalidCharError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative_decoding::error::InvalidCharError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative_decoding::error::InvalidCharError
+impl<T, U> core::convert::Into<U> for hex_conservative_decoding::error::InvalidCharError where U: core::convert::From<T>
+pub fn hex_conservative_decoding::error::InvalidCharError::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for hex_conservative_decoding::error::InvalidCharError where U: core::convert::Into<T>
+pub type hex_conservative_decoding::error::InvalidCharError::Error = core::convert::Infallible
+pub fn hex_conservative_decoding::error::InvalidCharError::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for hex_conservative_decoding::error::InvalidCharError where U: core::convert::TryFrom<T>
+pub type hex_conservative_decoding::error::InvalidCharError::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn hex_conservative_decoding::error::InvalidCharError::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for hex_conservative_decoding::error::InvalidCharError where T: core::clone::Clone
+pub type hex_conservative_decoding::error::InvalidCharError::Owned = T
+pub fn hex_conservative_decoding::error::InvalidCharError::clone_into(&self, target: &mut T)
+pub fn hex_conservative_decoding::error::InvalidCharError::to_owned(&self) -> T
+impl<T> alloc::string::ToString for hex_conservative_decoding::error::InvalidCharError where T: core::fmt::Display + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::InvalidCharError::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for hex_conservative_decoding::error::InvalidCharError where T: 'static + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::InvalidCharError::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for hex_conservative_decoding::error::InvalidCharError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::InvalidCharError::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for hex_conservative_decoding::error::InvalidCharError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::InvalidCharError::borrow_mut(&mut self) -> &mut T
+impl<T> core::clone::CloneToUninit for hex_conservative_decoding::error::InvalidCharError where T: core::clone::Clone
+pub unsafe fn hex_conservative_decoding::error::InvalidCharError::clone_to_uninit(&self, dest: *mut u8)
+impl<T> core::convert::From<T> for hex_conservative_decoding::error::InvalidCharError
+pub fn hex_conservative_decoding::error::InvalidCharError::from(t: T) -> T
+#[non_exhaustive] pub struct hex_conservative_decoding::error::InvalidLengthError
+pub hex_conservative_decoding::error::InvalidLengthError::expected: usize
+pub hex_conservative_decoding::error::InvalidLengthError::invalid: usize
+impl hex_conservative_decoding::error::InvalidLengthError
+pub fn hex_conservative_decoding::error::InvalidLengthError::expected_length(&self) -> usize
+pub fn hex_conservative_decoding::error::InvalidLengthError::invalid_length(&self) -> usize
+impl core::clone::Clone for hex_conservative_decoding::error::InvalidLengthError
+pub fn hex_conservative_decoding::error::InvalidLengthError::clone(&self) -> hex_conservative_decoding::error::InvalidLengthError
+impl core::cmp::Eq for hex_conservative_decoding::error::InvalidLengthError
+impl core::cmp::PartialEq for hex_conservative_decoding::error::InvalidLengthError
+pub fn hex_conservative_decoding::error::InvalidLengthError::eq(&self, other: &hex_conservative_decoding::error::InvalidLengthError) -> bool
+impl core::convert::From<core::convert::Infallible> for hex_conservative_decoding::error::InvalidLengthError
+pub fn hex_conservative_decoding::error::InvalidLengthError::from(never: core::convert::Infallible) -> Self
+impl core::convert::From<hex_conservative_decoding::error::InvalidLengthError> for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::from(e: hex_conservative_decoding::error::InvalidLengthError) -> Self
+impl core::fmt::Debug for hex_conservative_decoding::error::InvalidLengthError
+pub fn hex_conservative_decoding::error::InvalidLengthError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for hex_conservative_decoding::error::InvalidLengthError
+pub fn hex_conservative_decoding::error::InvalidLengthError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::StructuralPartialEq for hex_conservative_decoding::error::InvalidLengthError
+impl core::marker::Freeze for hex_conservative_decoding::error::InvalidLengthError
+impl core::marker::Send for hex_conservative_decoding::error::InvalidLengthError
+impl core::marker::Sync for hex_conservative_decoding::error::InvalidLengthError
+impl core::marker::Unpin for hex_conservative_decoding::error::InvalidLengthError
+impl core::marker::UnsafeUnpin for hex_conservative_decoding::error::InvalidLengthError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative_decoding::error::InvalidLengthError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative_decoding::error::InvalidLengthError
+impl<T, U> core::convert::Into<U> for hex_conservative_decoding::error::InvalidLengthError where U: core::convert::From<T>
+pub fn hex_conservative_decoding::error::InvalidLengthError::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for hex_conservative_decoding::error::InvalidLengthError where U: core::convert::Into<T>
+pub type hex_conservative_decoding::error::InvalidLengthError::Error = core::convert::Infallible
+pub fn hex_conservative_decoding::error::InvalidLengthError::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for hex_conservative_decoding::error::InvalidLengthError where U: core::convert::TryFrom<T>
+pub type hex_conservative_decoding::error::InvalidLengthError::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn hex_conservative_decoding::error::InvalidLengthError::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for hex_conservative_decoding::error::InvalidLengthError where T: core::clone::Clone
+pub type hex_conservative_decoding::error::InvalidLengthError::Owned = T
+pub fn hex_conservative_decoding::error::InvalidLengthError::clone_into(&self, target: &mut T)
+pub fn hex_conservative_decoding::error::InvalidLengthError::to_owned(&self) -> T
+impl<T> alloc::string::ToString for hex_conservative_decoding::error::InvalidLengthError where T: core::fmt::Display + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::InvalidLengthError::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for hex_conservative_decoding::error::InvalidLengthError where T: 'static + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::InvalidLengthError::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for hex_conservative_decoding::error::InvalidLengthError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::InvalidLengthError::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for hex_conservative_decoding::error::InvalidLengthError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::InvalidLengthError::borrow_mut(&mut self) -> &mut T
+impl<T> core::clone::CloneToUninit for hex_conservative_decoding::error::InvalidLengthError where T: core::clone::Clone
+pub unsafe fn hex_conservative_decoding::error::InvalidLengthError::clone_to_uninit(&self, dest: *mut u8)
+impl<T> core::convert::From<T> for hex_conservative_decoding::error::InvalidLengthError
+pub fn hex_conservative_decoding::error::InvalidLengthError::from(t: T) -> T
+pub struct hex_conservative_decoding::error::OddLengthStringError
+impl hex_conservative_decoding::error::OddLengthStringError
+pub fn hex_conservative_decoding::error::OddLengthStringError::length(&self) -> usize
+impl core::clone::Clone for hex_conservative_decoding::error::OddLengthStringError
+pub fn hex_conservative_decoding::error::OddLengthStringError::clone(&self) -> hex_conservative_decoding::error::OddLengthStringError
+impl core::cmp::Eq for hex_conservative_decoding::error::OddLengthStringError
+impl core::cmp::PartialEq for hex_conservative_decoding::error::OddLengthStringError
+pub fn hex_conservative_decoding::error::OddLengthStringError::eq(&self, other: &hex_conservative_decoding::error::OddLengthStringError) -> bool
+impl core::convert::From<core::convert::Infallible> for hex_conservative_decoding::error::OddLengthStringError
+pub fn hex_conservative_decoding::error::OddLengthStringError::from(never: core::convert::Infallible) -> Self
+impl core::convert::From<hex_conservative_decoding::error::OddLengthStringError> for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::from(e: hex_conservative_decoding::error::OddLengthStringError) -> Self
+impl core::fmt::Debug for hex_conservative_decoding::error::OddLengthStringError
+pub fn hex_conservative_decoding::error::OddLengthStringError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for hex_conservative_decoding::error::OddLengthStringError
+pub fn hex_conservative_decoding::error::OddLengthStringError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::StructuralPartialEq for hex_conservative_decoding::error::OddLengthStringError
+impl core::marker::Freeze for hex_conservative_decoding::error::OddLengthStringError
+impl core::marker::Send for hex_conservative_decoding::error::OddLengthStringError
+impl core::marker::Sync for hex_conservative_decoding::error::OddLengthStringError
+impl core::marker::Unpin for hex_conservative_decoding::error::OddLengthStringError
+impl core::marker::UnsafeUnpin for hex_conservative_decoding::error::OddLengthStringError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative_decoding::error::OddLengthStringError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative_decoding::error::OddLengthStringError
+impl<T, U> core::convert::Into<U> for hex_conservative_decoding::error::OddLengthStringError where U: core::convert::From<T>
+pub fn hex_conservative_decoding::error::OddLengthStringError::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for hex_conservative_decoding::error::OddLengthStringError where U: core::convert::Into<T>
+pub type hex_conservative_decoding::error::OddLengthStringError::Error = core::convert::Infallible
+pub fn hex_conservative_decoding::error::OddLengthStringError::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for hex_conservative_decoding::error::OddLengthStringError where U: core::convert::TryFrom<T>
+pub type hex_conservative_decoding::error::OddLengthStringError::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn hex_conservative_decoding::error::OddLengthStringError::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for hex_conservative_decoding::error::OddLengthStringError where T: core::clone::Clone
+pub type hex_conservative_decoding::error::OddLengthStringError::Owned = T
+pub fn hex_conservative_decoding::error::OddLengthStringError::clone_into(&self, target: &mut T)
+pub fn hex_conservative_decoding::error::OddLengthStringError::to_owned(&self) -> T
+impl<T> alloc::string::ToString for hex_conservative_decoding::error::OddLengthStringError where T: core::fmt::Display + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::OddLengthStringError::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for hex_conservative_decoding::error::OddLengthStringError where T: 'static + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::OddLengthStringError::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for hex_conservative_decoding::error::OddLengthStringError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::OddLengthStringError::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for hex_conservative_decoding::error::OddLengthStringError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::OddLengthStringError::borrow_mut(&mut self) -> &mut T
+impl<T> core::clone::CloneToUninit for hex_conservative_decoding::error::OddLengthStringError where T: core::clone::Clone
+pub unsafe fn hex_conservative_decoding::error::OddLengthStringError::clone_to_uninit(&self, dest: *mut u8)
+impl<T> core::convert::From<T> for hex_conservative_decoding::error::OddLengthStringError
+pub fn hex_conservative_decoding::error::OddLengthStringError::from(t: T) -> T
+pub enum hex_conservative_decoding::DecodeFixedLengthBytesError
+pub hex_conservative_decoding::DecodeFixedLengthBytesError::InvalidChar(hex_conservative_decoding::error::InvalidCharError)
+pub hex_conservative_decoding::DecodeFixedLengthBytesError::InvalidLength(hex_conservative_decoding::error::InvalidLengthError)
+impl hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::offset(self, by_bytes: usize) -> Self
+impl core::clone::Clone for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::clone(&self) -> hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl core::cmp::Eq for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl core::cmp::PartialEq for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::eq(&self, other: &hex_conservative_decoding::error::DecodeFixedLengthBytesError) -> bool
+impl core::convert::From<core::convert::Infallible> for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::from(never: core::convert::Infallible) -> Self
+impl core::convert::From<hex_conservative_decoding::error::InvalidCharError> for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::from(e: hex_conservative_decoding::error::InvalidCharError) -> Self
+impl core::convert::From<hex_conservative_decoding::error::InvalidLengthError> for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::from(e: hex_conservative_decoding::error::InvalidLengthError) -> Self
+impl core::fmt::Debug for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::StructuralPartialEq for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl core::marker::Freeze for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl core::marker::Send for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl core::marker::Sync for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl core::marker::Unpin for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl core::marker::UnsafeUnpin for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+impl<T, U> core::convert::Into<U> for hex_conservative_decoding::error::DecodeFixedLengthBytesError where U: core::convert::From<T>
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for hex_conservative_decoding::error::DecodeFixedLengthBytesError where U: core::convert::Into<T>
+pub type hex_conservative_decoding::error::DecodeFixedLengthBytesError::Error = core::convert::Infallible
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for hex_conservative_decoding::error::DecodeFixedLengthBytesError where U: core::convert::TryFrom<T>
+pub type hex_conservative_decoding::error::DecodeFixedLengthBytesError::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for hex_conservative_decoding::error::DecodeFixedLengthBytesError where T: core::clone::Clone
+pub type hex_conservative_decoding::error::DecodeFixedLengthBytesError::Owned = T
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::clone_into(&self, target: &mut T)
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::to_owned(&self) -> T
+impl<T> alloc::string::ToString for hex_conservative_decoding::error::DecodeFixedLengthBytesError where T: core::fmt::Display + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for hex_conservative_decoding::error::DecodeFixedLengthBytesError where T: 'static + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for hex_conservative_decoding::error::DecodeFixedLengthBytesError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for hex_conservative_decoding::error::DecodeFixedLengthBytesError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::borrow_mut(&mut self) -> &mut T
+impl<T> core::clone::CloneToUninit for hex_conservative_decoding::error::DecodeFixedLengthBytesError where T: core::clone::Clone
+pub unsafe fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::clone_to_uninit(&self, dest: *mut u8)
+impl<T> core::convert::From<T> for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::from(t: T) -> T
+pub enum hex_conservative_decoding::DecodeVariableLengthBytesError
+pub hex_conservative_decoding::DecodeVariableLengthBytesError::InvalidChar(hex_conservative_decoding::error::InvalidCharError)
+pub hex_conservative_decoding::DecodeVariableLengthBytesError::OddLengthString(hex_conservative_decoding::error::OddLengthStringError)
+impl hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::offset(self, by_bytes: usize) -> Self
+impl core::clone::Clone for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::clone(&self) -> hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl core::cmp::Eq for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl core::cmp::PartialEq for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::eq(&self, other: &hex_conservative_decoding::error::DecodeVariableLengthBytesError) -> bool
+impl core::convert::From<core::convert::Infallible> for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::from(never: core::convert::Infallible) -> Self
+impl core::convert::From<hex_conservative_decoding::error::InvalidCharError> for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::from(e: hex_conservative_decoding::error::InvalidCharError) -> Self
+impl core::convert::From<hex_conservative_decoding::error::OddLengthStringError> for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::from(e: hex_conservative_decoding::error::OddLengthStringError) -> Self
+impl core::fmt::Debug for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::StructuralPartialEq for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl core::marker::Freeze for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl core::marker::Send for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl core::marker::Sync for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl core::marker::Unpin for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl core::marker::UnsafeUnpin for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+impl<T, U> core::convert::Into<U> for hex_conservative_decoding::error::DecodeVariableLengthBytesError where U: core::convert::From<T>
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for hex_conservative_decoding::error::DecodeVariableLengthBytesError where U: core::convert::Into<T>
+pub type hex_conservative_decoding::error::DecodeVariableLengthBytesError::Error = core::convert::Infallible
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for hex_conservative_decoding::error::DecodeVariableLengthBytesError where U: core::convert::TryFrom<T>
+pub type hex_conservative_decoding::error::DecodeVariableLengthBytesError::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for hex_conservative_decoding::error::DecodeVariableLengthBytesError where T: core::clone::Clone
+pub type hex_conservative_decoding::error::DecodeVariableLengthBytesError::Owned = T
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::clone_into(&self, target: &mut T)
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::to_owned(&self) -> T
+impl<T> alloc::string::ToString for hex_conservative_decoding::error::DecodeVariableLengthBytesError where T: core::fmt::Display + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for hex_conservative_decoding::error::DecodeVariableLengthBytesError where T: 'static + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for hex_conservative_decoding::error::DecodeVariableLengthBytesError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for hex_conservative_decoding::error::DecodeVariableLengthBytesError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::borrow_mut(&mut self) -> &mut T
+impl<T> core::clone::CloneToUninit for hex_conservative_decoding::error::DecodeVariableLengthBytesError where T: core::clone::Clone
+pub unsafe fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::clone_to_uninit(&self, dest: *mut u8)
+impl<T> core::convert::From<T> for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::from(t: T) -> T
+pub struct hex_conservative_decoding::HexSliceToBytesIter<'a>(_)
+impl<'a> hex_conservative_decoding::HexSliceToBytesIter<'a>
+pub fn hex_conservative_decoding::HexSliceToBytesIter<'a>::new(s: &'a str) -> core::result::Result<Self, hex_conservative_decoding::error::OddLengthStringError>
+impl core::iter::traits::double_ended::DoubleEndedIterator for hex_conservative_decoding::HexSliceToBytesIter<'_>
+pub fn hex_conservative_decoding::HexSliceToBytesIter<'_>::next_back(&mut self) -> core::option::Option<Self::Item>
+pub fn hex_conservative_decoding::HexSliceToBytesIter<'_>::nth_back(&mut self, n: usize) -> core::option::Option<Self::Item>
+impl core::iter::traits::exact_size::ExactSizeIterator for hex_conservative_decoding::HexSliceToBytesIter<'_>
+impl core::iter::traits::iterator::Iterator for hex_conservative_decoding::HexSliceToBytesIter<'_>
+pub type hex_conservative_decoding::HexSliceToBytesIter<'_>::Item = core::result::Result<u8, hex_conservative_decoding::error::InvalidCharError>
+pub fn hex_conservative_decoding::HexSliceToBytesIter<'_>::next(&mut self) -> core::option::Option<Self::Item>
+pub fn hex_conservative_decoding::HexSliceToBytesIter<'_>::nth(&mut self, n: usize) -> core::option::Option<Self::Item>
+pub fn hex_conservative_decoding::HexSliceToBytesIter<'_>::size_hint(&self) -> (usize, core::option::Option<usize>)
+impl core::iter::traits::marker::FusedIterator for hex_conservative_decoding::HexSliceToBytesIter<'_>
+impl<'a> core::clone::Clone for hex_conservative_decoding::HexSliceToBytesIter<'a>
+pub fn hex_conservative_decoding::HexSliceToBytesIter<'a>::clone(&self) -> hex_conservative_decoding::HexSliceToBytesIter<'a>
+impl<'a> core::fmt::Debug for hex_conservative_decoding::HexSliceToBytesIter<'a>
+pub fn hex_conservative_decoding::HexSliceToBytesIter<'a>::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl<'a> core::marker::Freeze for hex_conservative_decoding::HexSliceToBytesIter<'a>
+impl<'a> core::marker::Send for hex_conservative_decoding::HexSliceToBytesIter<'a>
+impl<'a> core::marker::Sync for hex_conservative_decoding::HexSliceToBytesIter<'a>
+impl<'a> core::marker::Unpin for hex_conservative_decoding::HexSliceToBytesIter<'a>
+impl<'a> core::marker::UnsafeUnpin for hex_conservative_decoding::HexSliceToBytesIter<'a>
+impl<'a> core::panic::unwind_safe::RefUnwindSafe for hex_conservative_decoding::HexSliceToBytesIter<'a>
+impl<'a> core::panic::unwind_safe::UnwindSafe for hex_conservative_decoding::HexSliceToBytesIter<'a>
+impl<I> core::iter::traits::collect::IntoIterator for hex_conservative_decoding::HexSliceToBytesIter<'a> where I: core::iter::traits::iterator::Iterator
+pub type hex_conservative_decoding::HexSliceToBytesIter<'a>::IntoIter = I
+pub type hex_conservative_decoding::HexSliceToBytesIter<'a>::Item = <I as core::iter::traits::iterator::Iterator>::Item
+pub fn hex_conservative_decoding::HexSliceToBytesIter<'a>::into_iter(self) -> I
+impl<T, U> core::convert::Into<U> for hex_conservative_decoding::HexSliceToBytesIter<'a> where U: core::convert::From<T>
+pub fn hex_conservative_decoding::HexSliceToBytesIter<'a>::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for hex_conservative_decoding::HexSliceToBytesIter<'a> where U: core::convert::Into<T>
+pub type hex_conservative_decoding::HexSliceToBytesIter<'a>::Error = core::convert::Infallible
+pub fn hex_conservative_decoding::HexSliceToBytesIter<'a>::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for hex_conservative_decoding::HexSliceToBytesIter<'a> where U: core::convert::TryFrom<T>
+pub type hex_conservative_decoding::HexSliceToBytesIter<'a>::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn hex_conservative_decoding::HexSliceToBytesIter<'a>::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for hex_conservative_decoding::HexSliceToBytesIter<'a> where T: core::clone::Clone
+pub type hex_conservative_decoding::HexSliceToBytesIter<'a>::Owned = T
+pub fn hex_conservative_decoding::HexSliceToBytesIter<'a>::clone_into(&self, target: &mut T)
+pub fn hex_conservative_decoding::HexSliceToBytesIter<'a>::to_owned(&self) -> T
+impl<T> core::any::Any for hex_conservative_decoding::HexSliceToBytesIter<'a> where T: 'static + ?core::marker::Sized
+pub fn hex_conservative_decoding::HexSliceToBytesIter<'a>::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for hex_conservative_decoding::HexSliceToBytesIter<'a> where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::HexSliceToBytesIter<'a>::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for hex_conservative_decoding::HexSliceToBytesIter<'a> where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::HexSliceToBytesIter<'a>::borrow_mut(&mut self) -> &mut T
+impl<T> core::clone::CloneToUninit for hex_conservative_decoding::HexSliceToBytesIter<'a> where T: core::clone::Clone
+pub unsafe fn hex_conservative_decoding::HexSliceToBytesIter<'a>::clone_to_uninit(&self, dest: *mut u8)
+impl<T> core::convert::From<T> for hex_conservative_decoding::HexSliceToBytesIter<'a>
+pub fn hex_conservative_decoding::HexSliceToBytesIter<'a>::from(t: T) -> T
+pub struct hex_conservative_decoding::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator<Item = [u8; 2]>
+impl<I> hex_conservative_decoding::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator<Item = [u8; 2]> + core::iter::traits::exact_size::ExactSizeIterator
+pub fn hex_conservative_decoding::HexToBytesIter<I>::from_pairs(iter: I) -> Self
+impl<I> core::clone::Clone for hex_conservative_decoding::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator<Item = [u8; 2]> + core::clone::Clone
+pub fn hex_conservative_decoding::HexToBytesIter<I>::clone(&self) -> hex_conservative_decoding::HexToBytesIter<I>
+impl<I> core::cmp::Eq for hex_conservative_decoding::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator<Item = [u8; 2]> + core::cmp::Eq
+impl<I> core::cmp::PartialEq for hex_conservative_decoding::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator<Item = [u8; 2]> + core::cmp::PartialEq
+pub fn hex_conservative_decoding::HexToBytesIter<I>::eq(&self, other: &hex_conservative_decoding::HexToBytesIter<I>) -> bool
+impl<I> core::fmt::Debug for hex_conservative_decoding::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator<Item = [u8; 2]> + core::fmt::Debug
+pub fn hex_conservative_decoding::HexToBytesIter<I>::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl<I> core::hash::Hash for hex_conservative_decoding::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator<Item = [u8; 2]> + core::hash::Hash
+pub fn hex_conservative_decoding::HexToBytesIter<I>::hash<__H: core::hash::Hasher>(&self, state: &mut __H)
+impl<I> core::iter::traits::double_ended::DoubleEndedIterator for hex_conservative_decoding::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator<Item = [u8; 2]> + core::iter::traits::double_ended::DoubleEndedIterator + core::iter::traits::exact_size::ExactSizeIterator
+pub fn hex_conservative_decoding::HexToBytesIter<I>::next_back(&mut self) -> core::option::Option<Self::Item>
+pub fn hex_conservative_decoding::HexToBytesIter<I>::nth_back(&mut self, n: usize) -> core::option::Option<Self::Item>
+impl<I> core::iter::traits::exact_size::ExactSizeIterator for hex_conservative_decoding::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator<Item = [u8; 2]> + core::iter::traits::exact_size::ExactSizeIterator
+impl<I> core::iter::traits::iterator::Iterator for hex_conservative_decoding::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator<Item = [u8; 2]> + core::iter::traits::exact_size::ExactSizeIterator
+pub type hex_conservative_decoding::HexToBytesIter<I>::Item = core::result::Result<u8, hex_conservative_decoding::error::InvalidCharError>
+pub fn hex_conservative_decoding::HexToBytesIter<I>::next(&mut self) -> core::option::Option<Self::Item>
+pub fn hex_conservative_decoding::HexToBytesIter<I>::nth(&mut self, n: usize) -> core::option::Option<Self::Item>
+pub fn hex_conservative_decoding::HexToBytesIter<I>::size_hint(&self) -> (usize, core::option::Option<usize>)
+impl<I> core::iter::traits::marker::FusedIterator for hex_conservative_decoding::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator<Item = [u8; 2]> + core::iter::traits::exact_size::ExactSizeIterator + core::iter::traits::marker::FusedIterator
+impl<I> core::marker::StructuralPartialEq for hex_conservative_decoding::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator<Item = [u8; 2]>
+impl<I> core::marker::Freeze for hex_conservative_decoding::HexToBytesIter<I> where I: core::marker::Freeze
+impl<I> core::marker::Send for hex_conservative_decoding::HexToBytesIter<I> where I: core::marker::Send
+impl<I> core::marker::Sync for hex_conservative_decoding::HexToBytesIter<I> where I: core::marker::Sync
+impl<I> core::marker::Unpin for hex_conservative_decoding::HexToBytesIter<I> where I: core::marker::Unpin
+impl<I> core::marker::UnsafeUnpin for hex_conservative_decoding::HexToBytesIter<I> where I: core::marker::UnsafeUnpin
+impl<I> core::panic::unwind_safe::RefUnwindSafe for hex_conservative_decoding::HexToBytesIter<I> where I: core::panic::unwind_safe::RefUnwindSafe
+impl<I> core::panic::unwind_safe::UnwindSafe for hex_conservative_decoding::HexToBytesIter<I> where I: core::panic::unwind_safe::UnwindSafe
+impl<I> core::iter::traits::collect::IntoIterator for hex_conservative_decoding::HexToBytesIter<I> where I: core::iter::traits::iterator::Iterator
+pub type hex_conservative_decoding::HexToBytesIter<I>::IntoIter = I
+pub type hex_conservative_decoding::HexToBytesIter<I>::Item = <I as core::iter::traits::iterator::Iterator>::Item
+pub fn hex_conservative_decoding::HexToBytesIter<I>::into_iter(self) -> I
+impl<T, U> core::convert::Into<U> for hex_conservative_decoding::HexToBytesIter<I> where U: core::convert::From<T>
+pub fn hex_conservative_decoding::HexToBytesIter<I>::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for hex_conservative_decoding::HexToBytesIter<I> where U: core::convert::Into<T>
+pub type hex_conservative_decoding::HexToBytesIter<I>::Error = core::convert::Infallible
+pub fn hex_conservative_decoding::HexToBytesIter<I>::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for hex_conservative_decoding::HexToBytesIter<I> where U: core::convert::TryFrom<T>
+pub type hex_conservative_decoding::HexToBytesIter<I>::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn hex_conservative_decoding::HexToBytesIter<I>::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for hex_conservative_decoding::HexToBytesIter<I> where T: core::clone::Clone
+pub type hex_conservative_decoding::HexToBytesIter<I>::Owned = T
+pub fn hex_conservative_decoding::HexToBytesIter<I>::clone_into(&self, target: &mut T)
+pub fn hex_conservative_decoding::HexToBytesIter<I>::to_owned(&self) -> T
+impl<T> core::any::Any for hex_conservative_decoding::HexToBytesIter<I> where T: 'static + ?core::marker::Sized
+pub fn hex_conservative_decoding::HexToBytesIter<I>::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for hex_conservative_decoding::HexToBytesIter<I> where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::HexToBytesIter<I>::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for hex_conservative_decoding::HexToBytesIter<I> where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::HexToBytesIter<I>::borrow_mut(&mut self) -> &mut T
+impl<T> core::clone::CloneToUninit for hex_conservative_decoding::HexToBytesIter<I> where T: core::clone::Clone
+pub unsafe fn hex_conservative_decoding::HexToBytesIter<I>::clone_to_uninit(&self, dest: *mut u8)
+impl<T> core::convert::From<T> for hex_conservative_decoding::HexToBytesIter<I>
+pub fn hex_conservative_decoding::HexToBytesIter<I>::from(t: T) -> T
+pub struct hex_conservative_decoding::InvalidCharError
+impl hex_conservative_decoding::error::InvalidCharError
+pub fn hex_conservative_decoding::error::InvalidCharError::invalid_char(&self) -> u8
+pub fn hex_conservative_decoding::error::InvalidCharError::offset(self, by_bytes: usize) -> Self
+pub fn hex_conservative_decoding::error::InvalidCharError::pos(&self) -> usize
+impl core::clone::Clone for hex_conservative_decoding::error::InvalidCharError
+pub fn hex_conservative_decoding::error::InvalidCharError::clone(&self) -> hex_conservative_decoding::error::InvalidCharError
+impl core::cmp::Eq for hex_conservative_decoding::error::InvalidCharError
+impl core::cmp::PartialEq for hex_conservative_decoding::error::InvalidCharError
+pub fn hex_conservative_decoding::error::InvalidCharError::eq(&self, other: &hex_conservative_decoding::error::InvalidCharError) -> bool
+impl core::convert::From<core::convert::Infallible> for hex_conservative_decoding::error::InvalidCharError
+pub fn hex_conservative_decoding::error::InvalidCharError::from(never: core::convert::Infallible) -> Self
+impl core::convert::From<hex_conservative_decoding::error::InvalidCharError> for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::from(e: hex_conservative_decoding::error::InvalidCharError) -> Self
+impl core::convert::From<hex_conservative_decoding::error::InvalidCharError> for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::from(e: hex_conservative_decoding::error::InvalidCharError) -> Self
+impl core::fmt::Debug for hex_conservative_decoding::error::InvalidCharError
+pub fn hex_conservative_decoding::error::InvalidCharError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for hex_conservative_decoding::error::InvalidCharError
+pub fn hex_conservative_decoding::error::InvalidCharError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::StructuralPartialEq for hex_conservative_decoding::error::InvalidCharError
+impl core::marker::Freeze for hex_conservative_decoding::error::InvalidCharError
+impl core::marker::Send for hex_conservative_decoding::error::InvalidCharError
+impl core::marker::Sync for hex_conservative_decoding::error::InvalidCharError
+impl core::marker::Unpin for hex_conservative_decoding::error::InvalidCharError
+impl core::marker::UnsafeUnpin for hex_conservative_decoding::error::InvalidCharError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative_decoding::error::InvalidCharError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative_decoding::error::InvalidCharError
+impl<T, U> core::convert::Into<U> for hex_conservative_decoding::error::InvalidCharError where U: core::convert::From<T>
+pub fn hex_conservative_decoding::error::InvalidCharError::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for hex_conservative_decoding::error::InvalidCharError where U: core::convert::Into<T>
+pub type hex_conservative_decoding::error::InvalidCharError::Error = core::convert::Infallible
+pub fn hex_conservative_decoding::error::InvalidCharError::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for hex_conservative_decoding::error::InvalidCharError where U: core::convert::TryFrom<T>
+pub type hex_conservative_decoding::error::InvalidCharError::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn hex_conservative_decoding::error::InvalidCharError::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for hex_conservative_decoding::error::InvalidCharError where T: core::clone::Clone
+pub type hex_conservative_decoding::error::InvalidCharError::Owned = T
+pub fn hex_conservative_decoding::error::InvalidCharError::clone_into(&self, target: &mut T)
+pub fn hex_conservative_decoding::error::InvalidCharError::to_owned(&self) -> T
+impl<T> alloc::string::ToString for hex_conservative_decoding::error::InvalidCharError where T: core::fmt::Display + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::InvalidCharError::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for hex_conservative_decoding::error::InvalidCharError where T: 'static + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::InvalidCharError::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for hex_conservative_decoding::error::InvalidCharError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::InvalidCharError::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for hex_conservative_decoding::error::InvalidCharError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::InvalidCharError::borrow_mut(&mut self) -> &mut T
+impl<T> core::clone::CloneToUninit for hex_conservative_decoding::error::InvalidCharError where T: core::clone::Clone
+pub unsafe fn hex_conservative_decoding::error::InvalidCharError::clone_to_uninit(&self, dest: *mut u8)
+impl<T> core::convert::From<T> for hex_conservative_decoding::error::InvalidCharError
+pub fn hex_conservative_decoding::error::InvalidCharError::from(t: T) -> T
+#[non_exhaustive] pub struct hex_conservative_decoding::InvalidLengthError
+pub hex_conservative_decoding::InvalidLengthError::expected: usize
+pub hex_conservative_decoding::InvalidLengthError::invalid: usize
+impl hex_conservative_decoding::error::InvalidLengthError
+pub fn hex_conservative_decoding::error::InvalidLengthError::expected_length(&self) -> usize
+pub fn hex_conservative_decoding::error::InvalidLengthError::invalid_length(&self) -> usize
+impl core::clone::Clone for hex_conservative_decoding::error::InvalidLengthError
+pub fn hex_conservative_decoding::error::InvalidLengthError::clone(&self) -> hex_conservative_decoding::error::InvalidLengthError
+impl core::cmp::Eq for hex_conservative_decoding::error::InvalidLengthError
+impl core::cmp::PartialEq for hex_conservative_decoding::error::InvalidLengthError
+pub fn hex_conservative_decoding::error::InvalidLengthError::eq(&self, other: &hex_conservative_decoding::error::InvalidLengthError) -> bool
+impl core::convert::From<core::convert::Infallible> for hex_conservative_decoding::error::InvalidLengthError
+pub fn hex_conservative_decoding::error::InvalidLengthError::from(never: core::convert::Infallible) -> Self
+impl core::convert::From<hex_conservative_decoding::error::InvalidLengthError> for hex_conservative_decoding::error::DecodeFixedLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeFixedLengthBytesError::from(e: hex_conservative_decoding::error::InvalidLengthError) -> Self
+impl core::fmt::Debug for hex_conservative_decoding::error::InvalidLengthError
+pub fn hex_conservative_decoding::error::InvalidLengthError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for hex_conservative_decoding::error::InvalidLengthError
+pub fn hex_conservative_decoding::error::InvalidLengthError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::StructuralPartialEq for hex_conservative_decoding::error::InvalidLengthError
+impl core::marker::Freeze for hex_conservative_decoding::error::InvalidLengthError
+impl core::marker::Send for hex_conservative_decoding::error::InvalidLengthError
+impl core::marker::Sync for hex_conservative_decoding::error::InvalidLengthError
+impl core::marker::Unpin for hex_conservative_decoding::error::InvalidLengthError
+impl core::marker::UnsafeUnpin for hex_conservative_decoding::error::InvalidLengthError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative_decoding::error::InvalidLengthError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative_decoding::error::InvalidLengthError
+impl<T, U> core::convert::Into<U> for hex_conservative_decoding::error::InvalidLengthError where U: core::convert::From<T>
+pub fn hex_conservative_decoding::error::InvalidLengthError::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for hex_conservative_decoding::error::InvalidLengthError where U: core::convert::Into<T>
+pub type hex_conservative_decoding::error::InvalidLengthError::Error = core::convert::Infallible
+pub fn hex_conservative_decoding::error::InvalidLengthError::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for hex_conservative_decoding::error::InvalidLengthError where U: core::convert::TryFrom<T>
+pub type hex_conservative_decoding::error::InvalidLengthError::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn hex_conservative_decoding::error::InvalidLengthError::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for hex_conservative_decoding::error::InvalidLengthError where T: core::clone::Clone
+pub type hex_conservative_decoding::error::InvalidLengthError::Owned = T
+pub fn hex_conservative_decoding::error::InvalidLengthError::clone_into(&self, target: &mut T)
+pub fn hex_conservative_decoding::error::InvalidLengthError::to_owned(&self) -> T
+impl<T> alloc::string::ToString for hex_conservative_decoding::error::InvalidLengthError where T: core::fmt::Display + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::InvalidLengthError::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for hex_conservative_decoding::error::InvalidLengthError where T: 'static + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::InvalidLengthError::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for hex_conservative_decoding::error::InvalidLengthError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::InvalidLengthError::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for hex_conservative_decoding::error::InvalidLengthError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::InvalidLengthError::borrow_mut(&mut self) -> &mut T
+impl<T> core::clone::CloneToUninit for hex_conservative_decoding::error::InvalidLengthError where T: core::clone::Clone
+pub unsafe fn hex_conservative_decoding::error::InvalidLengthError::clone_to_uninit(&self, dest: *mut u8)
+impl<T> core::convert::From<T> for hex_conservative_decoding::error::InvalidLengthError
+pub fn hex_conservative_decoding::error::InvalidLengthError::from(t: T) -> T
+pub struct hex_conservative_decoding::OddLengthStringError
+impl hex_conservative_decoding::error::OddLengthStringError
+pub fn hex_conservative_decoding::error::OddLengthStringError::length(&self) -> usize
+impl core::clone::Clone for hex_conservative_decoding::error::OddLengthStringError
+pub fn hex_conservative_decoding::error::OddLengthStringError::clone(&self) -> hex_conservative_decoding::error::OddLengthStringError
+impl core::cmp::Eq for hex_conservative_decoding::error::OddLengthStringError
+impl core::cmp::PartialEq for hex_conservative_decoding::error::OddLengthStringError
+pub fn hex_conservative_decoding::error::OddLengthStringError::eq(&self, other: &hex_conservative_decoding::error::OddLengthStringError) -> bool
+impl core::convert::From<core::convert::Infallible> for hex_conservative_decoding::error::OddLengthStringError
+pub fn hex_conservative_decoding::error::OddLengthStringError::from(never: core::convert::Infallible) -> Self
+impl core::convert::From<hex_conservative_decoding::error::OddLengthStringError> for hex_conservative_decoding::error::DecodeVariableLengthBytesError
+pub fn hex_conservative_decoding::error::DecodeVariableLengthBytesError::from(e: hex_conservative_decoding::error::OddLengthStringError) -> Self
+impl core::fmt::Debug for hex_conservative_decoding::error::OddLengthStringError
+pub fn hex_conservative_decoding::error::OddLengthStringError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for hex_conservative_decoding::error::OddLengthStringError
+pub fn hex_conservative_decoding::error::OddLengthStringError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::StructuralPartialEq for hex_conservative_decoding::error::OddLengthStringError
+impl core::marker::Freeze for hex_conservative_decoding::error::OddLengthStringError
+impl core::marker::Send for hex_conservative_decoding::error::OddLengthStringError
+impl core::marker::Sync for hex_conservative_decoding::error::OddLengthStringError
+impl core::marker::Unpin for hex_conservative_decoding::error::OddLengthStringError
+impl core::marker::UnsafeUnpin for hex_conservative_decoding::error::OddLengthStringError
+impl core::panic::unwind_safe::RefUnwindSafe for hex_conservative_decoding::error::OddLengthStringError
+impl core::panic::unwind_safe::UnwindSafe for hex_conservative_decoding::error::OddLengthStringError
+impl<T, U> core::convert::Into<U> for hex_conservative_decoding::error::OddLengthStringError where U: core::convert::From<T>
+pub fn hex_conservative_decoding::error::OddLengthStringError::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for hex_conservative_decoding::error::OddLengthStringError where U: core::convert::Into<T>
+pub type hex_conservative_decoding::error::OddLengthStringError::Error = core::convert::Infallible
+pub fn hex_conservative_decoding::error::OddLengthStringError::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for hex_conservative_decoding::error::OddLengthStringError where U: core::convert::TryFrom<T>
+pub type hex_conservative_decoding::error::OddLengthStringError::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn hex_conservative_decoding::error::OddLengthStringError::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for hex_conservative_decoding::error::OddLengthStringError where T: core::clone::Clone
+pub type hex_conservative_decoding::error::OddLengthStringError::Owned = T
+pub fn hex_conservative_decoding::error::OddLengthStringError::clone_into(&self, target: &mut T)
+pub fn hex_conservative_decoding::error::OddLengthStringError::to_owned(&self) -> T
+impl<T> alloc::string::ToString for hex_conservative_decoding::error::OddLengthStringError where T: core::fmt::Display + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::OddLengthStringError::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for hex_conservative_decoding::error::OddLengthStringError where T: 'static + ?core::marker::Sized
+pub fn hex_conservative_decoding::error::OddLengthStringError::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for hex_conservative_decoding::error::OddLengthStringError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::OddLengthStringError::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for hex_conservative_decoding::error::OddLengthStringError where T: ?core::marker::Sized
+pub fn hex_conservative_decoding::error::OddLengthStringError::borrow_mut(&mut self) -> &mut T
+impl<T> core::clone::CloneToUninit for hex_conservative_decoding::error::OddLengthStringError where T: core::clone::Clone
+pub unsafe fn hex_conservative_decoding::error::OddLengthStringError::clone_to_uninit(&self, dest: *mut u8)
+impl<T> core::convert::From<T> for hex_conservative_decoding::error::OddLengthStringError
+pub fn hex_conservative_decoding::error::OddLengthStringError::from(t: T) -> T
+pub fn hex_conservative_decoding::decode_to_array<const N: usize>(hex: &str) -> core::result::Result<[u8; N], hex_conservative_decoding::error::DecodeFixedLengthBytesError>
+pub fn hex_conservative_decoding::decode_to_vec(hex: &str) -> core::result::Result<alloc::vec::Vec<u8>, hex_conservative_decoding::error::DecodeVariableLengthBytesError>
