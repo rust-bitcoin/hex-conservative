@@ -220,7 +220,7 @@ where
     #[inline]
     fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
         let [hi, lo] = self.iter.nth_back(n)?;
-        let pos = (self.front_pos + self.iter.len()).saturating_mul(2);
+        let pos = self.front_pos.saturating_add(self.iter.len()).saturating_mul(2);
         Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| InvalidCharError {
             invalid: c,
             pos: if is_high { pos } else { pos.saturating_add(1) },
