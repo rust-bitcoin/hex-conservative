@@ -85,6 +85,11 @@ impl io::Read for HexSliceToBytesIter<'_> {
 ///
 /// This type is intentionally low-level. It operates on an iterator of character pairs, each
 /// represented as a `[u8; 2]`. If you already have a `&str`, use [`HexSliceToBytesIter`] instead.
+///
+/// This iterator is not fused unless the underlying iterator is. If the underlying iterator does
+/// not implement the [`FusedIterator`](core::iter::FusedIterator) trait, once
+/// [`HexToBytesIter::next`] returns `None`, further calls may panic or otherwise behave
+/// arbitrarily, regardless of what the underlying iterator is documented to do.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct HexToBytesIter<I>
 where
