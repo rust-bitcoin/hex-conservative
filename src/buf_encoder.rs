@@ -10,9 +10,8 @@
 
 use core::borrow::Borrow;
 
-use arrayvec::ArrayString;
-
 use super::{Case, Table};
+use crate::array_string::ArrayString;
 
 /// Hex-encodes bytes into the provided buffer.
 ///
@@ -117,7 +116,7 @@ impl<const CAP: usize> BufEncoder<CAP> {
 
     /// Returns the written bytes as a hex `str`.
     #[inline]
-    pub fn as_str(&self) -> &str { &self.buf }
+    pub fn as_str(&self) -> &str { self.buf.as_str() }
 
     /// Resets the buffer to become empty.
     #[inline]
