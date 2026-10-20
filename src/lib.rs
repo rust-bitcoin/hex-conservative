@@ -84,6 +84,8 @@ pub mod _export {
     }
 }
 
+#[cfg(test)]
+mod array_string;
 pub mod buf_encoder;
 pub mod display;
 pub mod error;
