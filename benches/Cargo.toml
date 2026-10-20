@@ -16,7 +16,11 @@
  harness = false
 
  [[bench]]
+ name = "encode"
+ path = "hex/encode.rs"
+ harness = false
+
+ [[bench]]
  name = "decode"
  path = "hex/decode.rs"
  harness = false
- 
