@@ -84,6 +84,7 @@ pub mod _export {
     }
 }
 
+mod array_string;
 pub mod buf_encoder;
 pub mod display;
 pub mod error;

@@ -1158,9 +1158,8 @@ mod tests {
         use alloc::vec::Vec;
         use std::io::Write as _;
 
-        use arrayvec::ArrayString;
-
         use super::{Case, DisplayHex, HexWriter};
+        use crate::array_string::ArrayString;
 
         #[test]
         fn hex_writer() {
