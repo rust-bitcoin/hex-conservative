@@ -26,12 +26,12 @@ jobs:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           persist-credentials: false
-      - uses: rust-bitcoin/rust-bitcoin-maintainer-tools/.github/actions/setup-rbmt@af3c2868415b17eedc808da6d0589e10b7482660
+      - uses: ./.github/actions/setup-rbmt
       - name: "Install decoding workspace toolchains"
         if: matrix.workspace != '.'
         run: cargo rbmt toolchains
       - name: "Run tests"
-        run: cargo rbmt test --toolchain ${{ matrix.toolchain }} --lock-file ${{ matrix.dep }}
+        run: cargo rbmt test --toolchain ${{ matrix.toolchain }} --lockfile ${{ matrix.dep }}
 
   Check:
     runs-on: ubuntu-24.04
@@ -41,7 +41,7 @@ jobs:
       fail-fast: false
       matrix:
         workspace: [".", decoding]
-        task: [api, lint, docs, docsrs, "fmt --check"]
+        task: [lint, docs, "fmt --check"]
     defaults:
       run:
         working-directory: ${{ matrix.workspace }}
@@ -49,9 +49,46 @@ jobs:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           persist-credentials: false
-      - uses: rust-bitcoin/rust-bitcoin-maintainer-tools/.github/actions/setup-rbmt@af3c2868415b17eedc808da6d0589e10b7482660
+      - uses: ./.github/actions/setup-rbmt
       - name: "Run ${{ matrix.task }}"
         run: cargo rbmt ${{ matrix.task }}
+
+  API:
+    name: Check API diff
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-rbmt
+      - name: "Run API check"
+        id: api_check
+        env:
+          BASELINE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          set +e
+          cargo rbmt api --baseline "$BASELINE"
+          root_exit_code=$?
+          (cd decoding && cargo rbmt api --baseline "$BASELINE")
+          decoding_exit_code=$?
+          echo "exit_code=$(( root_exit_code || decoding_exit_code ))" >> "$GITHUB_OUTPUT"
+      - name: "Save API diff state"
+        if: github.event_name == 'pull_request'
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          EXIT_CODE: ${{ steps.api_check.outputs.exit_code }}
+        run: |
+          echo "$PR_NUMBER" > api-diff
+          echo "$EXIT_CODE" >> api-diff
+      - name: "Upload API diff state"
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: api-diff
+          path: api-diff
 
   # Non cargo-rbmt jobs manage their toolchain version directly.
   Prepare:
