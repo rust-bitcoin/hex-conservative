@@ -9,29 +9,26 @@ name: Continuous integration
 
 jobs:
   Test:
-    name: Test ${{ matrix.workspace }} - ${{ matrix.toolchain }} toolchain, ${{ matrix.dep }} deps
+    name: Test - ${{ matrix.toolchain }} toolchain, ${{ matrix.dep }} deps
     runs-on: ubuntu-24.04
     permissions:
       contents: read
     strategy:
       fail-fast: false
       matrix:
-        workspace: [".", decoding]
         toolchain: [stable, nightly, msrv]
         dep: [minimal, recent]
-    defaults:
-      run:
-        working-directory: ${{ matrix.workspace }}
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-rbmt
-      - name: "Install decoding workspace toolchains"
-        if: matrix.workspace != '.'
-        run: cargo rbmt toolchains
       - name: "Run tests"
+        if: matrix.toolchain != 'msrv'
         run: cargo rbmt test --toolchain ${{ matrix.toolchain }} --lockfile ${{ matrix.dep }}
+      - name: "Run tests on each package MSRV"
+        if: matrix.toolchain == 'msrv'
+        run: ./contrib/test-msrv.sh ${{ matrix.dep }}
 
   Check:
     runs-on: ubuntu-24.04
@@ -40,11 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        workspace: [".", decoding]
         task: [lint, docs, "fmt --check"]
-    defaults:
-      run:
-        working-directory: ${{ matrix.workspace }}
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
@@ -71,10 +64,7 @@ jobs:
         run: |
           set +e
           cargo rbmt api --baseline "$BASELINE"
-          root_exit_code=$?
-          (cd decoding && cargo rbmt api --baseline "$BASELINE")
-          decoding_exit_code=$?
-          echo "exit_code=$(( root_exit_code || decoding_exit_code ))" >> "$GITHUB_OUTPUT"
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
       - name: "Save API diff state"
         if: github.event_name == 'pull_request'
         env:
