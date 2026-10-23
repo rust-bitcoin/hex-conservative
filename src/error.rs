@@ -160,7 +160,7 @@ pub struct InvalidCharError {
 impl InvalidCharError {
     /// Returns the invalid character byte.
     #[inline]
-    #[deprecated(since = "TBD", note = "not suitable for use with UTF-8 strings")]
+    #[deprecated(since = "1.3.0", note = "not suitable for use with UTF-8 strings")]
     pub fn invalid_char(&self) -> u8 { self.invalid }
     /// Returns the position of the invalid character byte.
     #[inline]
@@ -198,6 +198,7 @@ impl From<Infallible> for InvalidCharError {
 
 /// Note that the implementation displays position as 1-based instead of 0-based to be more
 /// suitable to end users who might be non-programmers.
+#[allow(deprecated)]            // Use of `invalid_char()` is cleaner than direct var access.
 impl fmt::Display for InvalidCharError {
     #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
