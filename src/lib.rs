@@ -85,30 +85,40 @@ pub mod _export {
 }
 
 mod array_string;
+#[cfg(not(creusot))]
 pub mod buf_encoder;
+#[cfg(not(creusot))]
 pub mod display;
+#[cfg(not(creusot))]
 pub mod error;
+#[cfg(not(creusot))]
 mod iter;
 
 /// Re-exports of the common crate traits.
+#[cfg(not(creusot))]
 pub mod prelude {
     #[doc(inline)]
     pub use crate::display::DisplayHex;
 }
 
 #[cfg(feature = "alloc")]
+#[cfg(not(creusot))]
 use alloc::vec::Vec;
+#[cfg(not(creusot))]
 use core::fmt;
 
+#[cfg(not(creusot))]
 pub(crate) use table::Table;
 
 #[rustfmt::skip]                // Keep public re-exports separate.
 #[doc(inline)]
+#[cfg(not(creusot))]
 pub use self::{
     display::DisplayHex,
     iter::{BytesToHexIter, HexToBytesIter, HexSliceToBytesIter},
 };
 #[doc(no_inline)]
+#[cfg(not(creusot))]
 pub use self::error::{
     DecodeFixedLengthBytesError, DecodeVariableLengthBytesError, InvalidCharError,
     InvalidLengthError, OddLengthStringError,
@@ -124,6 +134,7 @@ pub use self::error::{
 ///
 /// Returns an error if `hex` contains invalid characters or doesn't have even length.
 #[cfg(feature = "alloc")]
+#[cfg(not(creusot))]
 pub fn decode_to_vec(hex: &str) -> Result<Vec<u8>, DecodeVariableLengthBytesError> {
     Ok(HexToBytesIter::new(hex)?.drain_to_vec()?)
 }
@@ -137,6 +148,7 @@ pub fn decode_to_vec(hex: &str) -> Result<Vec<u8>, DecodeVariableLengthBytesErro
 ///
 /// Returns an error if `hex` contains invalid characters or has incorrect length. (Should be
 /// `N * 2`.)
+#[cfg(not(creusot))]
 pub fn decode_to_array<const N: usize>(hex: &str) -> Result<[u8; N], DecodeFixedLengthBytesError> {
     if hex.len() == N * 2 {
         let mut ret = [0u8; N];
@@ -163,6 +175,7 @@ pub fn decode_to_array<const N: usize>(hex: &str) -> Result<[u8; N], DecodeFixed
 /// * If input string is not even length.
 /// * If input string contains non-hex characters.
 #[macro_export]
+#[cfg(not(creusot))]
 macro_rules! hex {
     ($hex:expr) => {{
         const _: () = assert!($hex.len() % 2 == 0, "hex string must have even length");
@@ -192,6 +205,7 @@ macro_rules! hex {
 }
 
 /// Possible case of hex.
+#[cfg(not(creusot))]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Case {
     /// Produce lower-case chars (`[0-9a-f]`).
@@ -203,11 +217,13 @@ pub enum Case {
     Upper,
 }
 
+#[cfg(not(creusot))]
 impl Default for Case {
     #[inline]
     fn default() -> Self { Case::Lower }
 }
 
+#[cfg(not(creusot))]
 impl Case {
     /// Returns the encoding table.
     ///
@@ -228,6 +244,7 @@ impl Case {
 // making transmute between `Char` and `u8` sound whenever the byte is a valid hex digit.
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(u8)]
+#[cfg(not(creusot))]
 pub enum Char {
     /// `'0'`
     Zero = b'0',
@@ -275,6 +292,7 @@ pub enum Char {
     UpperF = b'F',
 }
 
+#[cfg(not(creusot))]
 impl Char {
     /// Returns the nibble value (0–15) of this hex character.
     #[inline]
@@ -330,6 +348,7 @@ impl Char {
     }
 }
 
+#[cfg(not(creusot))]
 impl fmt::Display for Char {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         // This should be the most efficient way of formatting because it avoids encoding `char`
@@ -339,6 +358,7 @@ impl fmt::Display for Char {
     }
 }
 
+#[cfg(not(creusot))]
 impl fmt::Debug for Char {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         // the Debug impl of char puts quotes around it so we do it as well for consistency.
@@ -351,17 +371,20 @@ impl fmt::Debug for Char {
     }
 }
 
+#[cfg(not(creusot))]
 impl From<Char> for char {
     #[inline]
     fn from(c: Char) -> char { char::from(c as u8) }
 }
 
+#[cfg(not(creusot))]
 impl From<Char> for u8 {
     #[inline]
     fn from(c: Char) -> u8 { c as u8 }
 }
 
 /// Correctness boundary for `Table`.
+#[cfg(not(creusot))]
 mod table {
     use super::Char;
 
