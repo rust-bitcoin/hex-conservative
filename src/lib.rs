@@ -60,7 +60,7 @@
 //! no plans to.
 //!
 //! Note though that the dependencies may have looser policy. This is not considered breaking/wrong
-//! - you would just need to pin them in `Cargo.lock` (not `.toml`).
+//! \- you would just need to pin them in `Cargo.lock` (not `.toml`).
 
 #![no_std]
 // Experimental features we need.
