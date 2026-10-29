@@ -10,7 +10,7 @@ keywords = ["encoding", "hex", "hexadecimal"]
 readme = "README.md"
 edition = "2021"
 rust-version = "1.74.0"
-exclude = ["api", "tests", "contrib"]
+exclude = ["tests", "contrib"]
 
 [workspace]
 members = ["fuzz"]
@@ -49,9 +49,10 @@ exact_features = [
     ["std", "newer-rust-version"],
 ]
 
-[workspace.metadata.rbmt.toolchains]
-nightly = "nightly-2026-03-27"
-stable = "1.93.1"
+[workspace.metadata]
+rbmt.version = "0.5.3"
+rbmt.toolchains.nightly = "nightly-2026-03-27"
+rbmt.toolchains.stable = "1.93.1"
 
 [lints.clippy]
 # Exclude lints we don't think are valuable.
