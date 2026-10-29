@@ -1,0 +1,5 @@
+additional_cargo_args = ["--all-features"]
+examine_globs = ["src/**/*.rs"]
+exclude_re = [
+    "Iterator",
+]
