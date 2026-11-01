@@ -160,7 +160,7 @@ pub struct InvalidCharError {
 impl InvalidCharError {
     /// Returns the invalid character byte.
     #[inline]
-    #[deprecated(since = "TBD", note = "not suitable for use with UTF-8 strings")]
+    #[deprecated(since = "1.3.0", note = "not suitable for use with UTF-8 strings")]
     pub fn invalid_char(&self) -> u8 { self.invalid }
     /// Returns the position of the invalid character byte.
     #[inline]
@@ -239,18 +239,17 @@ impl fmt::Display for InvalidCharError {
         let chr_ascii;
         let chr_non_ascii;
 
-        let invalid_char = self.invalid_char();
         // We're currently not storing the entire character, so we need to make sure values >=
         // 128 don't get misinterpreted as ISO-8859-1.
-        let chr: &dyn fmt::Display = if self.invalid_char().is_ascii() {
+        let chr: &dyn fmt::Display = if self.invalid.is_ascii() {
             // Yes, the Debug output is correct here. Display would print the characters
             // directly which would be confusing in case of control characters and it would
             // also mess up the formatting. The `Debug` implementation of `char` properly
             // escapes such characters.
-            chr_ascii = Format(move |f| write!(f, "{:?}", invalid_char as char));
+            chr_ascii = Format(move |f| write!(f, "{:?}", self.invalid as char));
             &chr_ascii
         } else {
-            chr_non_ascii = Format(move |f| write!(f, "{:#02x}", invalid_char));
+            chr_non_ascii = Format(move |f| write!(f, "{:#02x}", self.invalid));
             &chr_non_ascii
         };
 
@@ -449,7 +448,7 @@ mod tests {
         let error = result.unwrap_err();
         if let DecodeVariableLengthBytesError::InvalidChar(e) = error {
             assert!(!format!("{}", e).is_empty());
-            assert_eq!(e.invalid_char(), b'G');
+            assert_eq!(e.invalid, b'G');
             assert_eq!(e.pos(), 2);
         } else {
             panic!("Expected InvalidCharError");
