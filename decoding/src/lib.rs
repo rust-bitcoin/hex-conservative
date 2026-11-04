@@ -2,7 +2,7 @@
 
 #![doc = include_str!("../README.md")]
 #![no_std]
-#![cfg_attr(docsrs, feature(doc_cfg))]
+#![cfg_attr(docsrs, feature(doc_cfg, cfg_version))]
 #![warn(missing_docs)]
 
 #[cfg(feature = "std")]
