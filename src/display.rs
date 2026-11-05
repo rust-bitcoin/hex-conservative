@@ -932,6 +932,13 @@ mod tests {
         }
 
         #[test]
+        fn alternate_precision_respects_field_width() {
+            let rendered = format!("{:#8.2}", [0xab, 0xcd].as_hex());
+            assert_eq!(rendered, "0xab    ");
+            assert_eq!(rendered.len(), 8);
+        }
+
+        #[test]
         fn precision_with_padding_pads_right() {
             define_dummy!(4);
 
