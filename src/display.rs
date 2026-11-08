@@ -152,12 +152,13 @@ fn write_pad_left(
     encoder: &mut BufEncoder<1024>,
 ) -> Result<usize, fmt::Error> {
     let pad_right = if let Some(width) = f.width() {
-        // Add space for 2 characters if the '#' flag is set
-        let full_string_len = if f.alternate() { bytes_len * 2 + 2 } else { bytes_len * 2 };
+        let full_string_len = bytes_len * 2;
+
         let string_len = match f.precision() {
             Some(max) => core::cmp::min(max, full_string_len),
             None => full_string_len,
         };
+        let string_len = if f.alternate() { string_len + 2 } else { string_len };
 
         if string_len < width {
             let (left, right) = match f.align().unwrap_or(fmt::Alignment::Left) {
@@ -926,8 +927,15 @@ mod tests {
             test_display_hex!("{0:10.4}", [0x12, 0x34, 0x56, 0x78], "1234      ");
             test_display_hex!("{0:10.5}", [0x12, 0x34, 0x56, 0x78], "12345     ");
 
-            test_display_hex!("{0:#10.4}", [0x12, 0x34, 0x56, 0x78], "0x1234      ");
-            test_display_hex!("{0:#10.5}", [0x12, 0x34, 0x56, 0x78], "0x12345     ");
+            test_display_hex!("{0:#10.4}", [0x12, 0x34, 0x56, 0x78], "0x1234    ");
+            test_display_hex!("{0:#10.5}", [0x12, 0x34, 0x56, 0x78], "0x12345   ");
+        }
+
+        #[test]
+        fn alternate_precision_respects_field_width() {
+            let rendered = format!("{:#8.2}", [0xab, 0xcd].as_hex());
+            assert_eq!(rendered, "0xab    ");
+            assert_eq!(rendered.len(), 8);
         }
 
         #[test]
