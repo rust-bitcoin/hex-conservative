@@ -32,6 +32,11 @@ This library should compile with almost any combination of features on **Rust 1.
 reserve the right to use features to guard compiler specific code so `--all-features` may not work
 using the MSRV toolchain.
 
+The decoding side of this crate (the hex to bytes iterators, `decode_to_vec`, `decode_to_array` and
+the error types) lives in the [`hex-conservative-decoding`](https://crates.io/crates/hex-conservative-decoding)
+crate, which has an MSRV of **Rust 1.60.0**. This crate re-exports all of it, so you only need to
+depend on `hex-conservative-decoding` directly if you need decoding on a compiler older than our MSRV.
+
 ### Policy
 
 Policy is to never use an MSRV that is less than two years old and also that ships in Debian stable.
