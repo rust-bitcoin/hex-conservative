@@ -5,3 +5,5 @@ target
 
 # Test artifacts
 mutants.out*
+verif
+.why3find
