@@ -1,3 +1,16 @@
+# 1.3.1 - 2026-09-17
+
+- Set the deprecation notice form TBD to `1.3.0`.
+- display: fix `fmt_hex_max!` to not panic when given precision greater than byte length [#261](https://github.com/rust-bitcoin/hex-conservative/pull/261)
+- buf_encoder: change "early range check" assertion on max to one on min [#262](https://github.com/rust-bitcoin/hex-conservative/pull/262)
+- error: don't try to 1-index the `usize::MAX`th position in a string [#263](https://github.com/rust-bitcoin/hex-conservative/pull/263)
+- display: avoid repeated evaluation of macro arguments [#264](https://github.com/rust-bitcoin/hex-conservative/pull/264)
+- display: add tests for single evaluation of macro arguments [#266](https://github.com/rust-bitcoin/hex-conservative/pull/266)
+- display: fix left padding in `fmt_hex_max` with short strings [#267](https://github.com/rust-bitcoin/hex-conservative/pull/267)
+- Replace `arrayvec` depedency with minimal local type [#272](https://github.com/rust-bitcoin/hex-conservative/pull/272)
+- iter: add doccomment clarifying fusing behavior [#269](https://github.com/rust-bitcoin/hex-conservative/pull/269)
+- Account for alternate prefix in precision padding [#275](https://github.com/rust-bitcoin/hex-conservative/pull/275)
+
 # 1.3.0 - 2026-09-04
 
 - Mention `HexSliceToBytesIter` in `HexToBytesIter` docs [#252](https://github.com/rust-bitcoin/hex-conservative/pull/252)
