@@ -98,6 +98,8 @@ where
     iter: I,
     /// Number of (high, low) char pairs consumed from the front.
     front_pos: usize,
+    /// Front error held back by `read` so the bytes decoded before it can be returned first.
+    pending_err: Option<(u8, usize)>,
 }
 
 impl<'a> HexToBytesIter<HexDigitsIter<'a>> {
@@ -188,7 +190,7 @@ where
     /// # }
     /// ```
     #[inline]
-    pub fn from_pairs(iter: I) -> Self { Self { front_pos: 0, iter } }
+    pub fn from_pairs(iter: I) -> Self { Self { front_pos: 0, iter, pending_err: None } }
 }
 
 impl<I> Iterator for HexToBytesIter<I>
@@ -201,10 +203,19 @@ where
     fn next(&mut self) -> Option<Self::Item> { self.nth(0) }
 
     #[inline]
-    fn size_hint(&self) -> (usize, Option<usize>) { self.iter.size_hint() }
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let (min, max) = self.iter.size_hint();
+        let pending = usize::from(self.pending_err.is_some());
+        (min.saturating_add(pending), max.and_then(|max| max.checked_add(pending)))
+    }
 
     #[inline]
     fn nth(&mut self, n: usize) -> Option<Self::Item> {
+        let n = match self.pending_err.take() {
+            Some((invalid, pos)) if n == 0 => return Some(Err(InvalidCharError { invalid, pos })),
+            Some(_) => n - 1,
+            None => n,
+        };
         let [hi, lo] = self.iter.nth(n)?;
         let pos = self.front_pos.saturating_add(n).saturating_mul(2);
         self.front_pos = self.front_pos.saturating_add(n).saturating_add(1);
@@ -224,6 +235,12 @@ where
 
     #[inline]
     fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
+        if self.pending_err.is_some() && n >= self.iter.len() {
+            let len = self.iter.len();
+            let _ = self.iter.nth_back(n);
+            let (invalid, pos) = self.pending_err.take()?;
+            return if n == len { Some(Err(InvalidCharError { invalid, pos })) } else { None };
+        }
         let [hi, lo] = self.iter.nth_back(n)?;
         let pos = (self.front_pos + self.iter.len()).saturating_mul(2);
         Some(hex_chars_to_byte(hi, lo).map_err(|(c, is_high)| InvalidCharError {
@@ -246,6 +263,13 @@ impl<I> io::Read for HexToBytesIter<I>
 where
     I: Iterator<Item = [u8; 2]> + ExactSizeIterator + FusedIterator,
 {
+    /// Reads decoded bytes into `buf`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`io::ErrorKind::InvalidData`] if the next pair is not valid hex. If bytes were
+    /// decoded before the invalid pair, they are returned first and the error is returned by the
+    /// next call.
     #[inline]
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         let mut bytes_read = 0usize;
@@ -255,7 +279,12 @@ where
                     *dst = src;
                     bytes_read += 1;
                 }
-                Some(Err(e)) => return Err(io::Error::new(io::ErrorKind::InvalidData, e)),
+                Some(Err(e)) if bytes_read == 0 =>
+                    return Err(io::Error::new(io::ErrorKind::InvalidData, e)),
+                Some(Err(e)) => {
+                    self.pending_err = Some((e.invalid, e.pos));
+                    break;
+                }
                 None => break,
             }
         }
@@ -860,7 +889,37 @@ mod tests {
         let hex = "deadbeefXX";
         let mut iter = HexToBytesIter::new(hex).unwrap();
         let mut buf = [0u8; 6];
+        let bytes_read = iter.read(&mut buf).unwrap();
+        assert_eq!(bytes_read, 4);
+        assert_eq!(buf[..4], [0xde, 0xad, 0xbe, 0xef]);
         let err = iter.read(&mut buf).unwrap_err();
         assert_eq!(err.kind(), io::ErrorKind::InvalidData);
+    }
+
+    #[test]
+    #[cfg(feature = "std")]
+    fn hex_to_bytes_iter_read_keeps_pending_error() {
+        use std::io::Read;
+
+        let mut buf = [0u8; 16];
+
+        let mut iter = HexToBytesIter::new("410azz420a").unwrap();
+        assert_eq!(iter.read(&mut buf).unwrap(), 2);
+        assert_eq!(buf[..2], *b"A\n");
+        assert_eq!(iter.len(), 3);
+        assert_eq!(iter.next().unwrap().unwrap_err().pos(), 4);
+        assert_eq!(iter.read(&mut buf).unwrap(), 2);
+        assert_eq!(buf[..2], *b"B\n");
+
+        let mut iter = HexToBytesIter::new("41zz42").unwrap();
+        assert_eq!(iter.read(&mut buf).unwrap(), 1);
+        assert_eq!(iter.next_back().unwrap().unwrap(), b'B');
+        assert_eq!(iter.next_back().unwrap().unwrap_err().pos(), 2);
+        assert!(iter.next_back().is_none());
+
+        let mut iter = HexToBytesIter::new("41zz42").unwrap();
+        assert_eq!(iter.read(&mut buf).unwrap(), 1);
+        assert_eq!(iter.nth(1).unwrap().unwrap(), b'B');
+        assert_eq!(iter.len(), 0);
     }
 }
