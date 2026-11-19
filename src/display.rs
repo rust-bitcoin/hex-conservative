@@ -594,6 +594,7 @@ where
 pub struct HexWriter<T> {
     writer: T,
     table: &'static Table,
+    failed: bool,
 }
 
 #[cfg(feature = "std")]
@@ -602,7 +603,9 @@ impl<T> HexWriter<T> {
     /// in the given `case`.
     ///
     /// Note even though we take ownership of the writer one can also call this with `&mut dest`.
-    pub fn new(dest: T, case: Case) -> Self { Self { writer: dest, table: case.table() } }
+    pub fn new(dest: T, case: Case) -> Self {
+        Self { writer: dest, table: case.table(), failed: false }
+    }
     /// Consumes this `HexWriter` returning the inner `T`.
     pub fn into_inner(self) -> T { self.writer }
 }
@@ -618,12 +621,16 @@ where
     ///
     /// If no bytes could be written to this `HexWriter`, and the provided buffer is not empty,
     /// returns [`std::io::ErrorKind::Other`], otherwise returns `Ok`.
+    ///
+    /// After the inner writer returns an error, all subsequent non-empty writes return an error.
     fn write(&mut self, buf: &[u8]) -> Result<usize, std::io::Error> {
         let mut n = 0;
         for byte in buf {
             let mut hex_chars = [0u8; 2];
             let hex_str = self.table.byte_to_str(&mut hex_chars, *byte);
-            if self.writer.write_str(hex_str).is_err() {
+            if self.failed || self.writer.write_str(hex_str).is_err() {
+                // The failed call may have written part of a hex byte, so retrying is unsafe.
+                self.failed = true;
                 break;
             }
             n += 1;
@@ -1213,6 +1220,31 @@ mod tests {
             let mut writer = HexWriter::new(String::new(), Lower);
             writer.write_all(&vec[..]).unwrap();
             assert_eq!(writer.into_inner(), vec.to_lower_hex_string());
+        }
+
+        #[test]
+        fn hex_writer_errors_after_partial_sink_failure() {
+            struct PartialFailureSink {
+                output: String,
+                calls: usize,
+            }
+
+            impl core::fmt::Write for PartialFailureSink {
+                fn write_str(&mut self, s: &str) -> core::fmt::Result {
+                    self.calls += 1;
+                    if self.calls == 2 {
+                        self.output.push_str(&s[..1]);
+                        return Err(core::fmt::Error);
+                    }
+                    self.output.push_str(s);
+                    Ok(())
+                }
+            }
+
+            let sink = PartialFailureSink { output: String::new(), calls: 0 };
+            let mut writer = HexWriter::new(sink, Case::Lower);
+            assert!(writer.write_all(&[0xab, 0xcd, 0xef]).is_err());
+            assert_eq!(writer.into_inner().output, "abc");
         }
 
         #[test]
