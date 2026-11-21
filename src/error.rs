@@ -20,7 +20,7 @@ if_rust_version::if_rust_version! {
 #[cfg(feature = "std")]
 macro_rules! if_std_error {
     ({ $($if_yes:tt)* } $(else { $($if_not:tt)* })?) => {
-        #[cfg_attr(docsrs, doc(cfg(any(feature = "std", all(feature = "newer-rust-version", rust_version = ">= 1.81.0")))))]
+        #[cfg_attr(docsrs, doc(cfg(any(feature = "std", all(feature = "newer-rust-version", version("1.81.0"))))))]
         $($if_yes)*
     }
 }
@@ -30,7 +30,7 @@ macro_rules! if_std_error {
     ({ $($if_yes:tt)* } $(else { $($if_not:tt)* })?) => {
         if_rust_version::if_rust_version! {
             >= 1.81 {
-                #[cfg_attr(docsrs, doc(cfg(any(feature = "std", all(feature = "newer-rust-version", rust_version = ">= 1.81.0")))))]
+                #[cfg_attr(docsrs, doc(cfg(any(feature = "std", all(feature = "newer-rust-version", version("1.81.0"))))))]
                 $($if_yes)*
             } $(else { $($if_not)* })?
         }
