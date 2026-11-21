@@ -21,7 +21,7 @@ tools:
 @fmt: (rbmt "fmt")
 
 # Check for API changes.
-check-api: (rbmt "api")
+check-api baseline="master": (rbmt ("api --baseline " + baseline))
 
 # Update the recent and minimal lock files.
 @update-lock-files: (rbmt "lock")
